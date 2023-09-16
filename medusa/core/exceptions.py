@@ -1,0 +1,2 @@
+class MedusaError(Exception):
+    pass
