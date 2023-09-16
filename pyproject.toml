@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "medusa"
+version = "0.0.1"
+description = "Python Vulkan Engine"
+license = "LGPL-3.0-only"
+
+dependencies = [
+
+    # Core
+    "pyyaml",
+
+    # Development
+    "coloredlogs",
+
+    # Graphics
+    "pysdl2",
+    "pysdl2-dll",
+
+    "vulkan",
+
+]
