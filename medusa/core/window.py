@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, Tuple
 
 import sdl2
 import sdl2.ext
@@ -16,7 +16,10 @@ class Window(object):
 
         self.__window = None
 
-        logger.debug("Initialise SDL2")
+        self.__width: int = 0
+        self.__height: int = 0
+
+        logger.info("Initialise SDL2")
         if sdl2.SDL_Init(sdl2.SDL_INIT_EVERYTHING) != 0:
             raise Exception(sdl2.SDL_GetError())
 
@@ -28,12 +31,12 @@ class Window(object):
             height,
             sdl2.SDL_WINDOW_VULKAN | sdl2.SDL_WINDOW_SHOWN,
         )
-        logger.debug("Window: Created")
+        logger.info("Window: Created")
 
     def __del__(self):
         if self.__window:
             sdl2.SDL_DestroyWindow(self.__window)
-            logger.debug("Window: Destroyed")
+            logger.info("Window: Destroyed")
 
         self.__window = None
 
@@ -43,9 +46,18 @@ class Window(object):
         for event in events:
             if event.type == sdl2.SDL_QUIT:
                 return False
+            if event.type == sdl2.SDL_WINDOWEVENT_RESIZED:
+                logger.warning("Window resized. Swap Chain is NOT being resized as of yet")
 
         return True
 
     @property
     def handle(self) -> Any:
         return self.__window
+
+    @property
+    def size(self) -> Tuple[int, int]:
+        return self.__width, self.__height
+
+    def set_title(self, title: str):
+        sdl2.SDL_SetWindowTitle(self.__window, title.encode("utf-8"))

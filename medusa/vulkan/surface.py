@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ctypes
 import logging
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import sdl2
@@ -49,10 +50,20 @@ def surface_win32(wm_info: sdl2.SDL_SysWMinfo, instance: Instance):
         _lib = _ffi.dlopen("User32.dll")
         return _lib.GetWindowLongA(_ffi.cast("void*", hWnd), -6)
 
-    surface_create = vk.VkWin32SurfaceCreateInfoKHR(
-        hinstance=get_instance(wm_info.info.win.window), hwnd=wm_info.info.win.window, flags=0
-    )
+    surface_create = vk.VkWin32SurfaceCreateInfoKHR(hinstance=get_instance(wm_info.info.win.window), hwnd=wm_info.info.win.window, flags=0)
     return vkx.vkCreateWin32SurfaceKHR(instance.handle, surface_create, None)
+
+
+@dataclass(frozen=True)
+class SurfaceInfo:
+    surface_format: int
+    surface_colour_space: int
+    depth_format: int
+    width: int
+    height: int
+
+    def get_extent(self) -> vk.VkExtent2D:
+        return vk.VkExtent2D(self.width, self.height)
 
 
 class Surface(object):

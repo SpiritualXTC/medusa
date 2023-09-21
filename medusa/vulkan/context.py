@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import logging
 import sys
-
 from typing import TYPE_CHECKING, Set, Tuple
 
 from medusa.vulkan import vulkan as vk
 from medusa.vulkan import extensions as vkx
 
 from medusa.core.exceptions import MedusaError
+from medusa.vulkan.command_buffer import CommandPool
 from medusa.vulkan.extensions import InstanceProcAddr
 from medusa.vulkan.queue import QueueFamily
 from medusa.vulkan.surface import Surface
@@ -63,9 +63,7 @@ class Instance(object):
         )
 
         if enable_validation_layers:
-            msg_severity = (
-                vk.VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | vk.VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
-            )
+            msg_severity = vk.VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | vk.VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
             msg_type = (
                 vk.VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
                 | vk.VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
@@ -180,7 +178,9 @@ class PhysicalDevice(object):
             raise MedusaError("No suitable device found")
 
         props = vk.vkGetPhysicalDeviceProperties(self.__device)
-        logger.info(f"Using device: {props.deviceName}")
+        logger.info(f"Vulkan Using device: {props.deviceName}")
+
+        self.__surface_caps = vkx.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(self.__device, self.__surface.handle)
 
     @property
     def handle(self) -> VulkanHandle:
@@ -188,6 +188,82 @@ class PhysicalDevice(object):
 
     def get_queue_family_indices(self) -> Tuple[int, int, int]:
         return PhysicalDevice.__queue_family_indices(self.__device, self.__surface.handle)
+
+    def get_surface_formats(self):
+        formats = vkx.vkGetPhysicalDeviceSurfaceFormatsKHR(self.__device, self.__surface.handle)
+        return formats
+
+    def get_present_modes(self):
+        present_modes = vkx.vkGetPhysicalDeviceSurfacePresentModesKHR(self.__device, self.__surface.handle)
+        return present_modes
+
+    def select_swap_surface_format(self) -> Tuple[int, int]:
+        # TODO: This is be being GC'd once it goes out of scope -- even though referencing an element inside...
+        formats = self.get_surface_formats()
+
+        if len(formats) == 0:
+            raise MedusaError("Unable to select appropriate surface format")
+
+        for fmt in formats:
+            if fmt.format == vk.VK_FORMAT_UNDEFINED:
+                return fmt.format, fmt.colorSpace
+            if fmt.format == vk.VK_FORMAT_B8G8R8A8_UNORM and fmt.colorSpace == vk.VK_COLOR_SPACE_SRGB_NONLINEAR_KHR:
+                return fmt.format, fmt.colorSpace
+
+        return formats[0].format, formats[0].colorSpace
+
+    def select_swap_present_mode(self) -> int:
+        present_modes = self.get_present_modes()
+        for pm in present_modes:
+            if pm == vk.VK_PRESENT_MODE_MAILBOX_KHR:
+                return pm
+        return vk.VK_PRESENT_MODE_FIFO_KHR
+
+    def select_swap_depth_format(self):
+        select = {vk.VK_FORMAT_D32_SFLOAT, vk.VK_FORMAT_D32_SFLOAT_S8_UINT, vk.VK_FORMAT_D24_UNORM_S8_UINT}
+        tiling = vk.VK_IMAGE_TILING_OPTIMAL
+        features = vk.VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+
+        for depth_format in select:
+            format_props = vk.vkGetPhysicalDeviceFormatProperties(self.__device, depth_format, None)
+
+            if tiling == vk.VK_IMAGE_TILING_LINEAR and (format_props.optimalTilingFeatures & features) == features:
+                return depth_format
+
+            if tiling == vk.VK_IMAGE_TILING_OPTIMAL and (format_props.optimalTilingFeatures & features) == features:
+                return depth_format
+        else:
+            raise MedusaError("Unable to select depth format")
+
+    def calc_surface_extent(self, extent: vk.VkExtent2D) -> Tuple[int, int]:
+        MAX_UINT32 = 2**32 - 1  # TODO: Pull From Numpy or GLM
+
+        surface_caps = self.__surface_caps
+
+        if surface_caps.currentExtent.width != MAX_UINT32:
+            return surface_caps.currentExtent.width, surface_caps.currentExtent.height
+
+        min_extent = surface_caps.minImageExtent
+        max_extent = surface_caps.maxImageExtent
+
+        actual_width = max(min_extent.width, min(max_extent.width, extent.width))
+        actual_height = max(min_extent.height, min(max_extent.height, extent.height))
+
+        return actual_width, actual_height
+
+    def get_surface_images(self) -> int:
+        """Get number of images supported by the surface"""
+        surface_caps = self.__surface_caps
+
+        image_count = surface_caps.minImageCount + 1
+        if surface_caps.minImageCount > 0 and image_count > surface_caps.maxImageCount:
+            image_count = surface_caps.maxImageCount
+        return image_count
+
+    def get_surface_transform(self) -> int:
+        surface_caps = self.__surface_caps
+
+        return surface_caps.currentTransform
 
 
 class LogicalDevice(object):
@@ -225,7 +301,7 @@ class LogicalDevice(object):
         )
 
         self.__logical_device = vk.vkCreateDevice(physical_device.handle, device_info, None)
-        logger.info("Logical Device: Created")
+        logger.info("Vulkan Logical Device: Created")
 
         # Get Queues
         graphics, present, compute = queue_indices
@@ -242,13 +318,24 @@ class LogicalDevice(object):
 
         if self.__logical_device:
             vk.vkDestroyDevice(self.__logical_device, None)
-            logger.info("Logical Device: Destroyed")
+            logger.info("Vulkan Logical Device: Destroyed")
 
         self.__logical_device = None
 
     @property
     def handle(self) -> VulkanHandle:
         return self.__logical_device
+
+    @property
+    def graphics_queue(self) -> QueueFamily:
+        return self.__graphics_queue
+
+    @property
+    def present_queue(self) -> QueueFamily:
+        return self.__present_queue
+
+    def get_graphics_queue_indices(self) -> Tuple[int, int]:
+        return self.__graphics_queue.queue_family_index, self.__present_queue.queue_family_index
 
 
 class Context(object):
@@ -266,9 +353,40 @@ class Context(object):
 
         self.__logical_device: LogicalDevice = LogicalDevice(self.__instance, self.__physical_device)
 
-    def __del__(self):
+        self.__graphics_command_pool: CommandPool = CommandPool(self, self.__logical_device.graphics_queue)
 
+    def __del__(self):
+        self.__graphics_command_pool = None
         self.__logical_device = None
         self.__physical_device = None
         self.__surface = None
         self.__instance = None
+
+    @property
+    def surface(self) -> Surface:
+        return self.__surface
+
+    @property
+    def physical_device(self) -> PhysicalDevice:
+        return self.__physical_device
+
+    @property
+    def logical_device(self) -> LogicalDevice:
+        return self.__logical_device
+
+    @property
+    def graphics_command_pool(self) -> CommandPool:
+        return self.__graphics_command_pool
+
+    def find_memory_type(self, memory_type: int, memory_property_flags: int) -> int:
+        memory_properties = vk.vkGetPhysicalDeviceMemoryProperties(self.__physical_device.handle)
+        for idx in range(memory_properties.memoryTypeCount):
+            mem_type = memory_properties.memoryTypes[idx]
+
+            if memory_type & (1 << idx) and (mem_type.propertyFlags & memory_property_flags) == memory_property_flags:
+                return idx
+        else:
+            raise MedusaError("Unable to find appropriate memory type")
+
+    def wait_idle(self) -> None:
+        vk.vkDeviceWaitIdle(self.__logical_device.handle)
