@@ -17,6 +17,10 @@ dependencies = [
     "pre-commit",
     "flake8-pyproject",
 
+    # Math
+    "numpy",
+    "pyglm",
+
     # Graphics
     "pysdl2",
     "pysdl2-dll",
