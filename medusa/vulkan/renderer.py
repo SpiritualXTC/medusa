@@ -96,5 +96,8 @@ class Renderer(object):
 
     def end_render_pass(self) -> None:
         self.__render_pass.end()
-
         return
+
+    @property
+    def render_pass(self) -> RenderPass:
+        return self.__render_pass
