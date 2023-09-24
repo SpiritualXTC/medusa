@@ -6,6 +6,7 @@ from enum import Flag
 from typing import TYPE_CHECKING, Any, Dict
 
 from medusa.vulkan import vulkan as vk
+from medusa.vulkan.command_buffer import CommandBuffer
 from medusa.vulkan.descriptors import DescriptorSetLayout
 
 from medusa.vulkan.vulkan import VulkanHandle
@@ -144,6 +145,9 @@ class GraphicsPipeline(object):
     @property
     def handle(self) -> VulkanHandle:
         return self.__pipeline
+
+    def bind(self, command_buffer: CommandBuffer):
+        vk.vkCmdBindPipeline(command_buffer.handle, vk.VK_PIPELINE_BIND_POINT_GRAPHICS, self.__pipeline)
 
     def __enter__(self):
         return self

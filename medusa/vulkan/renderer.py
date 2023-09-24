@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, List, Any
+from typing import TYPE_CHECKING, List
 
 from medusa.vulkan import vulkan as vk
 
@@ -13,6 +13,7 @@ from medusa.vulkan.swap_chain import SwapChain, FrameSync, Frame
 if TYPE_CHECKING:
     from medusa.core.window import Window
     from medusa.vulkan.context import Context
+    from medusa.vulkan.command_buffer import CommandBuffer
 
 
 logger = logging.getLogger(__name__)
@@ -60,7 +61,7 @@ class Renderer(object):
 
         self._temp_frame_index = 0
 
-    def begin_frame(self) -> Any:
+    def begin_frame(self) -> CommandBuffer:
         # This returns a special sync object with the command buffers etc...
         self.__current_sync = self.__sync[self._temp_frame_index]
 
@@ -71,6 +72,7 @@ class Renderer(object):
 
         # Begin Command Buffer
         self.__current_sync.render_queue.begin()
+        return self.__current_sync.render_queue
 
     def end_frame(self) -> None:
         if self.__current_frame is None:
