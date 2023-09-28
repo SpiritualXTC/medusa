@@ -14,7 +14,7 @@ from medusa.vulkan.vulkan import VulkanHandle
 if TYPE_CHECKING:
     from medusa.vulkan.context import Context
     from medusa.vulkan.render_pass import RenderPass
-    from medusa.vulkan.constants import PushConstants
+    from medusa.vulkan.constants import GLMStruct
 
     from medusa.utilities.resource import Resource
 
@@ -70,18 +70,19 @@ class PipelineLayout(object):
         context: Context,
         stage_flags: PipelineStage,
         descriptor_set_layout: DescriptorSetLayout,
-        constants: PushConstants = None,
+        constants: GLMStruct = None,
     ):
         self.__layout: VulkanHandle = None
 
         self.__context: Context = context
 
-        if constants and constants.size != 0:
+        if constants and constants.nbytes != 0:
             # TODO: Needs to be pulled from the class. NOT the instance
+            # TODO: Looks like different constant sets could be applied for different shader stages
             constant_range = vk.VkPushConstantRange(
                 stageFlags=stage_flags.value,
                 offset=0,
-                size=constants.size,
+                size=constants.nbytes,
             )
         else:
             constant_range = None
@@ -106,14 +107,25 @@ class PipelineLayout(object):
         return self.__layout
 
 
+# class ComputePipeline(Pipeline):
+#     @override
+#     def _create_pipeline(self, layout: PipelineLayout, stages: Dict[PipelineStage, PipelineShader]):
+#         raise NotImplementedError()
+#
+#     @override
+#     def _validate_shader(self, stage: PipelineStage):
+#         return stage == PipelineStage.Compute
+
+
 class GraphicsPipeline(object):
-    def __init__(self, context: Context, descriptor_set: DescriptorSetLayout, render_pass: RenderPass, constants: PushConstants = None):
+    # TODO: Divide up into Builder/Non-Builder (probably by class extension rather than full abstraction)
+    def __init__(self, context: Context, descriptor_set: DescriptorSetLayout, render_pass: RenderPass, constants: GLMStruct = None):
         self.__pipeline: VulkanHandle = None
 
         self.__context: Context = context
         self.__render_pass: RenderPass = render_pass
         self.__descriptor_set: DescriptorSetLayout = descriptor_set
-        self.__constants: PushConstants = constants
+        self.__constants: GLMStruct = constants
 
         self.__layout: PipelineLayout = None
         self.__stages: Dict[PipelineStage, PipelineShader] = {}
@@ -145,6 +157,10 @@ class GraphicsPipeline(object):
     @property
     def handle(self) -> VulkanHandle:
         return self.__pipeline
+
+    @property
+    def layout(self) -> PipelineLayout:
+        return self.__layout
 
     def bind(self, command_buffer: CommandBuffer):
         vk.vkCmdBindPipeline(command_buffer.handle, vk.VK_PIPELINE_BIND_POINT_GRAPHICS, self.__pipeline)
@@ -219,6 +235,7 @@ class GraphicsPipeline(object):
             stride=stride,
             inputRate=vk.VK_VERTEX_INPUT_RATE_VERTEX if input_rate_vertex else vk.VK_VERTEX_INPUT_RATE_INSTANCE,
         )
+
         self._bindings.append(binding_info)
 
     def add_attribute(self, location: int, binding: int, fmt: int, offset: int):

@@ -50,18 +50,30 @@ class CommandPool(object):
 
         command_buffers = vk.vkAllocateCommandBuffers(self.__context.logical_device.handle, command_buffer_allocate_info)
         logger.info(f"Vulkan Command Pool: Allocated {len(command_buffers)} command buffers")
-
-        return tuple((CommandBuffer(self.__context, handle) for handle in command_buffers))
+        return tuple((CommandBuffer(self.__context, self, handle) for handle in command_buffers))
 
 
 class CommandBuffer(object):
-    def __init__(self, context: Context, command_buffer_handle: VulkanHandle):
+    # TODO: Setup a "one-time-use" allocator?
+    def __init__(self, context: Context, command_pool: CommandPool, command_buffer_handle: VulkanHandle):
         self.__context: Context = context
+        self.__command_pool: CommandPool = command_pool
         self.__command_buffer: VulkanHandle = command_buffer_handle
 
     def __del__(self):
+        if self.__command_buffer:
+            vk.vkFreeCommandBuffers(self.__context.logical_device.handle, self.__command_pool.handle, 1, [self.__command_buffer])
         self.__command_buffer = None
+        self.__command_pool = None
         self.__context = None
+
+    def __enter__(self):
+        self.begin()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.end()
+        return False
 
     @property
     def handle(self) -> VulkanHandle:
