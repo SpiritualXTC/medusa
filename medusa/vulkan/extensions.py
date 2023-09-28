@@ -98,6 +98,11 @@ def vkQueuePresentKHR(queue, pPresentInfo):  # NOQA
     pass
 
 
+@DeviceProcAddr
+def vkCmdPushDescriptorSetKHR(commandBuffer, pipelineBindPoint, layout, set, descriptorWriteCount, pDescriptorWrites):  # NOQA
+    pass
+
+
 # Windows Specific
 @InstanceProcAddr
 def vkCreateWin32SurfaceKHR(instance, pCreateInfo, pAllocator):  # NOQA

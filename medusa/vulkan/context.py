@@ -36,7 +36,12 @@ class Instance(object):
 
     @staticmethod
     def __get_enabled_extensions() -> Set[str]:
-        required = {"VK_EXT_debug_report", "VK_KHR_surface"}
+        required = {
+            vk.VK_EXT_DEBUG_REPORT_EXTENSION_NAME,
+            vk.VK_KHR_SURFACE_EXTENSION_NAME,
+            vk.VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME,
+        }
+
         if sys.platform == "win32":
             required |= {"VK_KHR_win32_surface"}
 
@@ -269,7 +274,7 @@ class PhysicalDevice(object):
 class LogicalDevice(object):
     @staticmethod
     def __get_enabled_extensions(physical_device: PhysicalDevice) -> Set[str]:
-        required = {vk.VK_KHR_SWAPCHAIN_EXTENSION_NAME}
+        required = {vk.VK_KHR_SWAPCHAIN_EXTENSION_NAME, vk.VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME}
         available = {ext.extensionName for ext in vk.vkEnumerateDeviceExtensionProperties(physical_device.handle, None)}
 
         extensions = available & required
