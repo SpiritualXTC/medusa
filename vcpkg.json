@@ -1,0 +1,27 @@
+{
+  "dependencies": [
+    "boost-algorithm",
+    "boost-format",
+    "boost-signals2",
+    "boost-system",
+    "boost-uuid",
+    "glew",
+    "glm",
+    {
+      "name": "numcpp",
+      "features": [
+        "boost"
+      ]
+    },
+    "opencl",
+    "opengl",
+    "sdl2",
+    "sdl2-image",
+    "sdl2-mixer",
+    "sdl2-net",
+    "sdl2-ttf",
+    "spdlog",
+    "yaml-cpp",
+    "assimp"
+  ]
+}
