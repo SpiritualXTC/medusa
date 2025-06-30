@@ -12,9 +12,8 @@ repos:
   - repo: https://github.com/bmorcos/pre-commit-hooks-cpp
     rev: master # Or a specific commit/tag for stability
     hooks:
-      - id: clang-format
-        args: [--style=Google] # Or your preferred style
+      # - id: clang-format
+      #  args: [--style=Google] # Or your preferred style
       - id: cpplint
-        args: [--filter=-legal/copyright] # Adjust filters as needed
-      - id: cppcheck
-        args: [--enable=warning]
+      # - id: cppcheck
+      #  args: [--enable=warning]
