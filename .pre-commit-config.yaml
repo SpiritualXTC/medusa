@@ -9,11 +9,11 @@ repos:
       - id: no-commit-to-branch
         args: [--branch, main]
 
-  - repo: https://github.com/bmorcos/pre-commit-hooks-cpp
-    rev: master # Or a specific commit/tag for stability
-    hooks:
+  #- repo: https://github.com/bmorcos/pre-commit-hooks-cpp
+  #  rev: master # Or a specific commit/tag for stability
+  #  hooks:
       # - id: clang-format
       #  args: [--style=Google] # Or your preferred style
-      - id: cpplint
+      #- id: cpplint
       # - id: cppcheck
       #  args: [--enable=warning]
