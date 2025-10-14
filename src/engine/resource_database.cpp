@@ -38,7 +38,7 @@ std::shared_ptr<IShader> ResourceDatabase::getShader(const std::string& shaderNa
     // Lock the context pointer
     auto context = _context.lock();
 
-    auto shader = context->create_shader();
+    auto shader = context->createShader();
 
     // TODO: Move to a loader
     for (auto it = keys.begin(); it != keys.end(); ++it)

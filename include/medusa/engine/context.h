@@ -26,10 +26,10 @@ namespace medusa
         virtual bool present() = 0;
 
         // Factory
-        virtual std::shared_ptr<IShader> create_shader() = 0;
+        virtual std::shared_ptr<IShader> createShader() = 0;
 
-        virtual std::shared_ptr<IDescriptor> create_descriptor() = 0;
-        virtual std::shared_ptr<ITexture> create_texture() = 0;
+        virtual std::shared_ptr<IDescriptor> createDescriptor() = 0;
+        virtual std::shared_ptr<ITexture> createTexture() = 0;
 
         virtual std::shared_ptr<IMemory> createMemory(BufferType bufferType, BufferUsage usage) = 0;
 

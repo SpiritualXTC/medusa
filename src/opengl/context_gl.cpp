@@ -136,7 +136,7 @@ bool ContextGL::present()
 
 
 //
-std::shared_ptr<IShader> ContextGL::create_shader()
+std::shared_ptr<IShader> ContextGL::createShader()
 {
     auto shader = std::make_shared<ShaderGL>();
 
@@ -161,7 +161,7 @@ std::shared_ptr<IMemory> ContextGL::createMemory(BufferType bufferType, BufferUs
 
 
 //
-std::shared_ptr<IDescriptor> ContextGL::create_descriptor()
+std::shared_ptr<IDescriptor> ContextGL::createDescriptor()
 {
     auto descriptor = std::make_shared<DescriptorGL>();
 
@@ -171,7 +171,7 @@ std::shared_ptr<IDescriptor> ContextGL::create_descriptor()
 
 
 //
-std::shared_ptr<ITexture> ContextGL::create_texture()
+std::shared_ptr<ITexture> ContextGL::createTexture()
 {
     auto texture = std::make_shared<TextureGL>();
 

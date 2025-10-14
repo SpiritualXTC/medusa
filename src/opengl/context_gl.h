@@ -36,10 +36,10 @@ namespace medusa
             std::shared_ptr<IMemory> createMemory(BufferType bufferType, BufferUsage usage) override;
 
 
-            std::shared_ptr<IShader> create_shader() override;
-            std::shared_ptr<IDescriptor> create_descriptor() override;
+            std::shared_ptr<IShader> createShader() override;
+            std::shared_ptr<IDescriptor> createDescriptor() override;
             //std::shared_ptr<IMesh> create_mesh() override;
-            std::shared_ptr<ITexture> create_texture() override;
+            std::shared_ptr<ITexture> createTexture() override;
 
         private:
             SDL_GLContext _context = nullptr;

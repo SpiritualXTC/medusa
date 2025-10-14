@@ -179,7 +179,7 @@ std::shared_ptr<IMesh> ModelLoader::load(const std::string& filename, std::share
     std::shared_ptr<GenericArray<Indirect>> sm = context->createArray<Indirect>(BufferType::DrawIndirect, BufferUsage::StaticDraw);
     std::shared_ptr<VertexBuffer> vb = context->createVertexBuffer(BufferUsage::StaticDraw);
     std::shared_ptr<IndexBuffer> ib = context->createIndexBuffer(BufferUsage::StaticDraw);
-    std::shared_ptr<IDescriptor> desc = context->create_descriptor();
+    std::shared_ptr<IDescriptor> desc = context->createDescriptor();
 
     std::vector<Vertex> vertices(position.size());
 
