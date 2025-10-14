@@ -19,10 +19,8 @@ namespace medusa
             //
         }
 
-
         const inline size_t size() const { return _size; }
         const inline size_t elements() const { return _elements; }
-
 
         // Hashing
         bool operator==(DType const& other) const
