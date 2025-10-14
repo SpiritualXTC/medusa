@@ -14,22 +14,15 @@
 #include "gl.h"
 #include "window_gl.h"
 
-#include <engine/graphics/mesh.h>
+#include "graphics/memory_gl.h"
 
-#include "graphics/index_buffer_gl.h"
-#include "graphics/vertex_buffer_gl.h"
-#include "graphics/instance_buffer_gl.h"
-#include "graphics/storage_buffer_gl.h"
 #include "graphics/shader_gl.h"
 #include "graphics/descriptor_gl.h"
 #include "graphics/texture_gl.h"
 
 
-
-
 using namespace medusa;
 using namespace medusa::opengl;
-
 
 
 void APIENTRY debugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
@@ -37,7 +30,6 @@ void APIENTRY debugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum
     logging::critical(fmt::format("GL Error: source={}, type={}, id={}, severity={}, msg={}", source, type, id, severity, message));
 
 }
-
 
 
 //
@@ -57,15 +49,12 @@ ContextGL::ContextGL(std::shared_ptr<Config> config)
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
-
-
     // Create the Window
     int w = config->getValue<int>("medusa.window.width", 800);
     int h = config->getValue<int>("medusa.window.height", 600);
 
     logging::info(fmt::format("Resolution: {}x{}", w, h));
     _window = std::make_shared<WindowGL>(w, h);
-
 
     // Create the Context
     _context = SDL_GL_CreateContext(_window->handle());
@@ -114,12 +103,9 @@ ContextGL::~ContextGL()
 }
 
 
+//
 bool ContextGL::reset()
 {
-    // Reset the indices
-    _uniformBindingIndex = 0;
-    _storageBindingIndex = 0;
-
     // TODO: Zero the lists
 
     // TODO: Undo binding indices
@@ -141,9 +127,7 @@ bool ContextGL::next()
 }
 
 
-/*
-
-*/
+//
 bool ContextGL::present()
 {
     SDL_GL_SwapWindow(_window->handle());
@@ -160,52 +144,19 @@ std::shared_ptr<IShader> ContextGL::create_shader()
 }
 
 
-//
-std::shared_ptr<IIndexBuffer> ContextGL::create_index_buffer()
+
+std::shared_ptr<IMemory> ContextGL::createMemory(BufferType bufferType, BufferUsage usage)
 {
-    auto indexBuffer = std::make_shared<IndexBufferGL>();
+    auto it = _binding.find(bufferType);
+    if (it == _binding.end())
+        _binding.insert({ bufferType, 0 });
 
-    return indexBuffer;
-}
+    ResourceIndex& resource = _binding[bufferType];
+    ++resource;
 
+    auto memory = std::make_shared<MemoryGL>(bufferType, usage, resource);
 
-//
-std::shared_ptr<IVertexBuffer> ContextGL::create_vertex_buffer()
-{
-    auto vertexBuffer = std::make_shared<VertexBufferGL>();
-
-    return vertexBuffer;
-}
-
-
-//
-std::shared_ptr<IInstanceBuffer> ContextGL::create_instance_buffer()
-{
-    auto instanceBuffer = std::make_shared<InstanceBufferGL>();
-
-    return instanceBuffer;
-}
-
-
-//
-std::shared_ptr<IUniformBuffer> ContextGL::create_uniform_buffer(size_t size)
-{
-    auto uniformBuffer = std::make_shared<UniformBufferGL>(_uniformBindingIndex++, size);
-
-    _uniforms.push_back(uniformBuffer);
-
-    return uniformBuffer;
-}
-
-
-//
-std::shared_ptr<IStorageBuffer> ContextGL::create_shader_storage_buffer(size_t size)
-{
-    auto storageBuffer = std::make_shared<StorageBufferGL>(_storageBindingIndex++, size);
-
-    _buffers.push_back(storageBuffer);
-
-    return storageBuffer;
+    return memory;
 }
 
 
@@ -216,15 +167,6 @@ std::shared_ptr<IDescriptor> ContextGL::create_descriptor()
 
     return descriptor;
 
-}
-
-
-//
-std::shared_ptr<IMesh> ContextGL::create_mesh()
-{
-    auto mesh = std::make_shared<Mesh>(shared_from_this());
-
-    return mesh;
 }
 
 

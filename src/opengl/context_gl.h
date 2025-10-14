@@ -33,14 +33,12 @@ namespace medusa
             virtual bool present() override;
 
             // Factory
+            std::shared_ptr<IMemory> createMemory(BufferType bufferType, BufferUsage usage) override;
+
+
             std::shared_ptr<IShader> create_shader() override;
-            std::shared_ptr<IIndexBuffer> create_index_buffer() override;
-            std::shared_ptr<IVertexBuffer> create_vertex_buffer() override;
-            std::shared_ptr<IInstanceBuffer> create_instance_buffer() override;
-            std::shared_ptr<IUniformBuffer> create_uniform_buffer(size_t size) override;
-            std::shared_ptr<IStorageBuffer> create_shader_storage_buffer(size_t size) override;
             std::shared_ptr<IDescriptor> create_descriptor() override;
-            std::shared_ptr<IMesh> create_mesh() override;
+            //std::shared_ptr<IMesh> create_mesh() override;
             std::shared_ptr<ITexture> create_texture() override;
 
         private:
@@ -50,12 +48,7 @@ namespace medusa
             std::shared_ptr<WindowGL> _window;
             std::shared_ptr<RendererGL> _renderer;
 
-            // Managers
-            uint32_t _uniformBindingIndex = 0;
-            uint32_t _storageBindingIndex = 0;
-
-            std::list<std::weak_ptr<IUniformBuffer>> _uniforms;
-            std::list<std::weak_ptr<IStorageBuffer>> _buffers;
+            std::unordered_map<BufferType, ResourceIndex> _binding;
         };
     }
 }

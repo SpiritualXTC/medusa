@@ -99,6 +99,7 @@ namespace medusa
                 {BufferType::ShaderStorage, GL_SHADER_STORAGE_BUFFER},
                 {BufferType::Texture, GL_TEXTURE_BUFFER},
                 {BufferType::Uniform, GL_UNIFORM_BUFFER},
+                {BufferType::DrawIndirect, GL_DRAW_INDIRECT_BUFFER},
             };
             return _gl_map(items, bufferType);
         }

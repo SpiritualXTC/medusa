@@ -15,4 +15,8 @@ namespace medusa
     class IVertexBuffer;
     class IIndexBuffer;
 
+
+    class VertexBuffer;
+    class IndexBuffer;
+
 }  // namespace medusa
