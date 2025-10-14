@@ -97,7 +97,7 @@ namespace medusa
         template <typename T>
         void addVertexData(T* data, size_t count, size_t elements, AttributeLocation location)
         {
-            DType dt = DataType(T, elements);
+            DType dt = DataType<T, elements>();
             addVertexData(data, dt, count, location);
         }
 
