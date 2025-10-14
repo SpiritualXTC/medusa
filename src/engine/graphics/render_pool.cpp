@@ -33,10 +33,11 @@ void RenderPool::addAttribute(const DType& dt, InstanceAttributeLocation locatio
 }
 
 
+//
 void RenderPool::create_mesh_instance(std::shared_ptr<IMesh> mesh)
 {
     auto descriptor = mesh->descriptor();
-    auto instanceBuffer = _context->create_instance_buffer();
+    auto instanceBuffer = _context->createArray<glm::mat4>(BufferType::Array, BufferUsage::StaticDraw, nullptr, 10000);
 
     // Bind Instance Buffer to Descriptor
     descriptor->bind();
@@ -46,7 +47,7 @@ void RenderPool::create_mesh_instance(std::shared_ptr<IMesh> mesh)
     for (auto& id : _data)
     {
         // TODO: Shouldn't be part of the descriptor...
-        descriptor->addInstanceAttribute(id.data_type, sizeof(Payload), id.location);
+        descriptor->addInstanceAttribute(id.data_type, sizeof(glm::mat4), id.location);
     }
 
     // Unbind Descriptor
@@ -55,15 +56,9 @@ void RenderPool::create_mesh_instance(std::shared_ptr<IMesh> mesh)
     // Unbind Instance Buffer
     instanceBuffer->unbind();
 
-    std::shared_ptr<Batch> batch = std::make_shared<Batch>(mesh, instanceBuffer, std::vector<Payload>({}));
+    std::shared_ptr<Batch> batch = std::make_shared<Batch>(mesh, instanceBuffer);
 
-    _pool.insert({ mesh->id(), mesh });
     _batch.insert({ mesh->id(), batch }); // DIS ONE
-
-    batch->buffer->create(nullptr, 10000, sizeof(Payload));
-
-
-    batch->items.resize(10000);
 
     return;
 }
@@ -72,8 +67,6 @@ void RenderPool::create_mesh_instance(std::shared_ptr<IMesh> mesh)
 //
 bool RenderPool::add(std::shared_ptr<IRenderable> renderable)
 {
-    //logging::info(fmt::format("Pool: Add id={}", renderable->resource_id()));
-
     auto it = _batch.find(renderable->resource_id());
 
     if (it == _batch.end())
@@ -81,11 +74,9 @@ bool RenderPool::add(std::shared_ptr<IRenderable> renderable)
 
     auto& batch = it->second;
 
-    Payload pl{ renderable->transform() };
+    glm::mat4 m = renderable->transform();
 
-
-    batch->items[batch->count] = pl;
-    batch->count++;
+    batch->instances->insert(m);
 
     return true;
 }
@@ -97,7 +88,7 @@ bool RenderPool::clear()
     for (auto& it : _batch)
     {
         auto& batch = it.second;
-        batch->count = 0;
+        batch->instances->reset();
     }
 
     return true;
@@ -120,10 +111,10 @@ bool RenderPool::render(std::shared_ptr<IPass> pass)
 
         // TODO: Try and do instance buffer update via OpenCL or OpenGL Compute Shader
         // TODO: This will occur for EVERY view :(
-        batch->buffer->update(batch->items.data(), 0, batch->count);
+        //batch->buffer->update(batch->items.data(), 0, batch->count);
 
         // This needs to be called for every view
-        batch->mesh->render(batch->count);
+        batch->mesh->render(batch->instances->elements());
     }
 
     return true;

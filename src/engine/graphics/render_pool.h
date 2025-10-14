@@ -1,18 +1,18 @@
 #pragma once
 
 #include <medusa/medusa.h>
+#include <medusa/engine_fwd.h>
 #include <medusa/graphics_fwd.h>
 
 #include <medusa/renderer/renderable.h>
 #include <medusa/graphics/shader.h>
 #include <medusa/math.h>
 
+#include <medusa/graphics/containers.h>
 
 namespace medusa
 {
     // Forward-Declarations
-    class IContext;
-
     class MeshComponent;
 
 
@@ -25,19 +25,10 @@ namespace medusa
 
 
 
-    struct Payload
-    {
-        glm::mat4 transform;
-        //glm::vec4 ambient;
-    };
-
-
     struct Batch
     {
         std::shared_ptr<IMesh> mesh;
-        std::shared_ptr<IInstanceBuffer> buffer;
-        std::vector<Payload> items;
-        size_t count;
+        std::shared_ptr<GenericArray<glm::mat4>> instances;
     };
 
 
@@ -51,17 +42,13 @@ namespace medusa
 
         virtual ~RenderPool();
 
-
         void addAttribute(const DType& dt, InstanceAttributeLocation location);
-
-
 
         template<typename T>
         void addAttribute(InstanceAttributeLocation location)
         {
 
         }
-
 
         template<>
         void addAttribute<glm::mat4>(InstanceAttributeLocation location)
@@ -71,9 +58,6 @@ namespace medusa
             addAttribute(types::FloatV4, InstanceAttributeLocation((int)location + 2));
             addAttribute(types::FloatV4, InstanceAttributeLocation((int)location + 3));
         }
-
-
-
 
 
         void create_mesh_instance(std::shared_ptr<IMesh> base_mesh);
@@ -92,6 +76,5 @@ namespace medusa
         std::vector<InstanceData> _data;
 
         std::unordered_map<uint64_t, std::shared_ptr<Batch>> _batch;
-        std::unordered_map<uint64_t, std::shared_ptr<IMesh>> _pool;
     };
 }
