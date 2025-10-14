@@ -4,6 +4,8 @@
 #include <medusa/engine_fwd.h>
 #include <medusa/graphics_fwd.h>
 
+#include <medusa/containers_fwd.h>
+
 namespace medusa
 {
     namespace loaders
@@ -18,7 +20,7 @@ namespace medusa
             virtual ~ModelLoader();
 
 
-            std::shared_ptr<IMesh> load(const std::string& filename);
+            std::shared_ptr<IMesh> load(const std::string& filename, std::shared_ptr<GenericMap<Material>> materials);
 
 
         private:

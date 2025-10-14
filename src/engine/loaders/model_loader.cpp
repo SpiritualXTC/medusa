@@ -4,7 +4,9 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include <medusa/graphics/material.h>
+#include <medusa/engine/context.h>
+#include <medusa/graphics.h>
+#include <medusa/graphics/containers.h>
 
 #include <core/utilities/logging.h>
 
@@ -28,13 +30,11 @@ ModelLoader::~ModelLoader()
 }
 
 
-std::shared_ptr<IMesh> ModelLoader::load(const std::string& filename)
+std::shared_ptr<IMesh> ModelLoader::load(const std::string& filename, std::shared_ptr<GenericMap<Material>> materials)
 {
     Assimp::Importer importer;
 
     auto context = _context.lock();
-
-    std::shared_ptr<Model> model = std::make_shared<Model>(context);
 
     std::vector<glm::vec3> position;
     std::vector<glm::vec3> normals;
@@ -42,14 +42,13 @@ std::shared_ptr<IMesh> ModelLoader::load(const std::string& filename)
 
     std::vector<uint32_t> indices;
 
+    std::vector<Indirect> submeshes;
+    std::vector<size_t> materialIndex;
+
     uint32_t vertexOffset = 0;
 
-
-
+    // Load *.obj file
     const aiScene* scene = importer.ReadFile(filename.c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
-
-
-
     assert(scene != nullptr);
 
 
@@ -79,10 +78,8 @@ std::shared_ptr<IMesh> ModelLoader::load(const std::string& filename)
         if (mat->Get(AI_MATKEY_OPACITY, opacity) != AI_SUCCESS)
             logging::warn("Unable to read `opacity` from material {}, idx={}", matName, matIdx);
 
-        // Read Texture Filenames
+        // TODO: Read Texture Filenames
 
-
-        logging::info(fmt::format("ambient={},{},{}", (float)ambient.r, (float)ambient.g, (float)ambient.b));
 
         // Set Material Data
         material.ambient(ambient.r, ambient.g, ambient.b);
@@ -92,7 +89,13 @@ std::shared_ptr<IMesh> ModelLoader::load(const std::string& filename)
         // Set & Load Textures from Resource Database into material
 
         // Add material
-        model->addMaterial(material);
+        if (materials)
+        {
+            auto idx = materials->insert(matName, material);
+            materialIndex.push_back(idx);
+
+            logging::debug(fmt::format("Material: name={}, index={}->{}", matName, matIdx, idx));
+        }
     }
 
 
@@ -132,6 +135,9 @@ std::shared_ptr<IMesh> ModelLoader::load(const std::string& filename)
             std::vector<uint32_t> submeshIndices(submesh->mNumFaces * 3);
             uint32_t* ptr = submeshIndices.data();
 
+            size_t submeshFaces = 0;
+            size_t submeshVertices = 0;
+
             for (uint32_t faceIdx = 0; faceIdx < submesh->mNumFaces; ++faceIdx)
             {
                 const auto& face = submesh->mFaces[faceIdx];
@@ -139,39 +145,86 @@ std::shared_ptr<IMesh> ModelLoader::load(const std::string& filename)
                 if (face.mNumIndices != 3)
                 {
                     logging::error(fmt::format("Unsupported number of indices found in face (idx={}), of mesh: `{}`, expected 3, got {}", faceIdx, submeshName, face.mNumIndices));
-                    for (uint32_t idx = 0; idx < face.mNumIndices; idx++)
-                        logging::error(fmt::format("- {}", face.mIndices[idx]));
+                    //for (uint32_t idx = 0; idx < face.mNumIndices; idx++)
+                        //logging::error(fmt::format("- {}", face.mIndices[idx]));
                     continue;
                 }
 
                 // Copy Indices. Only supporting 3 indices in a face
-                *ptr++ = face.mIndices[0] + vertexOffset;
-                *ptr++ = face.mIndices[1] + vertexOffset;
-                *ptr++ = face.mIndices[2] + vertexOffset;
+                *ptr++ = face.mIndices[0];
+                *ptr++ = face.mIndices[1];
+                *ptr++ = face.mIndices[2];
             }
             indices.insert(indices.end(), submeshIndices.begin(), submeshIndices.end());
 
+            // Add submesh data to model
+            Indirect* smdLast = submeshes.size() == 0 ? nullptr : &submeshes[submeshes.size() - 1];
+
+            Indirect smd;
+            smd.baseInstance = submesh->mMaterialIndex >= materialIndex.size() ? 0 : materialIndex[submesh->mMaterialIndex];
+            smd.baseVertex = vertexOffset;
+            smd.firstIndex = smdLast == nullptr ? 0 : smdLast->firstIndex + smdLast->count;
+            smd.instanceCount = 1; // TODO: Should be zero to start with, this will be increased during scene update
+            smd.count = submeshIndices.size();
+
+            logging::info(fmt::format("Submesh: v={}, f={}, matIdx={} -> {}", submesh->mNumVertices, submesh->mNumFaces, submesh->mMaterialIndex, materialIndex[submesh->mMaterialIndex]));
+
+            submeshes.push_back(smd);
+
             // Increase the vertex offset
             vertexOffset += submesh->mNumVertices;
-
-            // Add submesh data to model
-            model->addSubmeshData(submesh->mNumVertices, submeshIndices.size(), submesh->mMaterialIndex);
         }
     }
 
+    std::shared_ptr<GenericArray<Indirect>> sm = context->createArray<Indirect>(BufferType::DrawIndirect, BufferUsage::StaticDraw);
+    std::shared_ptr<VertexBuffer> vb = context->createVertexBuffer(BufferUsage::StaticDraw);
+    std::shared_ptr<IndexBuffer> ib = context->createIndexBuffer(BufferUsage::StaticDraw);
+    std::shared_ptr<IDescriptor> desc = context->create_descriptor();
+
+    std::vector<Vertex> vertices(position.size());
 
     Geometry geometry(context);
 
-    // Add geometry to model
-    if (position.size())
-        geometry.addVertexData(position.data(), position.size(), AttributeLocation::Position);
-    if (normals.size())
-        geometry.addVertexData(normals.data(), normals.size(), AttributeLocation::Normal);
 
-    geometry.addIndexData(indices.data(), indices.size());
+    // Bind Buffers to Descriptors
+    desc->bind();
+    vb->bind();
+
+    if (indices.size())
+        ib->bind();
+
+    // Add geometry to model and to descriptor
+    if (position.size())
+    {
+        geometry.addVertexData(position.data(), position.size(), AttributeLocation::Position);
+        desc->addDescription(types::FloatV3, sizeof(Vertex), AttributeLocation::Position);
+    }
+    if (normals.size())
+    {
+        geometry.addVertexData(normals.data(), normals.size(), AttributeLocation::Normal);
+        desc->addDescription(types::FloatV3, sizeof(Vertex), AttributeLocation::Normal);
+    }
+
+    geometry.interleave((uint8_t*)vertices.data(), sizeof(Vertex));
+
+    desc->unbind();
+
+    // VertexBuffer requires staying bound while the descriptors are setup
+    if (indices.size())
+        ib->unbind();
+    vb->unbind();
+
+
+    logging::info(fmt::format("Loaded Mesh - Copying to Buffers: v={}, i={}, s={}", vertices.size(), indices.size(), submeshes.size()));
+
+    // Allocate Vertex/Index Buffers
+    vb->allocate(vertices.data(), vertices.size());
+    if (indices.size())
+        ib->allocate(indices.data(), indices.size());
+
+    sm->allocate(submeshes.data(), submeshes.size());
 
     // Construct model
-    geometry.mesh(model);
-
+    std::shared_ptr<Model> model = std::make_shared<Model>(desc, vb, ib, sm);
     return model;
 }

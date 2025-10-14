@@ -61,7 +61,7 @@ std::shared_ptr<IShader> ResourceDatabase::getShader(const std::string& shaderNa
 
 
 //
-std::shared_ptr<IMesh> ResourceDatabase::getModel(const std::string& modelName)
+std::shared_ptr<IMesh> ResourceDatabase::getModel(const std::string& modelName, std::shared_ptr<GenericMap<Material>> materials)
 {
     logging::error("Loading Model");
 
@@ -81,5 +81,5 @@ std::shared_ptr<IMesh> ResourceDatabase::getModel(const std::string& modelName)
 
     std::shared_ptr<loaders::ModelLoader> loader = std::make_shared<loaders::ModelLoader>(context);
 
-    return loader->load(filepath);
+    return loader->load(filepath, materials);
 }
