@@ -11,6 +11,9 @@
 
 namespace medusa
 {
+    class IMemory;
+    class MemoryView;
+
     class IMesh;
     class IShader;
     class IVertexBuffer;
@@ -18,8 +21,9 @@ namespace medusa
     class IUniformBuffer;
     class IInstanceBuffer;
     class IStorageBuffer;
+
     class IDescriptor;
     class ITexture;
 
     class Material;
-}
+}  // namespace medusa
