@@ -1,7 +1,10 @@
 #pragma once
 
 #include <medusa/medusa.h>
+#include <medusa/engine_fwd.h>
+#include <medusa/containers_fwd.h>
 #include <medusa/graphics_fwd.h>
+
 
 namespace medusa
 {
@@ -91,7 +94,4 @@ namespace medusa
     private:
 
     };
-
-
-
-}
+}  // namespace medusa

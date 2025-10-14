@@ -93,9 +93,6 @@ namespace medusa
     };
 
 
-
-
-
     /// <summary>
     /// View of a block of memory
     /// </summary>

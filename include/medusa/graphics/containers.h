@@ -7,9 +7,6 @@
 
 namespace medusa
 {
-
-
-
     /// <summary>
     /// Buffer view of memory
     /// </summary>
@@ -270,8 +267,6 @@ namespace medusa
     };
 
 
-
-
     /// Specialisations
 
     struct Vertex
@@ -284,6 +279,8 @@ namespace medusa
 
 
     //template<typename V>
+    // TODO: This should be able to to handle any Vertex
+    //  -- The problem is the association of a vertex structure alongside the geometry construction
     class VertexBuffer : public GenericArray<Vertex>
     {
     public:
@@ -295,6 +292,7 @@ namespace medusa
 
         const size_t vertices() const { return this->elements(); }
     };
+
 
     class IndexBuffer : public GenericArray<uint32_t>
     {

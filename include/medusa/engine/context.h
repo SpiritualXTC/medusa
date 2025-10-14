@@ -4,9 +4,10 @@
 #include <medusa/engine/state.h>
 #include <medusa/graphics_fwd.h>
 
-#include <medusa/graphics/buffer.h>
 #include <medusa/graphics/memory.h>
+#include <medusa/graphics/buffer.h>
 #include <medusa/graphics/containers.h>
+
 
 namespace medusa
 {

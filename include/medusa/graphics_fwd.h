@@ -11,9 +11,6 @@
 
 namespace medusa
 {
-    class IMemory;
-    class MemoryView;
-
     class IMesh;
     class IShader;
 

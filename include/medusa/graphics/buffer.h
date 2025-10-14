@@ -2,6 +2,7 @@
 
 #include <medusa/medusa.h>
 
+
 namespace medusa
 {
     enum class BufferType
@@ -34,4 +35,4 @@ namespace medusa
         StreamRead,
         StreamCopy,
     };
-}
+}  // namespace medusa
