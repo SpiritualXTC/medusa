@@ -4,7 +4,8 @@
 
 #include <medusa/engine/context.h>
 #include <medusa/graphics.h>
-#include <engine/graphics/mesh.h>
+
+#include <engine/graphics/model.h>
 
 
 using namespace medusa;
@@ -131,22 +132,34 @@ std::shared_ptr<IMesh> Geometry::mesh(std::shared_ptr<IMesh> meshIn)
 {
     auto context = _context.lock();
 
-    auto mesh = meshIn == nullptr ? context->create_mesh() : meshIn;
+    //auto mesh = meshIn == nullptr ? context->create_mesh() : meshIn;
 
-    auto vb = mesh->vertexBuffer();
-    auto ib = mesh->indexBuffer();
-    auto desc = mesh->descriptor();
+    //auto vb = mesh->vertexBuffer();
+    //auto ib = mesh->indexBuffer();
+    //auto desc = mesh->descriptor();
 
-    size_t size = _stride * _vertices;
+
+    auto vb = context->createVertexBuffer(BufferUsage::StaticDraw);
+    //_indexBuffer = context->create_index_buffer();
+    auto ib = context->createIndexBuffer(BufferUsage::StaticDraw);
+    auto desc = context->create_descriptor();
+
+
+
+    //size_t size = _stride * _vertices;
+
+    std::vector<Vertex> vertices(_vertices);
 
     // Interleave vertices
-    std::vector<uint8_t> buffer(size);
-    interleave(buffer.data(), _stride);
+    //std::vector<uint8_t> buffer(size);
+    interleave((uint8_t*)vertices.data(), sizeof(Vertex));// _stride);
 
     // Create Buffers
-    vb->create(buffer.data(), _vertices, _stride);
+    //vb->create(buffer.data(), _vertices, _stride);
+    vb->allocate(vertices.data(), vertices.size());
     if (_indices.size())
-        ib->create(_indices.data(), _indices.size());
+        ib->allocate(_indices.data(), _indices.size());
+        //ib->create(_indices.data(), _indices.size());
 
     // Bind Buffers to Descriptors
     desc->bind();
@@ -166,5 +179,7 @@ std::shared_ptr<IMesh> Geometry::mesh(std::shared_ptr<IMesh> meshIn)
         ib->unbind();
     vb->unbind();
 
-    return mesh;
+    // Construct model
+    std::shared_ptr<Model> model = std::make_shared<Model>(desc, vb, ib, nullptr);
+    return model;
 }

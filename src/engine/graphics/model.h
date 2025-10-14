@@ -4,38 +4,43 @@
 
 #include <medusa/engine_fwd.h>
 
+#include <medusa/graphics/mesh.h>
 #include <medusa/graphics/material.h>
-#include <engine/graphics/mesh.h>
+#include <medusa/graphics/containers.h>
 
 namespace medusa
 {
-    struct SubmeshData
-    {
-        uint32_t vertexOffset;
-        uint32_t vertexCount;
-        uint32_t indexOffset;
-        uint32_t indexCount;
 
-        uint32_t materialIndex;
+    struct Indirect
+    {
+        uint32_t count;
+        uint32_t instanceCount;
+        uint32_t firstIndex;
+        uint32_t baseVertex;
+        uint32_t baseInstance;
     };
 
 
     /// <summary>
     /// More complex mesh, includes textures/material/subset information
     /// </summary>
-    class Model : public Mesh
+    class Model : public IMesh
     {
     public:
-        Model(std::shared_ptr<IContext> context);
+        Model(std::shared_ptr<IDescriptor> descriptor, std::shared_ptr<VertexBuffer> vb, std::shared_ptr<IndexBuffer> ib, std::shared_ptr<GenericArray<Indirect>> submesh);
         virtual ~Model();
 
-        void addMaterial(Material& material);
-        void addSubmeshData(uint32_t vertices, uint32_t indices, uint32_t materialIndex);
+        const inline std::shared_ptr<IVertexBuffer> vertexBuffer() override { return nullptr; }
+        const inline std::shared_ptr<IIndexBuffer> indexBuffer() override { return _indices; }
+        const inline std::shared_ptr<IDescriptor> descriptor() override { return _descriptor; }
 
         bool render(size_t instances = 0) override;
 
     private:
-        std::vector<Material> _materials;
-        std::vector<SubmeshData> _submeshes;
+        std::shared_ptr<IDescriptor> _descriptor = nullptr;
+
+        std::shared_ptr<VertexBuffer> _vertices;
+        std::shared_ptr<IndexBuffer> _indices;
+        std::shared_ptr<GenericArray<Indirect>> _submeshes;
     };
 }

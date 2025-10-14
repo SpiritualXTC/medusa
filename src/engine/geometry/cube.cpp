@@ -2,7 +2,6 @@
 
 #include <medusa/graphics/mesh.h>
 #include <medusa/graphics/descriptor.h>
-#include <medusa/graphics/vertex_buffer.h>
 
 #include <core/utilities/logging.h>
 
@@ -132,7 +131,7 @@ std::shared_ptr<IMesh> Cube::mesh(std::shared_ptr<IMesh> meshIn)
     // Add Vertex Data
     g.addVertexData(position.data(), position.size(), AttributeLocation::Position);
     g.addVertexData(normals.data(), normals.size(), AttributeLocation::Normal);
-    g.addVertexData(texture.data(), texture.size(), AttributeLocation::Texture0);
+    //g.addVertexData(texture.data(), texture.size(), AttributeLocation::Texture0);
 
     // Add Index Data
     g.addIndexData(indices.data(), indices.size());

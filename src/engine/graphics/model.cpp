@@ -7,9 +7,13 @@
 
 using namespace medusa;
 
+
 //
-Model::Model(std::shared_ptr<IContext> context)
-    : Mesh(context)
+Model::Model(std::shared_ptr<IDescriptor> descriptor, std::shared_ptr<VertexBuffer> vb, std::shared_ptr<IndexBuffer> ib, std::shared_ptr<GenericArray<Indirect>> submesh)
+    : _descriptor(descriptor)
+    , _vertices(vb)
+    , _indices(ib)
+    , _submeshes(submesh)
 {
 
 }
@@ -23,51 +27,28 @@ Model::~Model()
 
 
 //
-void Model::addMaterial(Material& material)
-{
-    _materials.push_back(material);
-}
-
-
-//
-void Model::addSubmeshData(uint32_t vertices, uint32_t indices, uint32_t materialIndex)
-{
-    SubmeshData* last = _submeshes.size() == 0 ? nullptr : &_submeshes[_submeshes.size() - 1];
-
-    SubmeshData submesh;
-    submesh.vertexOffset = last == nullptr ? 0 : last->vertexOffset + last->vertexCount;
-    submesh.vertexCount = vertices;
-    submesh.indexOffset = last == nullptr ? 0 : last->indexOffset + last->indexCount;
-    submesh.indexCount = indices;
-
-    submesh.materialIndex = materialIndex;
-
-    _submeshes.push_back(submesh);
-}
-
-
-//
 bool Model::render(size_t instances)
 {
-    descriptor()->bind();
-
-
-    std::vector<size_t> indicesOffset(_submeshes.size());
-    std::vector<GLsizei> indicesCount(_submeshes.size());
-
-    for (uint32_t idx = 0; idx < _submeshes.size(); ++idx)
+    if (_submeshes)
     {
-        indicesOffset[idx] = _submeshes[idx].indexOffset * 4;
-        indicesCount[idx] = _submeshes[idx].indexCount;
+        // Advanced Rendering: This should still be cleaned up
+        descriptor()->bind();
+        _submeshes->bind();
 
+        // TODO: This should be moved to the descriptor... as that at least has an OpenGL implementation
+        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, (void*)0, _submeshes->elements(), _submeshes->stride());
 
+        _submeshes->unbind();
+        descriptor()->unbind();
     }
-
-    glMultiDrawElements(GL_TRIANGLES, (GLsizei*)indicesCount.data(), GL_UNSIGNED_INT, (void**)indicesOffset.data(), _submeshes.size());
-
-    descriptor()->unbind();
-
-    //bool result = Mesh::render(instances);
+    else
+    {
+        // Basic Rendering
+        if (_indices && _indices->indices())
+            _descriptor->render(PrimitiveType::Triangles, _vertices->vertices(), _indices->indices(), instances);
+        else
+            _descriptor->render(PrimitiveType::Triangles, _vertices->vertices(), 0, instances);
+    }
 
     return true;
 }
