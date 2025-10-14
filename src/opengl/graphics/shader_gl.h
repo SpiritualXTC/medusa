@@ -30,10 +30,8 @@ namespace medusa
 
             size_t getUniformBlockSize(const std::string& name) override;
 
-            //std::shared_ptr<IUniformBuffer> create_uniform_buffer(const std::string& blockName) override;
 
-            bool bindUniformBlock(const std::string& name, std::shared_ptr<IUniformBuffer> uniformBuffer) override;
-            bool bindBufferBlock(const std::string& name, std::shared_ptr<IStorageBuffer> storageBuffer) override;
+            bool bindBuffer(const std::string& name, std::shared_ptr<MemoryView> view) override;
 
 
             /* Get Handle of a Uniform  */

@@ -152,35 +152,35 @@ size_t ShaderGL::getUniformBlockSize(const std::string& name)
 }
 
 
-// Create a Uniform Block
-bool ShaderGL::bindUniformBlock(const std::string& name, std::shared_ptr<IUniformBuffer> uniformBuffer)
-{
-    auto blockIndex = glGetUniformBlockIndex(_handle, name.c_str());
-
-    GLHandle handle = (GLuint)uniformBuffer->handle();
-
-    logging::info(fmt::format("Bind Uniform: block={}, index={}, handle={}, size={}", blockIndex, uniformBuffer->bindingIndex(), handle, uniformBuffer->size()));
-
-    glUniformBlockBinding(_handle, blockIndex, uniformBuffer->bindingIndex());
-//  glBindBufferRange(GL_UNIFORM_BUFFER, bindingIndex, handle, 0, uniformBuffer->size());   // Does this make sense here? Shouldn't this be part of the uniformbuffer declaration/class: storage buffers, has this in it's own class uniformBuffer->bindingIndex()?
-
-    return true;
-}
-
-
 //
-bool ShaderGL::bindBufferBlock(const std::string& name, std::shared_ptr<IStorageBuffer> storageBuffer)
+bool ShaderGL::bindBuffer(const std::string& name, std::shared_ptr<MemoryView> view)
 {
-    auto blockIndex = glGetProgramResourceIndex(_handle, GL_SHADER_STORAGE_BLOCK, name.c_str());
+    GLuint blockIndex = GL_INVALID_INDEX;
+    GLHandle handle = (GLHandle)view->handle();
 
-    GLHandle handle = (GLHandle)storageBuffer->handle();
+    if (view->type() == BufferType::Uniform)
+    {
+        blockIndex = glGetUniformBlockIndex(_handle, name.c_str());
+        if (blockIndex != GL_INVALID_INDEX)
+            glUniformBlockBinding(_handle, blockIndex, view->index());
+    }
+    else if (view->type() == BufferType::ShaderStorage)
+    {
+        blockIndex = glGetProgramResourceIndex(_handle, GL_SHADER_STORAGE_BLOCK, name.c_str());
+        if (blockIndex != GL_INVALID_INDEX)
+            glShaderStorageBlockBinding(_handle, blockIndex, view->index());
+    }
+    else
+        throw MedusaError("Invalid buffer type to bind");
 
-    logging::info(fmt::format("Bind Buffer: block={}, index={}, handle={}", blockIndex, storageBuffer->bindingIndex(), handle));
+    if (blockIndex != GL_INVALID_INDEX)
+        logging::info(fmt::format("Resource: Bind Buffer: block={}, index={}", blockIndex, view->index(), handle));
+    else
+        logging::error(fmt::format("Resource: Failed to bind buffer with bindindIndex={}", view->index()));
 
-    glShaderStorageBlockBinding(_handle, blockIndex, storageBuffer->bindingIndex());
-
-    return false;
+    return blockIndex == GL_INVALID_INDEX ? false : true;
 }
+
 
 
 // Bind this shader as the active shader
