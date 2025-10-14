@@ -12,4 +12,4 @@ namespace medusa
 
     class IRenderable;
     class IRenderableContainer;
-}
+}  // namespace medusa

@@ -16,11 +16,6 @@ namespace medusa
 
     class IMesh;
     class IShader;
-    class IVertexBuffer;
-    class IIndexBuffer;
-    class IUniformBuffer;
-    class IInstanceBuffer;
-    class IStorageBuffer;
 
     class IDescriptor;
     class ITexture;
