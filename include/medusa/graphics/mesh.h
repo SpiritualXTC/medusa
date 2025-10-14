@@ -17,8 +17,8 @@ namespace medusa
         IMesh() {}
         virtual ~IMesh() {}
 
-        virtual const inline std::shared_ptr<IVertexBuffer> vertexBuffer() = 0;
-        virtual const inline std::shared_ptr<IIndexBuffer> indexBuffer() = 0;
+        virtual const inline std::shared_ptr<VertexBuffer> vertexBuffer() = 0;
+        virtual const inline std::shared_ptr<IndexBuffer> indexBuffer() = 0;
         virtual const inline std::shared_ptr<IDescriptor> descriptor() = 0;
 
         virtual bool render(size_t instances = 0) = 0;

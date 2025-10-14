@@ -11,11 +11,8 @@ namespace medusa
     template <typename S>
     class GenericMap;
 
-    // TODO: These are gonna get removed at some stage
-    class IVertexBuffer;
-    class IIndexBuffer;
-
-
+    // Specialisations:
+    // TODO: VertexBuffer should be templated
     class VertexBuffer;
     class IndexBuffer;
 

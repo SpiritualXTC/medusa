@@ -284,36 +284,27 @@ namespace medusa
 
 
     //template<typename V>
-    class VertexBuffer : virtual public IVertexBuffer, virtual public GenericArray<Vertex>
+    class VertexBuffer : public GenericArray<Vertex>
     {
     public:
         VertexBuffer(std::shared_ptr<IMemory> mem)
             : GenericArray<Vertex>(mem)
         {
 
-
         }
-        virtual ~VertexBuffer() {}
-        const size_t vertices() const override { return this->elements(); }
 
-        virtual bool bind() const override { return GenericArray<Vertex>::bind(); }
-        virtual bool unbind() const override { return GenericArray<Vertex>::unbind(); }
+        const size_t vertices() const { return this->elements(); }
     };
 
-    class IndexBuffer : virtual public IIndexBuffer, virtual public GenericArray<uint32_t>
+    class IndexBuffer : public GenericArray<uint32_t>
     {
     public:
         IndexBuffer(std::shared_ptr<IMemory> mem)
             : GenericArray<uint32_t>(mem)
         {
 
-
         }
 
-        const size_t indices() const override { return this->elements(); }
-
-
-        virtual bool bind() const override { return GenericArray<uint32_t>::bind(); }
-        virtual bool unbind() const override { return GenericArray<uint32_t>::unbind(); }
+        const size_t indices() const { return this->elements(); }
     };
 } // namespace medusa

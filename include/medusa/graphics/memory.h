@@ -99,7 +99,7 @@ namespace medusa
     /// <summary>
     /// View of a block of memory
     /// </summary>
-    class MemoryView
+    class MemoryView : public IMemoryView
     {
     public:
         MemoryView(std::shared_ptr<IMemory> memory)
@@ -132,14 +132,14 @@ namespace medusa
         ///
         /// </summary>
         /// <returns></returns>
-        inline bool bind() const { return _memory->bind(); }
+        inline bool bind() const override { return _memory->bind(); }
 
 
         /// <summary>
         ///
         /// </summary>
         /// <returns></returns>
-        inline bool unbind() const { return _memory->unbind(); }
+        inline bool unbind() const override { return _memory->unbind(); }
 
 
         /// <summary>
@@ -158,22 +158,4 @@ namespace medusa
 
         std::shared_ptr<IMemory> _memory;
     };
-
-
-
-    // TODO: move these
-    class IVertexBuffer : public IMemoryView
-    {
-    public:
-        virtual ~IVertexBuffer() {}
-        virtual const size_t vertices() const = 0;
-    };
-
-    class IIndexBuffer : public IMemoryView
-    {
-    public:
-        virtual ~IIndexBuffer() {}
-        virtual const size_t indices() const = 0;
-
-    };
-}
+}  // namespace medusa

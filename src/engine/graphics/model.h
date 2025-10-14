@@ -30,8 +30,8 @@ namespace medusa
         Model(std::shared_ptr<IDescriptor> descriptor, std::shared_ptr<VertexBuffer> vb, std::shared_ptr<IndexBuffer> ib, std::shared_ptr<GenericArray<Indirect>> submesh);
         virtual ~Model();
 
-        const inline std::shared_ptr<IVertexBuffer> vertexBuffer() override { return nullptr; }
-        const inline std::shared_ptr<IIndexBuffer> indexBuffer() override { return _indices; }
+        const inline std::shared_ptr<VertexBuffer> vertexBuffer() override { return nullptr; }
+        const inline std::shared_ptr<IndexBuffer> indexBuffer() override { return _indices; }
         const inline std::shared_ptr<IDescriptor> descriptor() override { return _descriptor; }
 
         bool render(size_t instances = 0) override;
