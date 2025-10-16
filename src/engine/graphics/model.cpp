@@ -1,7 +1,6 @@
 #include "model.h"
 
 #include <medusa/graphics/descriptor.h>
-#include <opengl/gl.h> /// TODO: NOOOOO
 
 #include <core/utilities/logging.h>
 
@@ -32,14 +31,7 @@ bool Model::render(size_t instances)
     if (_submeshes)
     {
         // Advanced Rendering: This should still be cleaned up
-        descriptor()->bind();
-        _submeshes->bind();
-
-        // TODO: This should be moved to the descriptor... as that at least has an OpenGL implementation
-        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, (void*)0, _submeshes->elements(), _submeshes->stride());
-
-        _submeshes->unbind();
-        descriptor()->unbind();
+        descriptor()->renderIndirect(PrimitiveType::Triangles, _submeshes);
     }
     else
     {

@@ -2,6 +2,8 @@
 
 #include <format>
 
+#include <medusa/graphics/containers.h>
+
 #include <core/utilities/logging.h>
 
 using namespace medusa;
@@ -109,6 +111,24 @@ bool DescriptorGL::render(PrimitiveType primitiveType, size_t vertices, size_t i
     else
         //glDrawArrays(pt, 0, vertices);
         glDrawArraysInstanced(pt, 0, vertices, instances);
+
+    unbind();
+
+    return true;
+}
+
+
+bool DescriptorGL::renderIndirect(PrimitiveType primitiveType, std::shared_ptr<GenericArray<Indirect>> indirect)
+{
+    GLenum pt = mapEnum(primitiveType);
+
+    bind();
+
+    indirect->bind();
+
+    glMultiDrawElementsIndirect(pt, GL_UNSIGNED_INT, (void*)0, indirect->elements(), indirect->stride());
+
+    indirect->unbind();
 
     unbind();
 
