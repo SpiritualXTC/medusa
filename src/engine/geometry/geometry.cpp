@@ -155,7 +155,7 @@ std::shared_ptr<IMesh> Geometry::mesh(std::shared_ptr<IMesh> meshIn)
 
     // Bind Descriptors
     for (auto& g : _geometry)
-        desc->addDescription(g.dtype, _stride, g.location);
+        desc->addDescription(g.dtype, vb->stride(), g.location);
 
     desc->unbind();
 
