@@ -213,7 +213,6 @@ std::shared_ptr<IMesh> ModelLoader::load(const std::string& filename, std::share
         desc->addDescription(types::FloatV3, vb->stride(), AttributeLocation::Normal);
     }
 
-    geometry.interleave((uint8_t*)vertices.data(), sizeof(Vertex));
     desc->addDescription(types::Int, vb->stride(), AttributeLocation::MaterialIndex);
     geometry.addVertexData(materialIndices.data(), materialIndices.size(), 1, AttributeLocation::MaterialIndex);
 
@@ -227,6 +226,7 @@ std::shared_ptr<IMesh> ModelLoader::load(const std::string& filename, std::share
     logging::info(fmt::format("Loaded Mesh - Copying to Buffers: v={}, i={}, s={}", vertices.size(), indices.size(), submeshes.size()));
 
     // Allocate Vertex/Index Buffers
+    geometry.interleave((uint8_t*)vertices.data(), vb->stride());
     vb->allocate(vertices.data(), vertices.size());
     if (indices.size())
         ib->allocate(indices.data(), indices.size());
