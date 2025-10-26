@@ -42,5 +42,7 @@ namespace medusa
         std::shared_ptr<VertexBuffer> _vertices;
         std::shared_ptr<IndexBuffer> _indices;
         std::shared_ptr<GenericArray<Indirect>> _submeshes;
+
+        size_t _cache_instances = 0;
     };
 }

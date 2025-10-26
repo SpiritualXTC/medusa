@@ -30,7 +30,20 @@ bool Model::render(size_t instances)
 {
     if (_submeshes)
     {
-        // Advanced Rendering: This should still be cleaned up
+        // Update the instance counts... this is kinda terrible but whatever
+        if (instances != _cache_instances)
+        {
+            // TODO: Add a method to "block" gpu syncs, on data. so it can be done in bulk [this is probably doing it in bulk anyway]
+            for (uint32_t i = 0; i < _submeshes->size(); ++i)
+            {
+                _submeshes->data(i).instanceCount = instances;
+            }
+            _submeshes->sync();
+
+            _cache_instances = instances;
+        }
+
+        // Advanced Indirect Instance Rendering
         descriptor()->renderIndirect(PrimitiveType::Triangles, _submeshes);
     }
     else
