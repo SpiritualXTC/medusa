@@ -129,6 +129,13 @@ std::shared_ptr<IMesh> ModelLoader::load(const std::string& filename, std::share
             }
         }
 
+        // Per-Vertex Material Index
+        size_t start = materialIndices.size();
+        size_t count = submesh->mNumVertices;
+        materialIndices.resize(materialIndices.size() + count);
+
+        std::fill(materialIndices.begin() + start, materialIndices.end(), materialIndex[submesh->mMaterialIndex]);
+
         // Faces
         if (submesh->HasFaces() && submesh->mNumFaces >= 1)
         {
@@ -198,23 +205,24 @@ std::shared_ptr<IMesh> ModelLoader::load(const std::string& filename, std::share
     if (position.size())
     {
         geometry.addVertexData(position.data(), position.size(), AttributeLocation::Position);
-        desc->addDescription(types::FloatV3, sizeof(Vertex), AttributeLocation::Position);
+        desc->addDescription(types::FloatV3, vb->stride(), AttributeLocation::Position);
     }
     if (normals.size())
     {
         geometry.addVertexData(normals.data(), normals.size(), AttributeLocation::Normal);
-        desc->addDescription(types::FloatV3, sizeof(Vertex), AttributeLocation::Normal);
+        desc->addDescription(types::FloatV3, vb->stride(), AttributeLocation::Normal);
     }
 
     geometry.interleave((uint8_t*)vertices.data(), sizeof(Vertex));
+    desc->addDescription(types::Int, vb->stride(), AttributeLocation::MaterialIndex);
+    geometry.addVertexData(materialIndices.data(), materialIndices.size(), 1, AttributeLocation::MaterialIndex);
 
     desc->unbind();
 
-    // VertexBuffer requires staying bound while the descriptors are setup
+    // VertexBuffer requires staying bound while the descriptors are setup. Unbind after everything is setup
     if (indices.size())
         ib->unbind();
     vb->unbind();
-
 
     logging::info(fmt::format("Loaded Mesh - Copying to Buffers: v={}, i={}, s={}", vertices.size(), indices.size(), submeshes.size()));
 

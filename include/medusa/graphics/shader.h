@@ -28,6 +28,8 @@ namespace medusa
         Texture0 = 0x02,
         Texture1 = 0x03,
         Colour = 0x04,
+
+        MaterialIndex = 0x08,
     };
 
     enum class InstanceAttributeLocation
