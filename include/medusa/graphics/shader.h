@@ -37,11 +37,7 @@ namespace medusa
         // Transforms
         World = 0x04,   // 0xF0
 
-        // Lighting :: These are the old-style lighting, probably revisit this
-        MaterialAmbient = 0x08,
-        MaterialDiffuse = 0x15,
-        MaterialSpecular = 0x16,
-        MaterialEmissive = 0x17,
+        TransformIndex = 0x09,
     };
 
 
