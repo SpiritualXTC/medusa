@@ -56,41 +56,4 @@ namespace medusa
         /// <returns></returns>
         virtual bool render(std::shared_ptr<IPass> pass) = 0;
     };
-
-
-    /// <summary>
-    /// Naive RenderableList, render the iterable directly
-    /// </summary>
-    class RenderableList : public IRenderableContainer
-    {
-    public:
-        RenderableList(){}
-        virtual ~RenderableList() {}
-
-        bool add(std::shared_ptr<IRenderable> renderable)
-        {
-            _list.push_back(renderable);
-
-            return true;
-        }
-
-        bool clear()
-        {
-            _list.clear();
-
-            return true;
-        }
-
-        bool render(std::shared_ptr<IPass> pass)
-        {
-            for (auto& r : _list)
-                r->render(pass);
-
-            return true;
-        }
-
-
-    private:
-        std::list<std::shared_ptr<IRenderable>> _list;
-    };
 }
