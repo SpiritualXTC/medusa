@@ -22,24 +22,13 @@ namespace medusa
         MeshContainer(std::shared_ptr<IContext> context, std::shared_ptr<GenericArray<glm::mat4>> transformBuffer);
         virtual ~MeshContainer();
 
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <returns></returns>
         std::shared_ptr<ModelComponent> createInstance(std::shared_ptr<IMesh> mesh);
-
-
-
-
-        /// <summary>
-        /// Add an item to the iterable
-        /// </summary>
-        /// <param name="renderable"></param>
-        /// <returns></returns>
-        bool add(std::shared_ptr<IRenderable> renderable) override { throw MedusaError("Deprecated"); }
-
-
-        /// <summary>
-        /// Clear the iterable
-        /// </summary>
-        /// <returns></returns>
-        bool clear() override { throw MedusaError("Deprecated"); }
 
 
         /// <summary>
