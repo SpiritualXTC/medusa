@@ -67,7 +67,7 @@ namespace medusa
 
         bool clear() override;
 
-        bool render(std::shared_ptr<IPass> pass) override;
+        bool render() override;
 
     private:
 

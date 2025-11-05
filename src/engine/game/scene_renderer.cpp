@@ -55,13 +55,8 @@ std::shared_ptr<ModelComponent> MeshContainer::createInstance(std::shared_ptr<IM
 
 
 //
-bool MeshContainer::render(std::shared_ptr<IPass> pass)
+bool MeshContainer::render()
 {
-    if (pass != nullptr)
-        throw MedusaError("Deprecated");
-
-    //logging::info("Rendering mesh containers");
-
     for (auto instance : _instances)
         instance.second->render();
 

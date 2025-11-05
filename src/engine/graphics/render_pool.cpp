@@ -47,6 +47,7 @@ void RenderPool::create_mesh_instance(std::shared_ptr<IMesh> mesh)
     for (auto& id : _data)
     {
         // TODO: Shouldn't be part of the descriptor...
+        // THIS IS STILL USED BY THE WIREFRAME RENDERER
         descriptor->addInstanceAttribute(id.data_type, sizeof(glm::mat4), id.location);
     }
 
@@ -96,22 +97,12 @@ bool RenderPool::clear()
 
 
 //
-bool RenderPool::render(std::shared_ptr<IPass> pass)
+bool RenderPool::render()
 {
-    // TODO Register the World Matrix, and pass it through to the shaders as an instanced variable
-    //  Each instance needs to append it's matrix into the instance buffer
-    //  The mesh "PAYLOAD" also needs to be included as texturing is currently not working as it's binding is handled by the mesh component.
-    //  Can textures be included in the descriptor binding? that would be convenient :)
-
-
     // Update and Render Batches
     for (auto& it : _batch)
     {
         auto& batch = it.second;
-
-        // TODO: Try and do instance buffer update via OpenCL or OpenGL Compute Shader
-        // TODO: This will occur for EVERY view :(
-        //batch->buffer->update(batch->items.data(), 0, batch->count);
 
         // This needs to be called for every view
         batch->mesh->render(batch->instances->elements());

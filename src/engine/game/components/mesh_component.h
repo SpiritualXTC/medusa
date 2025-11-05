@@ -17,7 +17,7 @@ namespace medusa
 
         // Update the component
         bool update() override;
-        bool render(std::shared_ptr<IPass> pass) override;
+        bool render() override;
 
         inline uint64_t resource_id() {return _mesh->id();}
 

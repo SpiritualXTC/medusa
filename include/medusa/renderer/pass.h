@@ -7,7 +7,7 @@
 
 namespace medusa
 {
-    class IPass : public std::enable_shared_from_this<IPass>
+    class IPass
     {
     public:
         IPass(std::shared_ptr<IShader> shader, std::shared_ptr<IRenderableContainer> _container)

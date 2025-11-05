@@ -44,9 +44,9 @@ bool MeshComponent::update()
 
 
 //
-bool MeshComponent::render(std::shared_ptr<IPass> pass)
+bool MeshComponent::render()
 {
-    auto shader = pass->shader();
+    //auto shader = pass->shader();
 
     // TODO: This needs a magic solution :(
 

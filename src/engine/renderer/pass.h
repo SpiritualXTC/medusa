@@ -14,16 +14,8 @@ namespace medusa
 
         bool render() override;
 
-
-
     private:
 
     };
 
-
-    class MultiPass : public IPass
-    {
-    public:
-
-    };
 }

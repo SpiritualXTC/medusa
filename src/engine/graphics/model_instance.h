@@ -21,8 +21,7 @@ namespace medusa
 
 
         // TODO: Note, the instances count here is kinda meaningless... as is passing the count through the render function :)
-        //bool render(size_t instances = 0) override { return _mesh->render(_instanceMap->size()); }
-        bool render(size_t instances = 0) override { return _mesh->render(instances); }
+        bool render(size_t instances = 0) override { return _mesh->render(_instanceMap->size()); }
 
 
         /// <summary>

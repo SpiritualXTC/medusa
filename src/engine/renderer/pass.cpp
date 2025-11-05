@@ -23,11 +23,7 @@ Pass::~Pass()
 //
 bool Pass::render()
 {
-    auto ptr = static_pointer_cast<Pass>(this->shared_from_this());
-
-    auto s = shader();
-
-    container()->render(ptr);
+    container()->render();
 
     return true;
 }

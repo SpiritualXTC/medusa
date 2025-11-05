@@ -18,7 +18,7 @@ namespace medusa
 
         virtual inline uint64_t resource_id() = 0;
 
-        virtual bool render(std::shared_ptr<IPass> pass) = 0;
+        virtual bool render() = 0;
 
         // Getters
         inline virtual const glm::mat4& transform() = 0;
@@ -54,6 +54,6 @@ namespace medusa
         /// Render all the items in the iterable
         /// </summary>
         /// <returns></returns>
-        virtual bool render(std::shared_ptr<IPass> pass) = 0;
+        virtual bool render() = 0;
     };
 }

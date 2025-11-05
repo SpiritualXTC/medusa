@@ -46,7 +46,7 @@ namespace medusa
         /// Render all the items in the iterable
         /// </summary>
         /// <returns></returns>
-        bool render(std::shared_ptr<IPass> pass) override;
+        bool render() override;
     private:
 
         std::weak_ptr<IContext> _context;
