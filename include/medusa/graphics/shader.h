@@ -35,8 +35,6 @@ namespace medusa
     enum class InstanceAttributeLocation
     {
         // Transforms
-        World = 0x04,   // 0xF0
-
         TransformIndex = 0x09,
     };
 
