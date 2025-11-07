@@ -18,12 +18,11 @@ namespace medusa
     public:
         SceneManager(std::shared_ptr<Engine> engine);
 
+        const std::weak_ptr<Engine> engine() { return _engine; }
+
 
         inline std::shared_ptr<GenericMap<Material>> getMaterials() { return _materials; }
         inline const std::shared_ptr<GenericMap<Material>> getMaterials() const { return _materials; }
-
-        inline std::shared_ptr<GenericArray<glm::mat4>> getTransformBuffer() { return _matrixBuffer; }
-
 
         std::shared_ptr<IMesh> getModel(const std::string& modelName);
 
@@ -33,6 +32,6 @@ namespace medusa
 
         std::shared_ptr<GenericMap<Material>> _materials;
 
-        std::shared_ptr<GenericArray<glm::mat4>> _matrixBuffer; // TODO: This PROBABLY makes more sense in the SceneGraph, but for simplicity in testing, lets leave it here for now
+
     };
 }

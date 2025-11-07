@@ -27,11 +27,6 @@ SceneManager::SceneManager(std::shared_ptr<Engine> engine)
     dummy.emissive(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
     _materials->insert("[default]", dummy);
-
-    // Create the World Transform Buffer
-    glm::mat4 identity = glm::identity<glm::mat4>();
-    _matrixBuffer = engine->context()->createArray<glm::mat4>(medusa::BufferType::ShaderStorage, medusa::BufferUsage::DynamicDraw);
-    _matrixBuffer->insert(identity);
 }
 
 

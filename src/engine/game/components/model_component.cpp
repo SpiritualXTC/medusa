@@ -28,15 +28,12 @@ ModelComponent::~ModelComponent()
 //
 bool ModelComponent::update()
 {
-    // TODO: This should only happen on a change ... ? It should also NOT go to the GPU directly, but in bulk push. (Later problems)
-
     TransformComponent::update();
 
     auto transformBuffer = _transformBuffer.lock();
 
     auto& m = transformBuffer->data(_transformIndex);
     m = matrix();
-    transformBuffer->sync(_transformIndex);
 
     return true;
 }
