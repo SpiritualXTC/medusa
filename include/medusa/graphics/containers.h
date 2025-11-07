@@ -3,8 +3,6 @@
 #include <medusa/medusa.h>
 #include <medusa/graphics/memory.h>
 
-#include <core/utilities/logging.h>
-
 namespace medusa
 {
     /// <summary>
