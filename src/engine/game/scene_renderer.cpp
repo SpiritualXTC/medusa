@@ -62,19 +62,3 @@ bool MeshContainer::render()
 
     return true;
 }
-
-
-
-
-//
-SceneRenderer::SceneRenderer()
-{
-
-}
-
-
-//
-SceneRenderer::~SceneRenderer()
-{
-
-}
