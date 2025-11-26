@@ -128,9 +128,22 @@ void Geometry::interleave(uint8_t* buffer, size_t stride)
 ///
 /// </summary>
 /// <returns></returns>
-std::shared_ptr<IMesh> Geometry::mesh(std::shared_ptr<IMesh> meshIn)
+std::shared_ptr<IMesh> Geometry::mesh(uint32_t materialIndex)
 {
     auto context = _context.lock();
+
+    // TODO: This is not clean :)
+    // TODO: Descriptor SHOULD be passed into mesh(), and appropriate getters called based on the descriptor attributes.
+    //  Kinda inverting the current implementation
+    if (materialIndex != -1)
+    {
+        std::vector<uint32_t> materialIndices(_vertices);
+
+        std::fill(materialIndices.begin(), materialIndices.end(), materialIndex);
+
+        addVertexData(materialIndices.data(), materialIndices.size(), 1, AttributeLocation::MaterialIndex);
+    }
+
 
     auto vb = context->createVertexBuffer(BufferUsage::StaticDraw);
     auto ib = context->createIndexBuffer(BufferUsage::StaticDraw);

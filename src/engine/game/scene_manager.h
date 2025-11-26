@@ -10,6 +10,8 @@ namespace medusa
 {
     class Engine;
 
+    class IGeometry;
+
     /// <summary>
     /// Manages the scene
     /// </summary>
@@ -25,6 +27,7 @@ namespace medusa
         inline const std::shared_ptr<GenericMap<Material>> getMaterials() const { return _materials; }
 
         std::shared_ptr<IMesh> getModel(const std::string& modelName);
+        std::shared_ptr<IMesh> getModel(const std::shared_ptr<IGeometry> geometry, const Material& material);
 
     private:
         std::weak_ptr<Engine> _engine;

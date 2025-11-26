@@ -6,6 +6,7 @@
 #include <engine/resource_database.h>
 
 #include <engine/engine.h>
+#include <engine/geometry/geometry.h>
 
 using namespace medusa;
 
@@ -36,4 +37,14 @@ std::shared_ptr<IMesh> SceneManager::getModel(const std::string& modelName)
     auto engine = _engine.lock();
 
     return engine->resources()->getModel(modelName, _materials);
+}
+
+
+std::shared_ptr<IMesh> SceneManager::getModel(const std::shared_ptr<IGeometry> geometry, const Material& material)
+{
+    static uint32_t generateIndex = 0;
+
+    std::string matName = std::format("test_{}", generateIndex++);
+    auto matIdx = _materials->insert(matName, material);
+    return geometry->mesh(matIdx);
 }

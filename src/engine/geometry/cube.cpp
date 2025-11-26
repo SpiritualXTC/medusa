@@ -118,7 +118,7 @@ Cube::~Cube()
 
 
 //
-std::shared_ptr<IMesh> Cube::mesh(std::shared_ptr<IMesh> meshIn)
+std::shared_ptr<IMesh> Cube::mesh(uint32_t materialIndex)
 {
     Geometry g(_context.lock());
 
@@ -136,5 +136,5 @@ std::shared_ptr<IMesh> Cube::mesh(std::shared_ptr<IMesh> meshIn)
     // Add Index Data
     g.addIndexData(indices.data(), indices.size());
 
-    return g.mesh(meshIn);
+    return g.mesh(materialIndex);
 }

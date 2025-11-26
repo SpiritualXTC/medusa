@@ -26,7 +26,8 @@ namespace medusa
     class IGeometry
     {
     public:
-        virtual std::shared_ptr<IMesh> mesh(std::shared_ptr<IMesh> meshIn = nullptr) = 0;
+        // TODO: MaterialIndex needs to be refactored away from here.
+        virtual std::shared_ptr<IMesh> mesh(uint32_t materialIndex = -1) = 0;
 
     private:
 
@@ -70,7 +71,7 @@ namespace medusa
         /// Construct a mesh from the geometry
         /// </summary>
         /// <returns></returns>
-        std::shared_ptr<IMesh> mesh(std::shared_ptr<IMesh> meshIn = nullptr) override;
+        std::shared_ptr<IMesh> mesh(uint32_t materialIndex = -1) override;
 
         /// <summary>
         /// Add GLM Typed data
