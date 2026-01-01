@@ -22,7 +22,7 @@ namespace medusa
 
 
     /// <summary>
-    /// More complex mesh, includes textures/material/subset information
+    ///
     /// </summary>
     class Model : public IMesh
     {
