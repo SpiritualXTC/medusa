@@ -19,7 +19,9 @@ namespace medusa
     };
 
 
-
+    /// <summary>
+    /// Base interface for all components
+    /// </summary>
     class IComponent
     {
     public:
@@ -29,5 +31,17 @@ namespace medusa
         virtual bool update() = 0;
 
     private:
+    };
+
+
+    /// <summary>
+    /// Base interface for all component containers
+    /// </summary>
+    class IComponentContainer
+    {
+    public:
+        virtual bool hasComponent(const std::string& name) = 0;
+        virtual bool addComponent(const std::string& name, std::shared_ptr<IComponent> component) = 0;
+        virtual std::shared_ptr<IComponent> getComponent(const std::string& name) = 0;
     };
 }

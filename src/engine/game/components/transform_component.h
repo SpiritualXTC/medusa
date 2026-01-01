@@ -3,18 +3,22 @@
 //#include <medusa/math/matrix.h>
 
 #include <medusa/game/component.h>
+#include <medusa/game/transform.h>
 
 #include <core/math/matrix.h>
 
 
 namespace medusa
 {
-    class TransformComponent : public IComponent, public Matrix
+    /// <summary>
+    ///
+    /// </summary>
+    class TransformComponent : public IComponent, public Matrix, public Transform
     {
     public:
-        TransformComponent() {}
-        virtual ~TransformComponent() {}
+        TransformComponent(std::shared_ptr<TransformBuffer> transformBuffer);
+        virtual ~TransformComponent();
 
-        bool update() override { calculate(); return true; }
+        bool update() override;
     };
 }

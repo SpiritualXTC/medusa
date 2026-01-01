@@ -17,8 +17,11 @@ SceneGraph::SceneGraph(std::shared_ptr<SceneManager> manager)
 
     // Create the World Transform Buffer
     glm::mat4 identity = glm::identity<glm::mat4>();
-    _matrixBuffer = engine->context()->createArray<glm::mat4>(medusa::BufferType::ShaderStorage, medusa::BufferUsage::DynamicDraw);
-    _matrixBuffer->insert(identity);
+    _transformBuffer = engine->context()->createArray<glm::mat4>(medusa::BufferType::ShaderStorage, medusa::BufferUsage::DynamicDraw);
+    _transformBuffer->insert(identity);
+
+    // Create the root of the scene graph
+    _root = std::make_shared<ObjectComponent>(_transformBuffer);
 }
 
 
@@ -32,10 +35,10 @@ SceneGraph::~SceneGraph()
 //
 bool SceneGraph::update()
 {
-    bool b = EntityComponent::update();
+    bool b = _root->update();
 
     // Resync the transform buffer
-    _matrixBuffer->sync();
+    _transformBuffer->sync();
 
     return b;
 }
