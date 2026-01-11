@@ -26,7 +26,30 @@ Model::~Model()
 
 
 //
-bool Model::render(size_t instances)
+bool Model::render()
+{
+    if (_submeshes)
+    {
+        // IMPROVE: This should be a custom loop. Push to the batch for now
+        //  NOTE: This overrides the meshes current batch handling.
+        //  TODO: The IMesh interface should NOT have responsibility over instancing
+        renderBatch(1);
+    }
+    else
+    {
+        // Basic Rendering
+        if (_indices && _indices->indices())
+            _descriptor->render(PrimitiveType::Triangles, _vertices->vertices(), _indices->indices());
+        else
+            _descriptor->render(PrimitiveType::Triangles, _vertices->vertices(), 0);
+    }
+
+    return true;
+}
+
+
+//
+bool Model::renderBatch(size_t instances)
 {
     if (_submeshes)
     {

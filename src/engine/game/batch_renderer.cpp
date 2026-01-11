@@ -54,7 +54,7 @@ void Batch::popInstance(std::shared_ptr<IMeshInstance> instance)
 //
 void Batch::batchRender()
 {
-    _mesh->render(_instanceMap->size());
+    _mesh->renderBatch(_instanceMap->size());
 }
 
 
@@ -104,10 +104,7 @@ std::shared_ptr<IMeshInstance> BatchRenderer::createBatchInstance(std::shared_pt
 //
 bool BatchRenderer::render()
 {
-    for (auto instance : _instances)
-        instance.second->render();
-
-    for (auto batch : _batches)
+    for (auto& batch : _batches)
     {
         // TODO: Need a way to render from the interface
         batch.second->batchRender();

@@ -49,7 +49,10 @@ namespace medusa
         virtual const inline std::shared_ptr<IndexBuffer> indexBuffer() = 0;
         virtual const inline std::shared_ptr<IDescriptor> descriptor() = 0;
 
-        virtual bool render(size_t instances = 0) = 0;
+
+        virtual bool render() = 0;
+        // TODO: Batch rendering should not be handled by the base mesh
+        virtual bool renderBatch(size_t instances = 0) = 0;
 
     private:
 

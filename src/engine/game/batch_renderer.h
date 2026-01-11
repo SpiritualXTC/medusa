@@ -80,7 +80,5 @@ namespace medusa
         std::weak_ptr<TransformBuffer> _transformBuffer;
 
         std::unordered_map<uint64_t, std::shared_ptr<Batch>> _batches;
-        std::unordered_map<uint64_t, std::shared_ptr<ModelInstance>> _instances;
-
     };
 }
