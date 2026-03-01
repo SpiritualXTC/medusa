@@ -2,12 +2,14 @@
 
 #include <core/utilities/logging.h>
 
+#include <medusa/graphics/shader.h>
+
 using namespace medusa;
 
 
 //
-Pass::Pass(std::shared_ptr<IShader> shader, std::shared_ptr<IRenderableContainer> container)
-    : IPass(shader, container)
+Pass::Pass(std::shared_ptr<IShader> shader)
+    : _shader(shader)
 {
 
 }
@@ -17,13 +19,4 @@ Pass::Pass(std::shared_ptr<IShader> shader, std::shared_ptr<IRenderableContainer
 Pass::~Pass()
 {
 
-}
-
-
-//
-bool Pass::render()
-{
-    container()->render();
-
-    return true;
 }
