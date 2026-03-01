@@ -30,7 +30,7 @@ ModelLoader::~ModelLoader()
 }
 
 
-std::shared_ptr<IMesh> ModelLoader::load(const std::string& filename, std::shared_ptr<GenericMap<Material>> materials)
+std::shared_ptr<Model> ModelLoader::load(const std::string& filename, std::shared_ptr<GenericMap<Material>> materials)
 {
     Assimp::Importer importer;
 
