@@ -23,7 +23,7 @@ namespace medusa
         inline bool hasComponent(const std::string& name) override { return _root->hasComponent(name); }
         bool addComponent(const std::string& name, std::shared_ptr<IComponent> component) override { return _root->addComponent(name, component); }
         std::shared_ptr<IComponent> getComponent(const std::string& name) override { return _root->getComponent(name); }
-
+        bool removeComponent(const std::string& name) override { return _root->removeComponent(name); }
 
         // TODO: Add Renderable? -- Only RenderableContainer IS an IRenderable?
         bool addContainer(const std::string& name, std::shared_ptr<IRenderableContainer> container)

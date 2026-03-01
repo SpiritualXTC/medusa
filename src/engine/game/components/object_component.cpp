@@ -39,6 +39,17 @@ bool ObjectComponent::addComponent(const std::string& name, std::shared_ptr<ICom
 
 
 //
+bool ObjectComponent::removeComponent(const std::string& name)
+{
+    if (! hasComponent(name))
+        return false;
+
+    _components.erase(name);
+
+    return true;
+}
+
+//
 std::shared_ptr<IComponent> ObjectComponent::getComponent(const std::string& name)
 {
     auto it = _components.find(name);

@@ -16,7 +16,7 @@ namespace medusa
         bool hasComponent(const std::string& name) override;
         bool addComponent(const std::string& name, std::shared_ptr<IComponent> component) override;
         std::shared_ptr<IComponent> getComponent(const std::string& name) override;
-
+        bool removeComponent(const std::string& name) override;
 
         bool update() override;
 
