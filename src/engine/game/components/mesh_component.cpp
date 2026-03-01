@@ -1,28 +1,29 @@
 #include "mesh_component.h"
 
-#include <engine/graphics/model_instance.h>
+#include <core/utilities/logging.h>
+
+#include <engine/geometry/geometry_buffer.h>
 
 using namespace medusa;
 
 
 //
-MeshComponent::MeshComponent(std::shared_ptr<IMeshInstance> instance)
-    : _instance(instance)
+MeshInstanceComponent::MeshInstanceComponent(std::shared_ptr<IMeshReference> meshRef, size_t transIndex)
+    : _meshRef(meshRef)
 {
-
+    _instanceIndex = _meshRef->pushInstance(transIndex);
 }
 
 
 //
-MeshComponent::~MeshComponent()
+MeshInstanceComponent::~MeshInstanceComponent()
 {
-
+    _meshRef->popInstance(_instanceIndex);
 }
 
 
 //
-bool MeshComponent::update()
+bool MeshInstanceComponent::update()
 {
-
     return true;
 }

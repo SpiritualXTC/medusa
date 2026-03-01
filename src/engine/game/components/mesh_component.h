@@ -5,26 +5,21 @@
 #include <medusa/game/component.h>
 
 
-
 namespace medusa
 {
-    /// <summary>
-    ///
-    /// </summary>
-    class MeshComponent : public IComponent
+    class MeshInstanceComponent : public IComponent
     {
     public:
-        MeshComponent(std::shared_ptr<IMeshInstance> instance);
-        virtual ~MeshComponent();
+        // TODO: This will be a "mesh reference" not an IMesh
+        //  A Mesh reference is part of the "global GeometryBuffer"
+        MeshInstanceComponent(std::shared_ptr<IMeshReference> meshRef, size_t transIndex);
+        virtual ~MeshInstanceComponent();
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <returns></returns>
         bool update() override;
 
     private:
-        std::shared_ptr<IMeshInstance> _instance;
+        std::shared_ptr<IMeshReference> _meshRef;
+        size_t _instanceIndex = 0;
     };
 
 
