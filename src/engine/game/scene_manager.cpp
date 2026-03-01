@@ -6,7 +6,9 @@
 #include <engine/resource_database.h>
 
 #include <engine/engine.h>
+#include <engine/graphics/model.h>
 #include <engine/geometry/geometry.h>
+#include <engine/geometry/geometry_buffer.h>
 
 using namespace medusa;
 
@@ -17,6 +19,10 @@ SceneManager::SceneManager(std::shared_ptr<Engine> engine)
     , _context(engine->context())
 {
     auto context = engine->context();
+
+
+    // EXPERIMENTAL Create the GeometryBuffer
+    _geometry = std::make_shared<medusa::GeometryBuffer>(context);
 
     // Create Material Database
     _materials = context->createMap<Material>(BufferType::ShaderStorage, BufferUsage::StaticDraw);
@@ -36,15 +42,36 @@ std::shared_ptr<IMesh> SceneManager::getModel(const std::string& modelName)
 {
     auto engine = _engine.lock();
 
-    return engine->resources()->getModel(modelName, _materials);
+    auto mesh = engine->resources()->getModel(modelName, _materials);
+
+    // Scale the mesh cos it's bloody huge
+    logging::error("Scaling the mesh by a factor of 1/1000x");
+    auto vb = mesh->vertexBuffer();
+    for (int index = 0; index < vb->vertices(); ++index)
+    {
+        auto& v = vb->data(index);
+        v.position *= 0.0001;
+    }
+    vb->sync();
+
+    // Add the Mesh into the GeometryBuffer...
+    _geometry->loadMesh(modelName, mesh);
+
+    return mesh;
 }
 
 
-std::shared_ptr<IMesh> SceneManager::getModel(const std::shared_ptr<IGeometry> geometry, const Material& material)
+std::shared_ptr<IMesh> SceneManager::getModel(const std::string& name, const std::shared_ptr<IGeometry> geometry, const Material& material)
 {
     static uint32_t generateIndex = 0;
 
     std::string matName = std::format("test_{}", generateIndex++);
     auto matIdx = _materials->insert(matName, material);
-    return geometry->mesh(matIdx);
+
+    auto mesh = geometry->mesh(matIdx);
+
+
+    _geometry->loadMesh(name, mesh);
+
+    return mesh;
 }

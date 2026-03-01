@@ -36,6 +36,9 @@ namespace medusa
         const inline std::shared_ptr<IndexBuffer> indexBuffer() override { return _indices; }
         const inline std::shared_ptr<IDescriptor> descriptor() override { return _descriptor; }
 
+        const inline std::shared_ptr<GenericArray<Indirect>> submeshes() { return _submeshes; }
+
+
         bool render() override;
         bool renderBatch(size_t instances = 0) override;
 

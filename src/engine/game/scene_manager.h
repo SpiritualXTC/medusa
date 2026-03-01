@@ -11,6 +11,8 @@ namespace medusa
     class Engine;
 
     class IGeometry;
+    class GeometryBuffer;
+
 
     /// <summary>
     /// Manages the scene
@@ -27,7 +29,10 @@ namespace medusa
         inline const std::shared_ptr<GenericMap<Material>> getMaterials() const { return _materials; }
 
         std::shared_ptr<IMesh> getModel(const std::string& modelName);
-        std::shared_ptr<IMesh> getModel(const std::shared_ptr<IGeometry> geometry, const Material& material);
+        std::shared_ptr<IMesh> getModel(const std::string& name, const std::shared_ptr<IGeometry> geometry, const Material& material);
+
+
+        std::shared_ptr<GeometryBuffer> getGeometryBuffer() { return _geometry; }
 
     private:
         std::weak_ptr<Engine> _engine;
@@ -36,5 +41,8 @@ namespace medusa
         std::shared_ptr<GenericMap<Material>> _materials;
 
 
+
+
+        std::shared_ptr<medusa::GeometryBuffer> _geometry;
     };
 }
