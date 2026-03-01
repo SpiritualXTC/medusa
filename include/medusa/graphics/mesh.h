@@ -8,30 +8,19 @@
 
 namespace medusa
 {
-    class Transform;
-
     /// <summary>
-    /// Interface for instancing a mesh
+    /// References a Mesh used for batch rendering
     /// </summary>
-    class IMeshInstance
+    class IMeshReference
     {
     public:
-        IMeshInstance() { }
-        virtual ~IMeshInstance() {}
-    };
+        IMeshReference() {}
+        virtual ~IMeshReference() {}
 
-    /// <summary>
-    /// Interface for batch rendering
-    /// </summary>
-    class IMeshBatch
-    {
-    public:
-        IMeshBatch() {}
-        virtual ~IMeshBatch() { }
+        virtual size_t pushInstance(size_t transformIndex) = 0;
+        virtual size_t popInstance(size_t instanceIndex) = 0;
 
-        virtual std::shared_ptr<IMeshInstance> pushInstance(std::shared_ptr<Transform> transform) = 0;
-        virtual void popInstance(std::shared_ptr<IMeshInstance> instance) = 0;
-
+        virtual size_t instances() const = 0;
     private:
     };
 
