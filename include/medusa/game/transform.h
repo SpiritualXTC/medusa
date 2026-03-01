@@ -10,6 +10,7 @@ namespace medusa
 
     class ITransform
     {
+    public:
         /// <summary>
         /// Get the index in the transform buffer
         /// </summary>
@@ -37,6 +38,8 @@ namespace medusa
             if (_transformIndex != -1)
             {
                 // TODO: Delete
+                auto transformBuffer = _transformBuffer.lock();
+                transformBuffer->erase(_transformIndex);
             }
         }
 
