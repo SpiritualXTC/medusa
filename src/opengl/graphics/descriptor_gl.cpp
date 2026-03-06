@@ -80,36 +80,15 @@ bool DescriptorGL::unbind()
 
 
 //
-bool DescriptorGL::render(PrimitiveType primitiveType, size_t vertices, size_t indices)
-{
-    GLenum pt = mapEnum(primitiveType);
-
-    bind();
-
-    if (indices)
-        glDrawElements(pt, indices, GL_UNSIGNED_INT, 0);
-    else
-        glDrawArrays(pt, 0, vertices);
-
-    unbind();
-
-    return true;
-}
-
-
 bool DescriptorGL::render(PrimitiveType primitiveType, size_t vertices, size_t indices, size_t instances)
 {
     GLenum pt = mapEnum(primitiveType);
 
-    //logging::info(fmt::format("Desc: Rendering {}", instances));
-
     bind();
 
     if (indices)
-        //glDrawElements(pt, indices, GL_UNSIGNED_INT, 0);
         glDrawElementsInstanced(pt, indices, GL_UNSIGNED_INT, 0, instances);
     else
-        //glDrawArrays(pt, 0, vertices);
         glDrawArraysInstanced(pt, 0, vertices, instances);
 
     unbind();
@@ -118,6 +97,7 @@ bool DescriptorGL::render(PrimitiveType primitiveType, size_t vertices, size_t i
 }
 
 
+//
 bool DescriptorGL::renderIndirect(PrimitiveType primitiveType, std::shared_ptr<GenericArray<Indirect>> indirect)
 {
     GLenum pt = mapEnum(primitiveType);

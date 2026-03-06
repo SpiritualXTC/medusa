@@ -9,7 +9,6 @@ namespace medusa
     class IState;
     class IContext;
     class IWindow;
-    class IRenderer;
 
     class IMemory;
     class MemoryView;

@@ -30,18 +30,22 @@ ModelLoader::~ModelLoader()
 }
 
 
-std::shared_ptr<IMesh> ModelLoader::load(const std::string& filename, std::shared_ptr<GenericMap<Material>> materials)
+std::shared_ptr<Model> ModelLoader::load(const std::string& filename, std::shared_ptr<GenericMap<Material>> materials)
 {
     Assimp::Importer importer;
 
     auto context = _context.lock();
 
+    // Vertex Data
     std::vector<glm::vec3> position;
     std::vector<glm::vec3> normals;
+    std::vector<uint32_t> materialIndices;
     // TODO: Texture Coordinates
 
+    // Face Data
     std::vector<uint32_t> indices;
 
+    // Mesh Data
     std::vector<Indirect> submeshes;
     std::vector<size_t> materialIndex;
 
@@ -50,7 +54,6 @@ std::shared_ptr<IMesh> ModelLoader::load(const std::string& filename, std::share
     // Load *.obj file
     const aiScene* scene = importer.ReadFile(filename.c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
     assert(scene != nullptr);
-
 
     logging::info("Model: {}", filename);
     logging::info("- meshes: {}, materials: {}, textures: {}", scene->mNumMeshes, scene->mNumMaterials, scene->mNumTextures);
@@ -78,8 +81,7 @@ std::shared_ptr<IMesh> ModelLoader::load(const std::string& filename, std::share
         if (mat->Get(AI_MATKEY_OPACITY, opacity) != AI_SUCCESS)
             logging::warn("Unable to read `opacity` from material {}, idx={}", matName, matIdx);
 
-        // TODO: Read Texture Filenames
-
+        // TODO: Get Texture Filenames and Load Textures into material
 
         // Set Material Data
         material.ambient(ambient.r, ambient.g, ambient.b);
@@ -97,7 +99,6 @@ std::shared_ptr<IMesh> ModelLoader::load(const std::string& filename, std::share
             logging::debug(fmt::format("Material: name={}, index={}->{}", matName, matIdx, idx));
         }
     }
-
 
     // Load Mesh Data
     for (uint32_t meshIdx = 0; meshIdx < scene->mNumMeshes; ++meshIdx)
@@ -127,6 +128,13 @@ std::shared_ptr<IMesh> ModelLoader::load(const std::string& filename, std::share
                 logging::warn(std::format("Texture UV data found in mesh `{}`, not supported yet", submeshName));
             }
         }
+
+        // Per-Vertex Material Index
+        size_t start = materialIndices.size();
+        size_t count = submesh->mNumVertices;
+        materialIndices.resize(materialIndices.size() + count);
+
+        std::fill(materialIndices.begin() + start, materialIndices.end(), materialIndex[submesh->mMaterialIndex]);
 
         // Faces
         if (submesh->HasFaces() && submesh->mNumFaces >= 1)
@@ -161,10 +169,10 @@ std::shared_ptr<IMesh> ModelLoader::load(const std::string& filename, std::share
             Indirect* smdLast = submeshes.size() == 0 ? nullptr : &submeshes[submeshes.size() - 1];
 
             Indirect smd;
-            smd.baseInstance = submesh->mMaterialIndex >= materialIndex.size() ? 0 : materialIndex[submesh->mMaterialIndex];
+            smd.baseInstance = 0;
             smd.baseVertex = vertexOffset;
             smd.firstIndex = smdLast == nullptr ? 0 : smdLast->firstIndex + smdLast->count;
-            smd.instanceCount = 1; // TODO: Should be zero to start with, this will be increased during scene update
+            smd.instanceCount = 0;
             smd.count = submeshIndices.size();
 
             logging::info(fmt::format("Submesh: v={}, f={}, matIdx={} -> {}", submesh->mNumVertices, submesh->mNumFaces, submesh->mMaterialIndex, materialIndex[submesh->mMaterialIndex]));
@@ -197,27 +205,28 @@ std::shared_ptr<IMesh> ModelLoader::load(const std::string& filename, std::share
     if (position.size())
     {
         geometry.addVertexData(position.data(), position.size(), AttributeLocation::Position);
-        desc->addDescription(types::FloatV3, sizeof(Vertex), AttributeLocation::Position);
+        desc->addDescription(types::FloatV3, vb->stride(), AttributeLocation::Position);
     }
     if (normals.size())
     {
         geometry.addVertexData(normals.data(), normals.size(), AttributeLocation::Normal);
-        desc->addDescription(types::FloatV3, sizeof(Vertex), AttributeLocation::Normal);
+        desc->addDescription(types::FloatV3, vb->stride(), AttributeLocation::Normal);
     }
 
-    geometry.interleave((uint8_t*)vertices.data(), sizeof(Vertex));
+    desc->addDescription(types::Int, vb->stride(), AttributeLocation::MaterialIndex);
+    geometry.addVertexData(materialIndices.data(), materialIndices.size(), 1, AttributeLocation::MaterialIndex);
 
     desc->unbind();
 
-    // VertexBuffer requires staying bound while the descriptors are setup
+    // VertexBuffer requires staying bound while the descriptors are setup. Unbind after everything is setup
     if (indices.size())
         ib->unbind();
     vb->unbind();
 
-
     logging::info(fmt::format("Loaded Mesh - Copying to Buffers: v={}, i={}, s={}", vertices.size(), indices.size(), submeshes.size()));
 
     // Allocate Vertex/Index Buffers
+    geometry.interleave((uint8_t*)vertices.data(), vb->stride());
     vb->allocate(vertices.data(), vertices.size());
     if (indices.size())
         ib->allocate(indices.data(), indices.size());

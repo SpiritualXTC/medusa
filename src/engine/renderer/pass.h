@@ -9,21 +9,13 @@ namespace medusa
     class Pass : public IPass
     {
     public:
-        Pass(std::shared_ptr<IShader> shader, std::shared_ptr<IRenderableContainer> container);
+        Pass(std::shared_ptr<IShader> shader);
         virtual ~Pass();
 
-        bool render() override;
-
-
+        const inline std::shared_ptr<IShader> shader() override { return _shader; }
 
     private:
-
+        std::shared_ptr<IShader> _shader;
     };
 
-
-    class MultiPass : public IPass
-    {
-    public:
-
-    };
 }

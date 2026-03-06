@@ -7,27 +7,13 @@
 
 namespace medusa
 {
-    class IPass : public std::enable_shared_from_this<IPass>
+    class IPass
     {
     public:
-        IPass(std::shared_ptr<IShader> shader, std::shared_ptr<IRenderableContainer> _container)
-            : _shader(shader)
-            , _container(_container)
-        {
-
-        }
+        IPass() {}
 
         virtual ~IPass() {}
 
-
-        const inline std::shared_ptr<IShader> shader() { return _shader; }
-
-        virtual bool render() = 0;
-
-        const inline std::shared_ptr<IRenderableContainer> container() const { return _container; }
-
-    private:
-        std::shared_ptr<IShader> _shader;
-        std::shared_ptr<IRenderableContainer> _container;
+        virtual const inline std::shared_ptr<IShader> shader() = 0;
     };
 }

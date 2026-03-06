@@ -22,19 +22,25 @@ namespace medusa
 
 
     /// <summary>
-    /// More complex mesh, includes textures/material/subset information
+    ///
     /// </summary>
     class Model : public IMesh
     {
     public:
+        // TODO: Refactor so the Mesh class does not own the indirect buffer. It should at most own a mesh layout structure.
+        //  The IndirectBuffer should be owned by the "BatchMesh"
         Model(std::shared_ptr<IDescriptor> descriptor, std::shared_ptr<VertexBuffer> vb, std::shared_ptr<IndexBuffer> ib, std::shared_ptr<GenericArray<Indirect>> submesh);
         virtual ~Model();
 
-        const inline std::shared_ptr<VertexBuffer> vertexBuffer() override { return nullptr; }
+        const inline std::shared_ptr<VertexBuffer> vertexBuffer() override { return _vertices; }
         const inline std::shared_ptr<IndexBuffer> indexBuffer() override { return _indices; }
         const inline std::shared_ptr<IDescriptor> descriptor() override { return _descriptor; }
 
-        bool render(size_t instances = 0) override;
+        const inline std::shared_ptr<GenericArray<Indirect>> submeshes() { return _submeshes; }
+
+
+        bool render() override;
+        bool renderBatch(size_t instances = 0) override;
 
     private:
         std::shared_ptr<IDescriptor> _descriptor = nullptr;
@@ -42,5 +48,7 @@ namespace medusa
         std::shared_ptr<VertexBuffer> _vertices;
         std::shared_ptr<IndexBuffer> _indices;
         std::shared_ptr<GenericArray<Indirect>> _submeshes;
+
+        size_t _cache_instances = 0;
     };
 }

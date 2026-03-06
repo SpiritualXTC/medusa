@@ -39,7 +39,7 @@ namespace medusa
             _depth = depth;
         }
 
-        std::shared_ptr<IMesh> mesh(std::shared_ptr<IMesh> meshIn = nullptr) override;
+        std::shared_ptr<Model> mesh(uint32_t materialIndex = -1) override;
 
     private:
         std::weak_ptr<IContext> _context;

@@ -3,8 +3,6 @@
 #include <medusa/medusa.h>
 #include <medusa/graphics/memory.h>
 
-#include <core/utilities/logging.h>
-
 namespace medusa
 {
     /// <summary>
@@ -175,11 +173,42 @@ namespace medusa
         }
 
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        size_t erase(const size_t index)
+        {
+            // Check validity of index
+            if (index >= _data.size())
+            {
+                // Exceeds bounds
+                return -1;
+            }
+
+            // Check whether the index is already being erased
+            if (_erased.size() > 0)
+            {
+                auto it = std::find(_erased.begin(), _erased.end(), index);
+                if (it != _erased.end())
+                {
+                    // This index is already being erased
+                    return -1;
+                }
+            }
+
+            // Add item to the erased array, decrease active count
+            _erased.push_back(index);
+            _active--;
+
+            return index;
+        }
+
+
         const std::vector<S>& buffer() const { return _data; }
 
     private:
-        // TODO: erase() MUST decrease _active...
-
         size_t _stride = 0;
 
         size_t _next = 0;
@@ -248,7 +277,7 @@ namespace medusa
 
 
         /// <summary>
-        ///
+        /// Insert a new item
         /// </summary>
         /// <param name="name"></param>
         /// <param name="s"></param>
@@ -260,6 +289,18 @@ namespace medusa
             _map.insert({ name, idx });
 
             return idx;
+        }
+
+
+        /// <summary>
+        /// Remove the item with the name "name"
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        size_t remove(const std::string& name)
+        {
+            size_t idx = index(name);
+            return erase(idx);
         }
 
     private:
@@ -274,6 +315,7 @@ namespace medusa
         glm::vec3 position;
         glm::vec3 normal;
         //glm::vec2 texture;
+        uint32_t material;
     };
 
 

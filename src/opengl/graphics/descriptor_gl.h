@@ -24,7 +24,6 @@ namespace medusa
             bool bind() override;
             bool unbind() override;
 
-            bool render(PrimitiveType primitiveType, size_t vertices, size_t indices = 0) override;
             bool render(PrimitiveType primitiveType, size_t vertices, size_t indices = 0, size_t instances = 1) override;
 
             bool renderIndirect(PrimitiveType primitiveType, std::shared_ptr<GenericArray<Indirect>> indirect) override;

@@ -2,7 +2,7 @@
 
 namespace medusa
 {
-    class IRenderer;
+    class IRenderer;    // TODO: This interface and all implementations can be removed
 
     class IView;
     class ILayer;

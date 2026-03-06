@@ -1,17 +1,16 @@
 #pragma once
 
 #include <medusa/medusa.h>
-#include <medusa/engine/state.h>
+#include <medusa/engine_fwd.h>
 #include <medusa/graphics_fwd.h>
 
-#include <medusa/graphics/memory.h>
-#include <medusa/graphics/buffer.h>
+#include <medusa/engine/state.h>
+
 #include <medusa/graphics/containers.h>
 
 
 namespace medusa
 {
-    class IWindow;
     class IRenderer;
 
     class IContext : public IState
@@ -23,16 +22,43 @@ namespace medusa
         virtual std::shared_ptr<IWindow> window() = 0;
         virtual std::shared_ptr<IRenderer> renderer() = 0;
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
         virtual bool next() = 0;
+
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
         virtual bool present() = 0;
 
-        // Factory
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
         virtual std::shared_ptr<IShader> createShader() = 0;
 
-        virtual std::shared_ptr<IDescriptor> createDescriptor() = 0;
-        virtual std::shared_ptr<ITexture> createTexture() = 0;
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        virtual std::shared_ptr<IDescriptor> createDescriptor() = 0;
+
+
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="bufferType"></param>
+        /// <param name="usage"></param>
+        /// <returns></returns>
         virtual std::shared_ptr<IMemory> createMemory(BufferType bufferType, BufferUsage usage) = 0;
+
 
         /// <summary>
         ///
@@ -105,6 +131,13 @@ namespace medusa
         {
             return std::make_shared<IndexBuffer>(createMemory(BufferType::ElementArray, usage));
         }
+
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        virtual std::shared_ptr<ITexture> createTexture() = 0;
 
     private:
 

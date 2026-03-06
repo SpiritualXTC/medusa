@@ -6,8 +6,7 @@
 
 namespace medusa
 {
-    class IRenderable;
-    class IPass;
+    // TODO: The Container SHOULD be an IRenderable, however the resource_id() (and the transform()) messes it up... requires an further derived class above IRenderable
 
 
     class IRenderable
@@ -16,11 +15,25 @@ namespace medusa
         IRenderable() {}
         virtual ~IRenderable() {}
 
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
         virtual inline uint64_t resource_id() = 0;
 
-        virtual bool render(std::shared_ptr<IPass> pass) = 0;
 
-        // Getters
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        virtual bool render() = 0;
+
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
         inline virtual const glm::mat4& transform() = 0;
     };
 
@@ -36,61 +49,9 @@ namespace medusa
         virtual ~IRenderableContainer() {}
 
         /// <summary>
-        /// Add an item to the iterable
-        /// </summary>
-        /// <param name="renderable"></param>
-        /// <returns></returns>
-        virtual bool add(std::shared_ptr<IRenderable> renderable) = 0;
-
-
-        /// <summary>
-        /// Clear the iterable
+        ///
         /// </summary>
         /// <returns></returns>
-        virtual bool clear() = 0;
-
-
-        /// <summary>
-        /// Render all the items in the iterable
-        /// </summary>
-        /// <returns></returns>
-        virtual bool render(std::shared_ptr<IPass> pass) = 0;
-    };
-
-
-    /// <summary>
-    /// Naive RenderableList, render the iterable directly
-    /// </summary>
-    class RenderableList : public IRenderableContainer
-    {
-    public:
-        RenderableList(){}
-        virtual ~RenderableList() {}
-
-        bool add(std::shared_ptr<IRenderable> renderable)
-        {
-            _list.push_back(renderable);
-
-            return true;
-        }
-
-        bool clear()
-        {
-            _list.clear();
-
-            return true;
-        }
-
-        bool render(std::shared_ptr<IPass> pass)
-        {
-            for (auto& r : _list)
-                r->render(pass);
-
-            return true;
-        }
-
-
-    private:
-        std::list<std::shared_ptr<IRenderable>> _list;
+        virtual bool render() = 0;
     };
 }

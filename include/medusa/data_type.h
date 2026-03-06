@@ -51,6 +51,17 @@ namespace medusa
     };
 
 
+    template <typename T>
+    struct ScalarDataType : DType
+    {
+    public:
+        ScalarDataType(size_t elements = 1)
+            : DType(sizeof(T) * elements, elements)
+        {
+            //
+        }
+    };
+
     /// <summary>
     ///
     /// </summary>
