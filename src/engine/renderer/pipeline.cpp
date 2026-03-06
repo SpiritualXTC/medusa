@@ -51,7 +51,6 @@ bool Pipeline::render()
     if (_pass == nullptr)
         return false;
 
-
     // Reset the Maps
     _indirect->reset();
     _instanceMap->reset();
@@ -63,19 +62,19 @@ bool Pipeline::render()
     for (auto& it : _geometryBuffer->meshRefs())
     {
         std::shared_ptr<MeshReference> meshRef = it.second;
-        std::shared_ptr<GenericArray<size_t>> instanceMap = meshRef->instanceMap();
+
+        std::unordered_set<size_t> indices = meshRef->transformIndices();
+
+        size_t instanceCount = 0;
 
         // Copy the transformIndices to the transform->Instance buffer
         //  This is essentially where visibility "culling" occcurs
         //  This just assumes everything is visible for now ... :)
         //  THIS NEEDS TO BE OPTIMISED -- PROBABLY ON GPU <,<
-
-        size_t instanceCount = 0;
-        for (size_t transformIndex : instanceMap->buffer()) // NOTE: This doesn't even accommodate entries that have been deleted :(
+        for (auto idx : indices)
         {
-            // TODO: Should be able to accommodate the Material SSBO as instance attributes -- not just vertex attributes :D
-            _instanceMap->insert(transformIndex);
-            instanceCount++;
+            _instanceMap->insert(idx);
+            ++instanceCount;
         }
 
         // Mesh has no visible instances, so it doesn't require adding
@@ -99,11 +98,12 @@ bool Pipeline::render()
         instanceOffset += instanceCount;
     }
 
-    // Sync teh maps from CPU -> GPU
-    // Ideally the above will be handled directly ON the GPU. So no CPU processing/transferring will be required
+    // Sync the Indirect Map to the GPU
     _indirect->sync();
-    _instanceMap->sync();
 
+    // Sync the instance map to the GPU
+    // Ideally the above will be handled directly ON the GPU. So no CPU processing/transferring will be required
+    _instanceMap->sync();
 
     // Render the Pipeline.
     auto& shader = _pass->shader();

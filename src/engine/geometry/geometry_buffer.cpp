@@ -14,7 +14,7 @@ using namespace medusa;
 //
 MeshReference::MeshReference(std::shared_ptr<IContext> context)
 {
-    _instanceTransformMap = context->createArray<size_t>(BufferType::Array, BufferUsage::StaticRead, nullptr, 0);
+
 }
 
 
@@ -26,25 +26,26 @@ MeshReference::~MeshReference()
 
 
 //
-size_t MeshReference::pushInstance(size_t transformIndex)
+void MeshReference::pushInstance(size_t transformIndex)
 {
     _count++;
     //logging::debug(fmt::format("creating instance: {}", _count));
 
-    size_t instanceIndex = _instanceTransformMap->insert(transformIndex);
-    return instanceIndex;
+    _transformIndices.insert(transformIndex);
+
+    return;
 }
 
 
 //
-size_t MeshReference::popInstance(size_t instanceIndex)
+void MeshReference::popInstance(size_t transformIndex)
 {
     //logging::debug(fmt::format("deleting instance: {}", _count));
     _count--;
 
-    _instanceTransformMap->erase(instanceIndex);
+    _transformIndices.erase(transformIndex);
 
-    return instanceIndex;
+    return;
 }
 
 

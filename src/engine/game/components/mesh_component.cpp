@@ -11,14 +11,15 @@ using namespace medusa;
 MeshInstanceComponent::MeshInstanceComponent(std::shared_ptr<IMeshReference> meshRef, size_t transIndex)
     : _meshRef(meshRef)
 {
-    _instanceIndex = _meshRef->pushInstance(transIndex);
+    _transformIndex = transIndex;
+    _meshRef->pushInstance(transIndex);
 }
 
 
 //
 MeshInstanceComponent::~MeshInstanceComponent()
 {
-    _meshRef->popInstance(_instanceIndex);
+    _meshRef->popInstance(_transformIndex);
 }
 
 

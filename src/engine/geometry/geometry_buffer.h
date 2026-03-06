@@ -39,12 +39,13 @@ namespace medusa
         /// <summary>
         /// Push an Instance
         /// </summary>
-        size_t pushInstance(size_t transformIndex);
+        void pushInstance(size_t transformIndex);
+
 
         /// <summary>
         /// Pop an Instance
         /// </summary>
-        size_t popInstance(size_t instanceIndex);
+        void popInstance(size_t transformIndex);
 
 
         /// <summary>
@@ -54,11 +55,24 @@ namespace medusa
         size_t instances() const override { return _count; }
 
 
+        /// <summary>
+        /// Get the set of transform indices this mesh instance references
+        /// </summary>
+        /// <returns></returns>
+        const std::unordered_set<size_t>& transformIndices() const { return _transformIndices; }
 
-        std::shared_ptr<GenericArray<size_t>> instanceMap() { return _instanceTransformMap; }
+
+        /// <summary>
+        /// Get the submesh data
+        /// </summary>
+        /// <returns></returns>
         std::vector<SubMesh>& subMeshes() { return _submeshes; }
 
 
+        /// <summary>
+        /// Add submesh data
+        /// </summary>
+        /// <param name="sm"></param>
         void addSubMesh(SubMesh& sm)
         {
             _submeshes.push_back(sm);
@@ -68,8 +82,8 @@ namespace medusa
     private:
         size_t _count = 0;
 
-        // Where is this item in the transform buffer? This will need to be optimized at some point
-        std::shared_ptr<GenericArray<size_t>> _instanceTransformMap;
+
+        std::unordered_set<size_t> _transformIndices;
 
         std::vector<SubMesh> _submeshes;
     };

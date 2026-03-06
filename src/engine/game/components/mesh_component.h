@@ -20,6 +20,7 @@ namespace medusa
     private:
         std::shared_ptr<IMeshReference> _meshRef;
         size_t _instanceIndex = 0;
+        size_t _transformIndex = 0;
     };
 
 
