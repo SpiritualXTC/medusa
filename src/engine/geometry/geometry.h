@@ -9,7 +9,7 @@ namespace medusa
 {
     class IContext;
 
-    class IMesh;
+    class Model;
 
     struct GeometryData
     {
@@ -27,7 +27,7 @@ namespace medusa
     {
     public:
         // TODO: MaterialIndex needs to be refactored away from here.
-        virtual std::shared_ptr<IMesh> mesh(uint32_t materialIndex = -1) = 0;
+        virtual std::shared_ptr<Model> mesh(uint32_t materialIndex = -1) = 0;
 
     private:
 
@@ -71,7 +71,7 @@ namespace medusa
         /// Construct a mesh from the geometry
         /// </summary>
         /// <returns></returns>
-        std::shared_ptr<IMesh> mesh(uint32_t materialIndex = -1) override;
+        std::shared_ptr<Model> mesh(uint32_t materialIndex = -1) override;
 
         /// <summary>
         /// Add GLM Typed data

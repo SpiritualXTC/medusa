@@ -118,7 +118,7 @@ Cube::~Cube()
 
 
 //
-std::shared_ptr<IMesh> Cube::mesh(uint32_t materialIndex)
+std::shared_ptr<Model> Cube::mesh(uint32_t materialIndex)
 {
     Geometry g(_context.lock());
 

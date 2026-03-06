@@ -100,15 +100,29 @@ bool GeometryBuffer::loadMesh(const std::string& name, std::shared_ptr<Model> mo
 
 
     // Subset Data :: Offset the Base Vertex and First Index in the global buffer
-    for (auto& subMesh : smb->buffer())
-    {
-        SubMesh sm;
-        sm.baseVertex = subMesh.baseVertex + vertexOffset;
-        sm.firstIndex = subMesh.firstIndex + indexOffset;
-        sm.count = subMesh.count;
 
-        _submeshes.push_back(sm);
-        ref->addSubMesh(sm);
+    if (smb == nullptr)
+    {
+        SubMesh submesh;
+        submesh.baseVertex = vertexOffset;
+        submesh.firstIndex = indexOffset;
+        submesh.count = ib->elements();
+
+        _submeshes.push_back(submesh);
+        ref->addSubMesh(submesh);
+    }
+    else
+    {
+        for (auto& subMesh : smb->buffer())
+        {
+            SubMesh sm;
+            sm.baseVertex = subMesh.baseVertex + vertexOffset;
+            sm.firstIndex = subMesh.firstIndex + indexOffset;
+            sm.count = subMesh.count;
+
+            _submeshes.push_back(sm);
+            ref->addSubMesh(sm);
+        }
     }
 
     // Insert the mesh reference
@@ -116,58 +130,6 @@ bool GeometryBuffer::loadMesh(const std::string& name, std::shared_ptr<Model> mo
 
     return true;
 }
-
-//
-bool GeometryBuffer::loadMesh(const std::string& name, std::shared_ptr<IMesh> mesh)
-{
-    // TODO: This is a dummy method... so other stuff continues to work until all the adaptions are made to use this new experimental crap
-    //  Both loadMesh functions should be combined. The other one handles subsets, this one handles an entire mesh
-
-    std::shared_ptr<MeshReference> ref = std::make_shared<MeshReference>(_context.lock());
-
-    auto vb = mesh->vertexBuffer();
-    auto ib = mesh->indexBuffer();
-
-    // Size mismatch. This will be sorted out later
-    if (vb->stride() != _vertices->stride())
-        throw MedusaError("Invalid Stride");
-
-    size_t vertexOffset = _vertices->elements();
-    size_t indexOffset = _indices->elements();
-
-    // Copy to global buffer
-
-    // Vertices
-    for (auto& v : vb->buffer())
-    {
-        _vertices->insert(v);
-        // TODO: Materials will probably have been moved -- need to accomodate as the material buffer should end up with as part of the GeometryBuffer?
-    }
-
-    // Indices : Offset EVERY index by the size of the vertex buffer
-    for (auto& i : ib->buffer())
-    {
-        _indices->insert(i);
-    }
-
-    _vertices->sync();
-    _indices->sync();
-
-    SubMesh submesh;
-    submesh.baseVertex = vertexOffset;
-    submesh.firstIndex = indexOffset;
-    submesh.count = ib->elements();
-
-
-    _submeshes.push_back(submesh);
-    ref->addSubMesh(submesh);
-
-    _refs.insert({ name, ref });
-
-    return true;
-}
-
-
 
 
 //
@@ -179,7 +141,7 @@ std::shared_ptr<MeshReference> GeometryBuffer::referenceMesh(const std::string& 
 }
 
 
-
+//
 std::shared_ptr<IDescriptor> GeometryBuffer::createDescriptor()
 {
     // TODO: This should be combine a few "pipeline" related things

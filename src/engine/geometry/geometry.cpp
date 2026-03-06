@@ -128,7 +128,7 @@ void Geometry::interleave(uint8_t* buffer, size_t stride)
 ///
 /// </summary>
 /// <returns></returns>
-std::shared_ptr<IMesh> Geometry::mesh(uint32_t materialIndex)
+std::shared_ptr<Model> Geometry::mesh(uint32_t materialIndex)
 {
     auto context = _context.lock();
 

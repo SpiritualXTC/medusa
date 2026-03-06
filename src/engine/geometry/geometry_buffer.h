@@ -106,7 +106,6 @@ namespace medusa
         /// </summary>
         /// <returns></returns>
         bool loadMesh(const std::string& name, std::shared_ptr<Model> model);
-        bool loadMesh(const std::string& name, std::shared_ptr<IMesh> geometry);
 
         std::shared_ptr<MeshReference> referenceMesh(const std::string& name);
 
