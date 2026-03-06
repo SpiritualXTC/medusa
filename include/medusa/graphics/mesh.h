@@ -17,8 +17,8 @@ namespace medusa
         IMeshReference() {}
         virtual ~IMeshReference() {}
 
-        virtual size_t pushInstance(size_t transformIndex) = 0;
-        virtual size_t popInstance(size_t instanceIndex) = 0;
+        virtual void pushInstance(size_t transformIndex) = 0;
+        virtual void popInstance(size_t transformIndex) = 0;
 
         virtual size_t instances() const = 0;
     private:
