@@ -8,3 +8,4 @@
 #include <medusa/graphics/mesh.h>
 #include <medusa/graphics/descriptor.h>
 #include <medusa/graphics/material.h>
+#include <medusa/graphics/texture.h>
