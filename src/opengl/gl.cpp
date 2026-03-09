@@ -142,6 +142,18 @@ namespace medusa
             return _gl_map(items, textureFormat);
         }
 
+
+        GLenum mapEnum(StorageFormat storageFormat)
+        {
+            static const std::unordered_map<StorageFormat, GLenum> items{
+                {StorageFormat::RGBA, GL_RGBA},
+                {StorageFormat::DepthComponent, GL_DEPTH_COMPONENT},
+                {StorageFormat::DepthStencil, GL_DEPTH_STENCIL},
+            };
+            return _gl_map(items, storageFormat);
+        }
+
+
         GLenum mapEnum(FaceDirection faceDirection)
         {
             static const std::unordered_map<FaceDirection, GLenum> items{
@@ -150,6 +162,7 @@ namespace medusa
             };
             return _gl_map(items, faceDirection);
         }
+
 
         GLenum mapEnum(CullMode cullMode)
         {
@@ -160,6 +173,7 @@ namespace medusa
             };
             return _gl_map(items, cullMode);
         }
+
 
         GLenum mapEnum(PolygonMode polygonMode)
         {
@@ -174,21 +188,67 @@ namespace medusa
 
         GLenum mapEnum(Function function)
         {
-            static const std::unordered_map<Function, GLenum> items
-            {
-                {Function::Never, GL_NEVER,},
-                {Function::Less, GL_LESS, },
-                {Function::Equal, GL_EQUAL,},
-                {Function::LessEqual, GL_LEQUAL,},
-                {Function::Greater, GL_GREATER, },
-                {Function::NotEqual, GL_NOTEQUAL,},
-                {Function::GreaterEqual, GL_GEQUAL,},
+            static const std::unordered_map<Function, GLenum> items{
+                {Function::LessEqual, GL_LEQUAL},
+                {Function::GreaterEqual, GL_GEQUAL},
+                {Function::Less, GL_LESS},
+                {Function::Greater, GL_GREATER},
+                {Function::Equal, GL_EQUAL},
+                {Function::NotEqual, GL_NOTEQUAL},
                 {Function::Always, GL_ALWAYS},
+                {Function::Never, GL_NEVER},
             };
             return _gl_map(items, function);
         }
 
 
+        GLint mapEnum(TextureMagFilter magFilter)
+        {
+            static const std::unordered_map<TextureMagFilter, GLint> items{
+                {TextureMagFilter::Nearest, GL_NEAREST},
+                {TextureMagFilter::Linear, GL_LINEAR},
+            };
+            auto it = items.find(magFilter);
+            return it == items.end() ? GL_INVALID_ENUM : it->second;
+        }
+
+
+        GLint mapEnum(TextureMinFilter minFilter)
+        {
+            static const std::unordered_map<TextureMinFilter, GLint> items{
+                {TextureMinFilter::Nearest, GL_NEAREST},
+                {TextureMinFilter::Linear, GL_LINEAR},
+                {TextureMinFilter::NearestMipMapNearest, GL_NEAREST_MIPMAP_NEAREST},
+                {TextureMinFilter::LinearMipMapNearest, GL_LINEAR_MIPMAP_NEAREST},
+                {TextureMinFilter::NearestMapMapLinear, GL_NEAREST_MIPMAP_LINEAR},
+                {TextureMinFilter::LinearMipMapLinear, GL_LINEAR_MIPMAP_LINEAR},
+            };
+            auto it = items.find(minFilter);
+            return it == items.end() ? GL_INVALID_ENUM : it->second;
+        }
+
+
+        GLenum mapEnum(TextureWrapMode wrapMode)
+        {
+            static const std::unordered_map<TextureWrapMode, GLenum> items{
+                {TextureWrapMode::Repeat, GL_REPEAT},
+                {TextureWrapMode::MirroredRepeat, GL_MIRRORED_REPEAT},
+                {TextureWrapMode::ClampToEdge, GL_CLAMP_TO_EDGE},
+            };
+            return _gl_map(items, wrapMode);
+        }
+
+
+        GLenum mapEnum(Swizzle swizzle)
+        {
+            static const std::unordered_map<Swizzle, GLenum> items{
+                {Swizzle::Red, GL_RED},
+                {Swizzle::Green, GL_GREEN},
+                {Swizzle::Blue, GL_BLUE},
+                {Swizzle::Alpha, GL_ALPHA},
+            };
+            return _gl_map(items, swizzle);
+        }
 
 
         /*
@@ -320,46 +380,6 @@ namespace medusa
             return dat[(Int32)format];
         }
 
-
-        inline GLint convTextureMagFilter(TextureMagFilter filter)
-        {
-            static GLenum dat[]
-            {
-                GL_NEAREST,
-                GL_LINEAR,
-            };
-
-            return dat[(Int32)filter];
-        }
-
-        inline GLint convTextureMinFilter(TextureMinFilter filter)
-        {
-            static GLenum dat[]
-            {
-                GL_NEAREST,
-                GL_LINEAR,
-
-                GL_NEAREST_MIPMAP_NEAREST,
-                GL_LINEAR_MIPMAP_NEAREST,
-
-                GL_NEAREST_MIPMAP_LINEAR,
-                GL_LINEAR_MIPMAP_LINEAR,
-            };
-
-            return dat[(Int32)filter];
-        }
-
-        inline GLenum convTextureWrapMode(TextureWrapMode wrapMode)
-        {
-            static GLenum dat[]
-            {
-                GL_REPEAT,
-                GL_MIRRORED_REPEAT,
-                GL_CLAMP_TO_EDGE,
-            };
-
-            return dat[(Int32)wrapMode];
-        }
 
         */
 

@@ -33,6 +33,7 @@ namespace medusa
 
         // Formats
         GLenum mapEnum(TextureFormat textureFormat);
+        GLenum mapEnum(StorageFormat storageFormat);
 
         // Render states
         GLenum mapEnum(PrimitiveType primitiveType);
@@ -43,5 +44,11 @@ namespace medusa
 
 
         GLenum mapEnum(Function function);
+
+        // Texturing
+        GLint mapEnum(TextureMagFilter magFilter);
+        GLint mapEnum(TextureMinFilter minFilter);
+        GLenum mapEnum(TextureWrapMode wrapMode);
+        GLenum mapEnum(Swizzle swizzle);
     }
 }
