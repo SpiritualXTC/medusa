@@ -87,17 +87,10 @@ bool GeometryBuffer::loadMesh(const std::string& name, std::shared_ptr<Model> mo
     // Copy to global buffer
 
     // Copy vertices to global buffer
-    for (auto& v : vb->buffer())
-    {
-        _vertices->insert(v);
-    }
+    _vertices->insert(vb->buffer());
 
     // Indices (Vertex offsets are handled by Indirect rendering)
-    for (auto& i : ib->buffer())
-    {
-        _indices->insert(i);
-    }
-
+    _indices->insert(ib->buffer());
 
     // Subset Data :: Offset the Base Vertex and First Index in the global buffer
 
@@ -113,6 +106,7 @@ bool GeometryBuffer::loadMesh(const std::string& name, std::shared_ptr<Model> mo
     }
     else
     {
+        // TODO: Optimize to push to GPU buffer all at once
         for (auto& subMesh : smb->buffer())
         {
             SubMesh sm;
