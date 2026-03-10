@@ -314,7 +314,7 @@ namespace medusa
     {
         glm::vec3 position;
         glm::vec3 normal;
-        //glm::vec2 texture;
+        glm::vec2 texture;
         uint32_t material;
     };
 

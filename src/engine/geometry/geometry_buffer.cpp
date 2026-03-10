@@ -157,6 +157,7 @@ std::shared_ptr<IDescriptor> GeometryBuffer::createDescriptor()
     // Add descriptors ... this not a flexible version :)
     desc->addDescription(types::FloatV3, _vertices->stride(), AttributeLocation::Position);
     desc->addDescription(types::FloatV3, _vertices->stride(), AttributeLocation::Normal);
+    desc->addDescription(types::FloatV2, _vertices->stride(), AttributeLocation::TextureDiffuse);
 
     desc->addDescription(types::Int, _vertices->stride(), AttributeLocation::MaterialIndex);
 
