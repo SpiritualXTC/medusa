@@ -3,6 +3,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <assimp/material.h>
 
 #include <medusa/engine/context.h>
 #include <medusa/graphics.h>
@@ -39,8 +40,10 @@ std::shared_ptr<Model> ModelLoader::load(const std::string& filename, std::share
     // Vertex Data
     std::vector<glm::vec3> position;
     std::vector<glm::vec3> normals;
+    std::vector<glm::vec2> textureCoords;
     std::vector<uint32_t> materialIndices;
     // TODO: Texture Coordinates
+
 
     // Face Data
     std::vector<uint32_t> indices;
@@ -81,6 +84,12 @@ std::shared_ptr<Model> ModelLoader::load(const std::string& filename, std::share
         if (mat->Get(AI_MATKEY_OPACITY, opacity) != AI_SUCCESS)
             logging::warn("Unable to read `opacity` from material {}, idx={}", matName, matIdx);
 
+        aiString matDiffuse;
+        if (mat->GetTexture(aiTextureType_DIFFUSE, 0, &matDiffuse) != AI_SUCCESS)
+            logging::warn("Unable to read TextureBlend Diffuse from material {}, idx={}, {}", matName, matIdx, matDiffuse.C_Str());
+
+        logging::info(std::format("Material `{}` has {} textures, tex0=`{}`", matName, mat->GetTextureCount(aiTextureType_DIFFUSE), matDiffuse.C_Str()));
+
         // TODO: Get Texture Filenames and Load Textures into material
 
         // Set Material Data
@@ -98,6 +107,10 @@ std::shared_ptr<Model> ModelLoader::load(const std::string& filename, std::share
 
             logging::debug(fmt::format("Material: name={}, index={}->{}", matName, matIdx, idx));
         }
+
+        // Load Texture
+        logging::error(fmt::format("Material texture filename: {}", ""));
+
     }
 
     // Load Mesh Data
@@ -119,14 +132,35 @@ std::shared_ptr<Model> ModelLoader::load(const std::string& filename, std::share
         }
 
         // Textures
+        uint32_t textureCoordCount = 0;
         for (uint32_t texIdx = 0; texIdx < submesh->GetNumUVChannels(); ++texIdx)
         {
+
             if (submesh->HasTextureCoords(texIdx))
             {
+                // Only supporting one texture index for now
+                if (textureCoordCount >= 1)
+                {
+                    logging::warn(std::format("Only the first set of 2D texture coordinates are being used `{}`", submeshName));
+                    break;
+                }
                 uint32_t channels = submesh->mNumUVComponents[texIdx];
 
-                logging::warn(std::format("Texture UV data found in mesh `{}`, not supported yet", submeshName));
+                // Only supporting 2D texture for now
+                if (channels != 2)
+                {
+                    logging::warn(std::format("Only supporting 2D textures: `{}`", submeshName));
+                    continue;
+                }
+
+                logging::info(std::format("Loading textures coordinates from UV index {}: `{}`", texIdx, submeshName));
+
+                textureCoords.insert(textureCoords.end(), (glm::vec2*)submesh->mTextureCoords[texIdx], (glm::vec2*)submesh->mTextureCoords[texIdx] + submesh->mNumVertices);
+
+                ++textureCoordCount;
             }
+
+
         }
 
         // Per-Vertex Material Index
@@ -211,6 +245,12 @@ std::shared_ptr<Model> ModelLoader::load(const std::string& filename, std::share
     {
         geometry.addVertexData(normals.data(), normals.size(), AttributeLocation::Normal);
         desc->addDescription(types::FloatV3, vb->stride(), AttributeLocation::Normal);
+    }
+
+    if (textureCoords.size())
+    {
+        geometry.addVertexData(textureCoords.data(), textureCoords.size(), AttributeLocation::TextureDiffuse);
+        desc->addDescription(types::FloatV2, vb->stride(), AttributeLocation::TextureDiffuse);
     }
 
     desc->addDescription(types::Int, vb->stride(), AttributeLocation::MaterialIndex);

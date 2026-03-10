@@ -9,8 +9,8 @@
 
 #include <core/utilities/logging.h>
 
-#include <engine/loaders/model_loader.h>
-#include <engine/loaders/texture_loader.h>
+#include <engine/resources/model_loader.h>
+#include <engine/resources/texture_loader.h>
 
 using namespace medusa;
 
