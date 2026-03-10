@@ -131,7 +131,7 @@ std::shared_ptr<Model> Cube::mesh(uint32_t materialIndex)
     // Add Vertex Data
     g.addVertexData(position.data(), position.size(), AttributeLocation::Position);
     g.addVertexData(normals.data(), normals.size(), AttributeLocation::Normal);
-    //g.addVertexData(texture.data(), texture.size(), AttributeLocation::Texture0);
+    g.addVertexData(texture.data(), texture.size(), AttributeLocation::TextureDiffuse);
 
     // Add Index Data
     g.addIndexData(indices.data(), indices.size());
