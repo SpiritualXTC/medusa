@@ -9,6 +9,7 @@
 namespace medusa
 {
     class Model;
+    class TextureManager;
 
     namespace loaders
     {
@@ -22,7 +23,7 @@ namespace medusa
             virtual ~ModelLoader();
 
 
-            std::shared_ptr<Model> load(const std::string& filename, std::shared_ptr<GenericMap<Material>> materials);
+            std::shared_ptr<Model> load(const std::string& filename, std::shared_ptr<GenericMap<Material>> materials, std::shared_ptr<TextureManager> textures);
 
 
         private:

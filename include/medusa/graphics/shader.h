@@ -25,8 +25,7 @@ namespace medusa
     {
         Position = 0x00,
         Normal = 0x01,
-        Texture0 = 0x02,
-        Texture1 = 0x03,
+        TextureDiffuse = 0x02,
         Colour = 0x04,
 
         MaterialIndex = 0x08,

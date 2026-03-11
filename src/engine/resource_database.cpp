@@ -9,8 +9,8 @@
 
 #include <core/utilities/logging.h>
 
-#include <engine/loaders/model_loader.h>
-#include <engine/loaders/texture_loader.h>
+#include <engine/resources/model_loader.h>
+#include <engine/resources/texture_loader.h>
 
 using namespace medusa;
 
@@ -61,7 +61,7 @@ std::shared_ptr<IShader> ResourceDatabase::getShader(const std::string& shaderNa
 
 
 //
-std::shared_ptr<Model> ResourceDatabase::getModel(const std::string& modelName, std::shared_ptr<GenericMap<Material>> materials)
+std::shared_ptr<Model> ResourceDatabase::getModel(const std::string& modelName, std::shared_ptr<GenericMap<Material>> materials, std::shared_ptr<TextureManager> textures)
 {
     logging::error("Loading Model");
 
@@ -81,5 +81,5 @@ std::shared_ptr<Model> ResourceDatabase::getModel(const std::string& modelName, 
 
     std::shared_ptr<loaders::ModelLoader> loader = std::make_shared<loaders::ModelLoader>(context);
 
-    return loader->load(filepath, materials);
+    return loader->load(filepath, materials, textures);
 }

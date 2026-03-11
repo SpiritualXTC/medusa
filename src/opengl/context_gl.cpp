@@ -5,6 +5,7 @@
 #include <string>
 
 #include <SDL.h>
+#include <SDL_image.h>
 
 #include <medusa/exception.h>
 
@@ -40,7 +41,6 @@ ContextGL::ContextGL(std::shared_ptr<Config> config)
         throw MedusaError("Unable to Initialise SDL");
     logging::info("SDL Initialised");
 
-
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -48,6 +48,15 @@ ContextGL::ContextGL(std::shared_ptr<Config> config)
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
+    uint32_t imageFlags = IMG_INIT_PNG | IMG_INIT_JPG;
+    uint32_t imageFlagsLoaded = 0;
+    if ((imageFlagsLoaded = IMG_Init(imageFlags)) == 0)
+        throw MedusaError("Unable to Initialise SDLImage");
+    else if (imageFlagsLoaded != imageFlags)
+    {
+        logging::error(fmt::format("Unable to initialise all Image formats for SDL Image Loader. expected={}, loaded={}", imageFlags, imageFlagsLoaded));
+    }
 
     // Create the Window
     int w = config->getValue<int>("medusa.window.width", 800);
@@ -99,6 +108,9 @@ ContextGL::~ContextGL()
 {
     if (_context != nullptr)
         SDL_GL_DeleteContext(_context);
+
+    IMG_Quit();
+
     _context = nullptr;
 }
 

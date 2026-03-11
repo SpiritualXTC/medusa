@@ -176,6 +176,46 @@ namespace medusa
         /// <summary>
         ///
         /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        size_t insert(const std::vector<S>& values)
+        {
+            // TODO: Accommodate values in _erased
+
+            size_t idx = next();
+
+            // This is ALWAYS added to the end for now
+            if (next() + values.size() < size())
+            {
+                std::copy(values.begin(), values.end(), _data.begin() + next());
+                sync();
+                _active += values.size();
+                _next += values.size();
+            }
+            else
+            {
+                size_t copyN = size() - next();
+                size_t allocN = values.size() - copyN;
+
+
+                if (copyN)
+                    std::copy(values.begin(), values.begin() + copyN, _data.begin() + next());
+
+                if (allocN > 0)
+                    _data.insert(_data.begin() + next() + copyN, values.begin() + copyN, values.end());
+
+                memory()->allocate(stride() * _data.capacity(), _data.data());
+                _active += values.size();
+                _next = _data.size();
+            }
+
+            return idx;
+        }
+
+
+        /// <summary>
+        ///
+        /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
         size_t erase(const size_t index)
@@ -314,7 +354,7 @@ namespace medusa
     {
         glm::vec3 position;
         glm::vec3 normal;
-        //glm::vec2 texture;
+        glm::vec2 texture;
         uint32_t material;
     };
 

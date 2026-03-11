@@ -11,23 +11,33 @@ namespace medusa
         Material() {}
         ~Material() {}
 
-
+        // Ambient
         inline const glm::vec4& ambient() const { return _ambient; }
-        inline const glm::vec4& diffuse() const { return _diffuse; }
-        inline const glm::vec4& specular() const { return _specular; }
-        inline const glm::vec4& emissive() const { return _emissive; }
 
         inline Material& ambient(const glm::vec4& ambient) { _ambient = ambient; return *this; }
         inline Material& ambient(float r, float g, float b, float a = 1.0) { return ambient({ r, g, b, a }); }
 
+        // Diffuse
+        inline const glm::vec4& diffuse() const { return _diffuse; }
+
         inline Material& diffuse(const glm::vec4& diffuse) { _diffuse = diffuse; return *this; }
         inline Material& diffuse(float r, float g, float b, float a = 1.0) { return diffuse({ r, g, b, a }); }
+
+        // Specular
+        inline const glm::vec4& specular() const { return _specular; }
+
         inline Material& specular(const glm::vec4& specular) { _specular = specular; return *this; }
         inline Material& specular(float r, float g, float b, float a = 1.0) { return specular({ r, g, b, a }); }
+
+        // Emissive
+        inline const glm::vec4& emissive() const { return _emissive; }
 
         inline Material& emissive(const glm::vec4& emissive) { _emissive = emissive; return *this; }
         inline Material& emissive(float r, float g, float b, float a = 1.0) { return emissive({ r, g, b, a }); }
 
+        // Diffuse Texture
+        inline const uint64_t diffuseTexture() const { return _diffuseTexture; }
+        inline Material& diffuseTexture(uint64_t textureHandle) { _diffuseTexture = textureHandle; return *this; }
 
 
     private:
@@ -36,5 +46,11 @@ namespace medusa
         glm::vec4 _diffuse{ 0.0f, 0.0f, 0.0f, 0.0f };
         glm::vec4 _specular{ 0.0f, 0.0f, 0.0f, 0.0f };
         glm::vec4 _emissive{ 0.0f, 0.0f, 0.0f, 0.0f };
+
+        uint64_t _diffuseTexture = -1;
+
+
+        // The structure MUST be padded to: 4x float/uint32
+        uint32_t _padding[2] = { 0 };
     };
 }
