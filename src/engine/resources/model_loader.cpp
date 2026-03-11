@@ -14,24 +14,29 @@
 #include <engine/geometry/geometry.h>
 #include <engine/graphics/model.h>
 
+#include <engine/resources/texture_manager.h>
 
 using namespace medusa;
 using namespace medusa::loaders;
 
 
+//
 ModelLoader::ModelLoader(std::shared_ptr<IContext> context)
     : _context(context)
 {
 
 }
 
+
+//
 ModelLoader::~ModelLoader()
 {
 
 }
 
 
-std::shared_ptr<Model> ModelLoader::load(const std::string& filename, std::shared_ptr<GenericMap<Material>> materials)
+//
+std::shared_ptr<Model> ModelLoader::load(const std::string& filename, std::shared_ptr<GenericMap<Material>> materials, std::shared_ptr<TextureManager> textures)
 {
     Assimp::Importer importer;
 
@@ -42,8 +47,6 @@ std::shared_ptr<Model> ModelLoader::load(const std::string& filename, std::share
     std::vector<glm::vec3> normals;
     std::vector<glm::vec2> textureCoords;
     std::vector<uint32_t> materialIndices;
-    // TODO: Texture Coordinates
-
 
     // Face Data
     std::vector<uint32_t> indices;
@@ -84,11 +87,11 @@ std::shared_ptr<Model> ModelLoader::load(const std::string& filename, std::share
         if (mat->Get(AI_MATKEY_OPACITY, opacity) != AI_SUCCESS)
             logging::warn("Unable to read `opacity` from material {}, idx={}", matName, matIdx);
 
-        aiString matDiffuse;
-        if (mat->GetTexture(aiTextureType_DIFFUSE, 0, &matDiffuse) != AI_SUCCESS)
-            logging::warn("Unable to read TextureBlend Diffuse from material {}, idx={}, {}", matName, matIdx, matDiffuse.C_Str());
+        aiString matTextureDiffuse;
+        if (mat->GetTexture(aiTextureType_DIFFUSE, 0, &matTextureDiffuse) != AI_SUCCESS)
+            logging::warn("Unable to read TextureBlend Diffuse from material {}, idx={}, {}", matName, matIdx, matTextureDiffuse.C_Str());
 
-        logging::info(std::format("Material `{}` has {} textures, tex0=`{}`", matName, mat->GetTextureCount(aiTextureType_DIFFUSE), matDiffuse.C_Str()));
+        logging::info(std::format("Material `{}` has {} textures, tex0=`{}`", matName, mat->GetTextureCount(aiTextureType_DIFFUSE), matTextureDiffuse.C_Str()));
 
         // TODO: Get Texture Filenames and Load Textures into material
 
@@ -99,6 +102,16 @@ std::shared_ptr<Model> ModelLoader::load(const std::string& filename, std::share
 
         // Set & Load Textures from Resource Database into material
 
+
+        // Load Texture
+        if (textures)
+        {
+            // At this point we NEED to have the index in the Texture Handle Buffer for AZDO
+            size_t textureIndex = 0;
+            std::shared_ptr<ITexture> tex = textures->loadTexture(matTextureDiffuse.C_Str());
+            material.diffuseTexture(tex->handle());
+        }
+
         // Add material
         if (materials)
         {
@@ -107,10 +120,6 @@ std::shared_ptr<Model> ModelLoader::load(const std::string& filename, std::share
 
             logging::debug(fmt::format("Material: name={}, index={}->{}", matName, matIdx, idx));
         }
-
-        // Load Texture
-        logging::error(fmt::format("Material texture filename: {}", ""));
-
     }
 
     // Load Mesh Data
@@ -155,12 +164,19 @@ std::shared_ptr<Model> ModelLoader::load(const std::string& filename, std::share
 
                 logging::info(std::format("Loading textures coordinates from UV index {}: `{}`", texIdx, submeshName));
 
-                textureCoords.insert(textureCoords.end(), (glm::vec2*)submesh->mTextureCoords[texIdx], (glm::vec2*)submesh->mTextureCoords[texIdx] + submesh->mNumVertices);
+                // Convert 3D vectors to 2D vectors
+                std::vector<glm::vec2> texCoord(submesh->mNumVertices);
+
+                for (size_t coordIdx = 0; coordIdx < submesh->mNumVertices; ++coordIdx)
+                {
+                    aiVector3D& tc = submesh->mTextureCoords[texIdx][coordIdx];
+                    texCoord[coordIdx] = glm::vec2(tc.x, 1.0 - tc.y); // why the 1.0 - y? :( lol
+                }
+
+                textureCoords.insert(textureCoords.end(), texCoord.begin(), texCoord.begin() + submesh->mNumVertices);
 
                 ++textureCoordCount;
             }
-
-
         }
 
         // Per-Vertex Material Index

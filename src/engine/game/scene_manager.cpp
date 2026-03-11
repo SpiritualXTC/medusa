@@ -10,6 +10,9 @@
 #include <engine/geometry/geometry.h>
 #include <engine/geometry/geometry_buffer.h>
 
+#include <engine/resources/texture_manager.h>
+
+
 using namespace medusa;
 
 
@@ -18,13 +21,11 @@ SceneManager::SceneManager(std::shared_ptr<Engine> engine)
     : _engine(engine)
     , _context(engine->context())
 {
-    auto context = engine->context();
-
-
-    // EXPERIMENTAL Create the GeometryBuffer
-    _geometry = std::make_shared<medusa::GeometryBuffer>(context);
+    auto& context = engine->context();
 
     // Create Material Database
+    _textures = std::make_shared<TextureManager>(context);
+
     _materials = context->createMap<Material>(BufferType::ShaderStorage, BufferUsage::StaticDraw);
 
     Material dummy;
@@ -34,6 +35,9 @@ SceneManager::SceneManager(std::shared_ptr<Engine> engine)
     dummy.emissive(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
     _materials->insert("[default]", dummy);
+
+    // Create Geometry Buffer
+    _geometry = std::make_shared<medusa::GeometryBuffer>(context);
 }
 
 
@@ -42,15 +46,16 @@ std::shared_ptr<IMesh> SceneManager::getModel(const std::string& modelName)
 {
     auto engine = _engine.lock();
 
-    auto mesh = engine->resources()->getModel(modelName, _materials);
+    auto mesh = engine->resources()->getModel(modelName, _materials, _textures);
 
     // Scale the mesh cos it's bloody huge
-    logging::error("Scaling the mesh by a factor of 1/1000x");
+    // TODO: Add matrix adjustments to the resource database
+    logging::error("Scaling the mesh");
     auto vb = mesh->vertexBuffer();
     for (int index = 0; index < vb->vertices(); ++index)
     {
         auto& v = vb->data(index);
-        v.position *= 0.0001;
+        v.position *= 0.1;
     }
     vb->sync();
 
@@ -74,4 +79,21 @@ std::shared_ptr<IMesh> SceneManager::getModel(const std::string& name, const std
     _geometry->loadMesh(name, mesh);
 
     return mesh;
+}
+
+
+bool SceneManager::addTexture(const std::string& name, std::shared_ptr<ITexture> texture)
+{
+    // TODO: The texture index needs to be pulled from the MANAGER ...
+
+    // Add to the Texture Manager
+    _textures->addTexture(name, texture);
+    return true;
+}
+
+
+//
+std::shared_ptr<ITexture> SceneManager::loadTexture2D(const std::string& filename)
+{
+    return _textures->loadTexture(filename);
 }
