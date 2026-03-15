@@ -11,10 +11,7 @@
 using namespace medusa;
 
 
-/// <summary>
-///
-/// </summary>
-/// <param name="context"></param>
+//
 Geometry::Geometry(std::shared_ptr<IContext> context)
     : _context(context)
 {
@@ -22,28 +19,18 @@ Geometry::Geometry(std::shared_ptr<IContext> context)
 }
 
 
-/// <summary>
-///
-/// </summary>
+//
 Geometry::~Geometry()
 {
 
 }
 
 
-/// <summary>
-///
-/// </summary>
-/// <param name="data"></param>
-/// <param name="dt"></param>
-/// <param name="count"></param>
-/// <param name="location"></param>
+//
 void Geometry::addVertexData(void* data, DType& dt, size_t count, AttributeLocation location)
 {
     // TODO: Add an optional indexing method for duplicating the vertices... tho it makes the overall indexing harder
     //  This is how .obj files are stored anyway
-
-    // TODO: An additional stride (default = 0), so extra data can be bundled in, and removed. Default behaviour is current. Just full copy.
 
     // Calculate vector size in bytes, and copy buffer
     size_t size = count * dt.size();
@@ -60,14 +47,12 @@ void Geometry::addVertexData(void* data, DType& dt, size_t count, AttributeLocat
 
     // Add to geometry
     _geometry.push_back(g);
+
+    _geometryData.insert({ location, g });
 }
 
 
-/// <summary>
-///
-/// </summary>
-/// <param name="data"></param>
-/// <param name="count"></param>
+//
 void Geometry::addIndexData(uint32_t* data, size_t count)
 {
     // Mesh Subsets could "PROBABLY" be handled here... but this could get confusing. So for now just clear and set
@@ -80,13 +65,11 @@ void Geometry::addIndexData(uint32_t* data, size_t count)
 }
 
 
-/// <summary>
-/// Interleave implementation
-/// </summary>
-/// <param name="buffer"></param>
-/// <param name="stride"></param>
+//
 void Geometry::interleave(uint8_t* buffer, size_t stride)
 {
+    // TODO: Implement, interleaving SUBDATA, if specified. Default will be all
+
     size_t offset = 0;
     size_t bytes = _vertices * _stride;
 
@@ -121,63 +104,4 @@ void Geometry::interleave(uint8_t* buffer, size_t stride)
     }
 
     return;
-}
-
-
-/// <summary>
-///
-/// </summary>
-/// <returns></returns>
-std::shared_ptr<Model> Geometry::mesh(uint32_t materialIndex)
-{
-    auto context = _context.lock();
-
-    // TODO: This is not clean :)
-    // TODO: Descriptor SHOULD be passed into mesh(), and appropriate getters called based on the descriptor attributes.
-    //  Kinda inverting the current implementation
-    if (materialIndex != -1)
-    {
-        std::vector<uint32_t> materialIndices(_vertices);
-
-        std::fill(materialIndices.begin(), materialIndices.end(), materialIndex);
-
-        addVertexData(materialIndices.data(), materialIndices.size(), 1, AttributeLocation::MaterialIndex);
-    }
-
-
-    auto vb = context->createVertexBuffer(BufferUsage::StaticDraw);
-    auto ib = context->createIndexBuffer(BufferUsage::StaticDraw);
-    auto desc = context->createDescriptor();
-
-    std::vector<Vertex> vertices(_vertices);
-
-    // Interleave vertices
-    interleave((uint8_t*)vertices.data(), sizeof(Vertex));
-
-    // Create Buffers
-    vb->allocate(vertices.data(), vertices.size());
-    if (_indices.size())
-        ib->allocate(_indices.data(), _indices.size());
-
-    // Bind Buffers to Descriptors
-    desc->bind();
-    vb->bind();
-
-    if (_indices.size())
-        ib->bind();
-
-    // Bind Descriptors
-    for (auto& g : _geometry)
-        desc->addDescription(g.dtype, vb->stride(), g.location);
-
-    desc->unbind();
-
-    // VertexBuffer requires staying bound while the descriptors are setup
-    if (_indices.size())
-        ib->unbind();
-    vb->unbind();
-
-    // Construct model
-    std::shared_ptr<Model> model = std::make_shared<Model>(desc, vb, ib, nullptr);
-    return model;
 }

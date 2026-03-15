@@ -101,12 +101,28 @@ std::vector<uint32_t> cube_indices()
 
 //
 Cube::Cube(std::shared_ptr<IContext> context, float width, float height, float depth)
-    : _context(context)
+    : Geometry(context)
     , _width(width)
     , _height(height)
     , _depth(depth)
 {
+    auto position = cube_position(_width, _height, _depth);
+    auto normals = cube_normals();
+    auto texture = cube_texture();
 
+    auto indices = cube_indices();
+
+    // Add Vertex Data
+    addVertexData(position.data(), position.size(), AttributeLocation::Position);
+    addVertexData(normals.data(), normals.size(), AttributeLocation::Normal);
+    addVertexData(texture.data(), texture.size(), AttributeLocation::TextureDiffuse);
+
+    std::vector<uint32_t> materialIndices(36);
+    std::fill(materialIndices.begin(), materialIndices.end(), 0);
+    addVertexData(materialIndices.data(), materialIndices.size(), 1, AttributeLocation::MaterialIndex);
+
+    // Add Index Data
+    addIndexData(indices.data(), indices.size());
 }
 
 
@@ -116,7 +132,7 @@ Cube::~Cube()
 
 }
 
-
+/*
 //
 std::shared_ptr<Model> Cube::mesh(uint32_t materialIndex)
 {
@@ -138,3 +154,4 @@ std::shared_ptr<Model> Cube::mesh(uint32_t materialIndex)
 
     return g.mesh(materialIndex);
 }
+*/

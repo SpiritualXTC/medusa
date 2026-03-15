@@ -3,16 +3,20 @@
 #include <medusa/medusa.h>
 
 #include <medusa/engine_fwd.h>
+#include <medusa/graphics_fwd.h>
 
 #include <medusa/graphics/mesh.h>
 #include <medusa/graphics/material.h>
 #include <medusa/graphics/containers.h>
+
+#include <engine/geometry/geometry.h>
 
 namespace medusa
 {
 
     struct Indirect
     {
+        // TODO: Move this elsewhere -- IDescriptor?
         uint32_t count;
         uint32_t instanceCount;
         uint32_t firstIndex;
@@ -21,6 +25,59 @@ namespace medusa
     };
 
 
+    struct ModelData
+    {
+        uint32_t vertexStart;
+        uint32_t indexStart;
+        uint32_t indices;
+        uint32_t vertices;
+
+        uint32_t materialIndex;
+    };
+
+
+    class Model : public Geometry
+    {
+    public:
+        Model(std::shared_ptr<IContext> context) : Geometry(context) {}
+        virtual ~Model() {}
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="texture"></param>
+        /// <returns></returns>
+        uint64_t addTexture(const std::string& name, std::shared_ptr<ITexture> texture);
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="material"></param>
+        /// <returns></returns>
+        uint64_t addMaterial(const Material& material);
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="modelData"></param>
+        /// <returns></returns>
+        uint64_t addModelData(const ModelData& modelData);
+
+        const std::vector<std::shared_ptr<ITexture>>& getTextures() const { return _textures; }
+        const std::vector<Material>& getMaterials() const { return _materials; }
+        const std::vector<ModelData>& getModelData() const { return _modelData; }
+
+    private:
+
+        std::vector<std::shared_ptr<ITexture>> _textures;
+        std::vector<Material> _materials;
+
+        std::vector<ModelData> _modelData;
+    };
+
+
+    /*
     /// <summary>
     ///
     /// </summary>
@@ -51,4 +108,5 @@ namespace medusa
 
         size_t _cache_instances = 0;
     };
+    */
 }

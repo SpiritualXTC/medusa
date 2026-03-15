@@ -3,9 +3,12 @@
 #include <medusa/engine/context.h>
 #include <medusa/graphics/containers.h>
 #include <medusa/graphics/descriptor.h>
+#include <medusa/graphics/texture.h>
 
 #include <engine/geometry/geometry.h>
 #include <engine/graphics/model.h>
+
+#include <engine/resources/texture_manager.h>
 
 
 using namespace medusa;
@@ -68,10 +71,76 @@ GeometryBuffer::~GeometryBuffer()
 
 
 //
-bool GeometryBuffer::loadMesh(const std::string& name, std::shared_ptr<Model> model)
+bool GeometryBuffer::loadMesh(const std::string& name, std::shared_ptr<Model> model, std::shared_ptr<GenericMap<Material>> materials, std::shared_ptr<TextureManager> textures)
 {
+
     std::shared_ptr<MeshReference> ref = std::make_shared<MeshReference>(_context.lock());
 
+
+
+    // TODO: The interleave here, needs to use ONLY what the geometry expects.
+    std::vector<Vertex> vertices = model->interleave<Vertex>();
+    std::vector<uint32_t>& indices = model->getIndices();
+    auto& modelData = model->getModelData();
+    auto& textureData = model->getTextures();
+    auto& materialData = model->getMaterials();
+
+
+
+    // Get the Offsets
+    size_t vertexOffset = _vertices->elements();
+    size_t indexOffset = _indices->elements();
+    size_t materialsOffset = materials->elements(); // MaterialBuffer needs to be here :(
+
+
+    // Size mismatch
+    if (model->stride() != _vertices->stride())
+        throw MedusaError("Invalid Stride");
+
+
+    // Update Material Index (Dis is a hacky mc hack)
+    for (auto& v : vertices)
+        v.material += materialsOffset;
+
+    // Copy to global buffer
+
+
+    for (auto& tex : textureData)
+    {
+        // HACKYITY HACK
+        textures->addTexture(std::format("tex_{}", tex->handle()), tex);
+    }
+
+    // Copy Materials to Material Buffer [Name Hack.... does the material really need to be a map?]
+    uint32_t idx = 0;
+    for (auto& m : materialData)
+    {
+        materials->insert(fmt::format("mesh_{}", idx++), m);
+    }
+
+
+    // Copy vertices to global buffer
+    _vertices->insert(vertices);
+
+    // Indices (Vertex offsets are handled by Indirect rendering)
+    _indices->insert(indices);
+
+
+
+
+    // TODO: Optimize to push to GPU buffer all at once
+    for (auto& subMesh : modelData)
+    {
+        SubMesh sm;
+        sm.baseVertex = subMesh.vertexStart + vertexOffset;
+        sm.firstIndex = subMesh.indexStart + indexOffset;
+        sm.count = subMesh.indices;
+
+        _submeshes.push_back(sm);
+        ref->addSubMesh(sm);
+    }
+
+    /*
     auto vb = model->vertexBuffer();
     auto ib = model->indexBuffer();
     auto smb = model->submeshes();
@@ -118,12 +187,57 @@ bool GeometryBuffer::loadMesh(const std::string& name, std::shared_ptr<Model> mo
             ref->addSubMesh(sm);
         }
     }
-
+    */
     // Insert the mesh reference
     _refs.insert({ name, ref });
 
     return true;
 }
+
+
+bool GeometryBuffer::loadMesh(const std::string& name, std::shared_ptr<Geometry> geometry, int32_t materialOverride)
+{
+    // TODO: The interleave here, needs to use ONLY what the geometry expects.
+    std::vector<Vertex> vertices = geometry->interleave<Vertex>();
+    std::vector<uint32_t>& indices = geometry->getIndices();
+
+    if (materialOverride != -1)
+    {
+        for (auto& v : vertices)
+        {
+            v.material = materialOverride;
+        }
+    }
+
+
+    size_t vertexOffset = _vertices->elements();
+    size_t indexOffset = _indices->elements();
+
+    // Copy to global buffer
+
+    // Copy vertices to global buffer
+    _vertices->insert(vertices);
+
+    // Indices (Vertex offsets are handled by Indirect rendering)
+    _indices->insert(indices);
+
+
+    // Insert the mesh reference
+    std::shared_ptr<MeshReference> ref = std::make_shared<MeshReference>(_context.lock());
+
+    SubMesh submesh;
+    submesh.baseVertex = vertexOffset;
+    submesh.firstIndex = indexOffset;
+    submesh.count = indices.size();
+
+    _submeshes.push_back(submesh);
+    ref->addSubMesh(submesh);
+
+    _refs.insert({ name, ref });
+
+    return true;
+}
+
 
 
 //

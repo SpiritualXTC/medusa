@@ -14,7 +14,8 @@ namespace medusa
 {
     class Model;
     class IGeometry;
-
+    class Geometry;
+    class TextureManager;
 
     /// <summary>
     /// Basic description of a submesh
@@ -105,7 +106,10 @@ namespace medusa
         /// TODO: Refactor
         /// </summary>
         /// <returns></returns>
-        bool loadMesh(const std::string& name, std::shared_ptr<Model> model);
+
+        bool loadMesh(const std::string& name, std::shared_ptr<Model> model, std::shared_ptr<GenericMap<Material>> materials, std::shared_ptr<TextureManager> textures);
+        bool loadMesh(const std::string& name, std::shared_ptr<Geometry> geometry, int32_t materialOverride = -1);
+
 
         std::shared_ptr<MeshReference> referenceMesh(const std::string& name);
 
@@ -132,9 +136,6 @@ namespace medusa
         std::shared_ptr<IndexBuffer> _indices;
 
         std::vector<SubMesh> _submeshes;
-
-
-
 
         std::unordered_map<std::string, std::shared_ptr<MeshReference>> _refs;
 

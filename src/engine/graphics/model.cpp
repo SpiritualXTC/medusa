@@ -1,12 +1,44 @@
 #include "model.h"
 
 #include <medusa/graphics/descriptor.h>
+#include <medusa/graphics/texture.h>
 
 #include <core/utilities/logging.h>
+
 
 using namespace medusa;
 
 
+//
+uint64_t Model::addTexture(const std::string& name, std::shared_ptr<ITexture> texture)
+{
+    uint64_t insertIndex = _textures.size();
+    _textures.push_back(texture);
+
+    return texture->handle();
+}
+
+
+//
+uint64_t Model::addMaterial(const Material& material)
+{
+    uint64_t insertIndex = _materials.size();
+    _materials.push_back(material);
+
+    return insertIndex;
+}
+
+
+//
+uint64_t Model::addModelData(const ModelData& modelData)
+{
+    uint64_t insertIndex = _modelData.size();
+    _modelData.push_back(modelData);
+    return insertIndex;
+}
+
+
+/*
 //
 Model::Model(std::shared_ptr<IDescriptor> descriptor, std::shared_ptr<VertexBuffer> vb, std::shared_ptr<IndexBuffer> ib, std::shared_ptr<GenericArray<Indirect>> submesh)
     : _descriptor(descriptor)
@@ -80,3 +112,4 @@ bool Model::renderBatch(size_t instances)
 
     return true;
 }
+*/

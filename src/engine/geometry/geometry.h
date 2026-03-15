@@ -23,18 +23,28 @@ namespace medusa
     };
 
 
-    class IGeometry
+    struct GeometryMesh
     {
-    public:
-        // TODO: MaterialIndex needs to be refactored away from here.
-        virtual std::shared_ptr<Model> mesh(uint32_t materialIndex = -1) = 0;
+        std::string name;
 
-    private:
+        uint32_t count;
+        uint32_t firstIndex;
+        uint32_t baseVertex;
+
+        uint32_t materialIndex;
 
     };
 
 
-    // TODO: operator += to append [Geometry] data into a GeometryList, which also extends IGeometry, but is just a vector of geometry.
+    class IGeometry
+    {
+    public:
+        IGeometry() {}
+        virtual ~IGeometry() {}
+
+    private:
+
+    };
 
 
     class Geometry : public IGeometry
@@ -42,6 +52,14 @@ namespace medusa
     public:
         Geometry(std::shared_ptr<IContext> context);
         virtual ~Geometry();
+
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        inline size_t stride() const { return _stride; }
+
 
         /// <summary>
         /// Add Vertex Data
@@ -67,11 +85,6 @@ namespace medusa
         /// <param name="stride"></param>
         void interleave(uint8_t* buffer, size_t stride = 0);
 
-        /// <summary>
-        /// Construct a mesh from the geometry
-        /// </summary>
-        /// <returns></returns>
-        std::shared_ptr<Model> mesh(uint32_t materialIndex = -1) override;
 
         /// <summary>
         /// Add GLM Typed data
@@ -129,6 +142,14 @@ namespace medusa
             return interleave<T>(buffer);
         }
 
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        std::vector<uint32_t>& getIndices() { return _indices; }
+
+
     private:
         std::weak_ptr<IContext> _context;
 
@@ -136,5 +157,8 @@ namespace medusa
         size_t _stride = 0;
         std::vector<GeometryData> _geometry;
         std::vector<uint32_t> _indices;
+
+        std::unordered_map<AttributeLocation, GeometryData> _geometryData;
+        std::unordered_map<std::string, GeometryMesh> _geometryMesh;
     };
 }

@@ -81,5 +81,5 @@ std::shared_ptr<Model> ResourceDatabase::getModel(const std::string& modelName, 
 
     std::shared_ptr<loaders::ModelLoader> loader = std::make_shared<loaders::ModelLoader>(context);
 
-    return loader->load(filepath, materials, textures);
+    return loader->load(filepath);
 }

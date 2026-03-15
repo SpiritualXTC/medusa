@@ -48,52 +48,31 @@ std::shared_ptr<IMesh> SceneManager::getModel(const std::string& modelName)
 
     auto mesh = engine->resources()->getModel(modelName, _materials, _textures);
 
-    // Scale the mesh cos it's bloody huge
-    // TODO: Add matrix adjustments to the resource database
-    logging::error("Scaling the mesh");
-    auto vb = mesh->vertexBuffer();
-    for (int index = 0; index < vb->vertices(); ++index)
-    {
-        auto& v = vb->data(index);
-        v.position *= 0.1;
-    }
-    vb->sync();
-
     // Add the Mesh into the GeometryBuffer...
-    _geometry->loadMesh(modelName, mesh);
+    _geometry->loadMesh(modelName, mesh, _materials, _textures);
 
-    return mesh;
+    return nullptr;
 }
 
 
-std::shared_ptr<IMesh> SceneManager::getModel(const std::string& name, const std::shared_ptr<IGeometry> geometry, const Material& material)
+std::shared_ptr<IMesh> SceneManager::getModel(const std::string& name, const std::shared_ptr<Geometry> geometry, const Material& material)
 {
+    // TODO: This is a temp function, the above function is going to be the only one
     static uint32_t generateIndex = 0;
 
     std::string matName = std::format("test_{}", generateIndex++);
     auto matIdx = _materials->insert(matName, material);
 
-    auto mesh = geometry->mesh(matIdx);
+    // Add the geometry
+    _geometry->loadMesh(name, geometry, matIdx);
 
-
-    _geometry->loadMesh(name, mesh);
-
-    return mesh;
+    return nullptr;
 }
 
 
 bool SceneManager::addTexture(const std::string& name, std::shared_ptr<ITexture> texture)
 {
-    // TODO: The texture index needs to be pulled from the MANAGER ...
-
     // Add to the Texture Manager
     _textures->addTexture(name, texture);
     return true;
-}
-
-
-//
-std::shared_ptr<ITexture> SceneManager::loadTexture2D(const std::string& filename)
-{
-    return _textures->loadTexture(filename);
 }

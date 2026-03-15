@@ -10,7 +10,7 @@ namespace medusa
 {
     class Engine;
 
-    class IGeometry;
+    class Geometry;
     class GeometryBuffer;
 
     class TextureManager;
@@ -34,15 +34,12 @@ namespace medusa
         inline const std::shared_ptr<TextureManager> getTextures() const { return _textures; }
 
         std::shared_ptr<IMesh> getModel(const std::string& modelName);
-        std::shared_ptr<IMesh> getModel(const std::string& name, const std::shared_ptr<IGeometry> geometry, const Material& material);
-
+        std::shared_ptr<IMesh> getModel(const std::string& name, const std::shared_ptr<Geometry> geometry, const Material& material);
 
         std::shared_ptr<GeometryBuffer> getGeometryBuffer() { return _geometry; }
 
 
         bool addTexture(const std::string& name, std::shared_ptr<ITexture> texture);
-
-        std::shared_ptr<ITexture> loadTexture2D(const std::string& filename);
 
     private:
         std::weak_ptr<Engine> _engine;

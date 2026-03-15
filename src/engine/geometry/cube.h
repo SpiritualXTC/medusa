@@ -7,7 +7,7 @@
 
 namespace medusa
 {
-    class Cube : public IGeometry
+    class Cube : public Geometry
     {
     public:
         Cube(std::shared_ptr<IContext> context, const glm::vec3& dimensions)
@@ -39,10 +39,10 @@ namespace medusa
             _depth = depth;
         }
 
-        std::shared_ptr<Model> mesh(uint32_t materialIndex = -1) override;
+        //std::shared_ptr<Model> mesh(uint32_t materialIndex = -1) override;
 
     private:
-        std::weak_ptr<IContext> _context;
+        //std::weak_ptr<IContext> _context;
 
         float _width;
         float _height;

@@ -14,7 +14,8 @@
 #include <engine/geometry/geometry.h>
 #include <engine/graphics/model.h>
 
-#include <engine/resources/texture_manager.h>
+#include <engine/resources/texture_loader.h>
+
 
 using namespace medusa;
 using namespace medusa::loaders;
@@ -36,11 +37,14 @@ ModelLoader::~ModelLoader()
 
 
 //
-std::shared_ptr<Model> ModelLoader::load(const std::string& filename, std::shared_ptr<GenericMap<Material>> materials, std::shared_ptr<TextureManager> textures)
+std::shared_ptr<Model> ModelLoader::load(const std::string& filename)
 {
     Assimp::Importer importer;
 
     auto context = _context.lock();
+
+    // Model Data
+    std::shared_ptr<Model> model = std::make_shared<Model>(context);
 
     // Vertex Data
     std::vector<glm::vec3> position;
@@ -52,7 +56,7 @@ std::shared_ptr<Model> ModelLoader::load(const std::string& filename, std::share
     std::vector<uint32_t> indices;
 
     // Mesh Data
-    std::vector<Indirect> submeshes;
+    ModelData modelData{ 0, 0, 0, 0, 0 };
     std::vector<size_t> materialIndex;
 
     uint32_t vertexOffset = 0;
@@ -87,39 +91,36 @@ std::shared_ptr<Model> ModelLoader::load(const std::string& filename, std::share
         if (mat->Get(AI_MATKEY_OPACITY, opacity) != AI_SUCCESS)
             logging::warn("Unable to read `opacity` from material {}, idx={}", matName, matIdx);
 
-        aiString matTextureDiffuse;
-        if (mat->GetTexture(aiTextureType_DIFFUSE, 0, &matTextureDiffuse) != AI_SUCCESS)
-            logging::warn("Unable to read TextureBlend Diffuse from material {}, idx={}, {}", matName, matIdx, matTextureDiffuse.C_Str());
-
-        logging::info(std::format("Material `{}` has {} textures, tex0=`{}`", matName, mat->GetTextureCount(aiTextureType_DIFFUSE), matTextureDiffuse.C_Str()));
-
-        // TODO: Get Texture Filenames and Load Textures into material
-
         // Set Material Data
         material.ambient(ambient.r, ambient.g, ambient.b);
         material.diffuse(diffuse.r, diffuse.g, diffuse.b, opacity);
         material.specular(specular.r, specular.g, specular.b);
 
-        // Set & Load Textures from Resource Database into material
-
-
-        // Load Texture
-        if (textures)
+        // Load Textures [Currently only Diffuse Texturing is enabled]
+        aiString matTextureDiffuse;
+        if (mat->GetTexture(aiTextureType_DIFFUSE, 0, &matTextureDiffuse) != AI_SUCCESS)
+            logging::warn("Unable to read TextureBlend Diffuse from material {}, idx={}, {}", matName, matIdx, matTextureDiffuse.C_Str());
+        else
         {
-            // At this point we NEED to have the index in the Texture Handle Buffer for AZDO
-            size_t textureIndex = 0;
-            std::shared_ptr<ITexture> tex = textures->loadTexture(matTextureDiffuse.C_Str());
-            material.diffuseTexture(tex->handle());
+            std::string name = matTextureDiffuse.C_Str();
+
+            std::shared_ptr<ITexture> tex = loaders::TextureLoader::loadTexture2D(context, name);
+
+            uint64_t handle = model->addTexture(name, tex);
+
+            material.diffuseTexture(handle);
+
+            // Load the texture, assign the handle to the material
+            logging::info(std::format("Material `{}` has {} textures, tex0=`{}`", matName, mat->GetTextureCount(aiTextureType_DIFFUSE), matTextureDiffuse.C_Str()));
         }
 
         // Add material
-        if (materials)
-        {
-            auto idx = materials->insert(matName, material);
-            materialIndex.push_back(idx);
+        auto idx = model->addMaterial(material);
 
-            logging::debug(fmt::format("Material: name={}, index={}->{}", matName, matIdx, idx));
-        }
+        // Map the material name -> index
+        materialIndex.push_back(idx);
+
+        logging::debug(fmt::format("Material: name={}, index={}->{}", matName, matIdx, idx));
     }
 
     // Load Mesh Data
@@ -170,7 +171,7 @@ std::shared_ptr<Model> ModelLoader::load(const std::string& filename, std::share
                 for (size_t coordIdx = 0; coordIdx < submesh->mNumVertices; ++coordIdx)
                 {
                     aiVector3D& tc = submesh->mTextureCoords[texIdx][coordIdx];
-                    texCoord[coordIdx] = glm::vec2(tc.x, 1.0 - tc.y); // why the 1.0 - y? :( lol
+                    texCoord[coordIdx] = glm::vec2(tc.x, 1.0 - tc.y); // Invert the Y-Coordinate [Only an Open GL requirement?]
                 }
 
                 textureCoords.insert(textureCoords.end(), texCoord.begin(), texCoord.begin() + submesh->mNumVertices);
@@ -189,9 +190,8 @@ std::shared_ptr<Model> ModelLoader::load(const std::string& filename, std::share
         // Faces
         if (submesh->HasFaces() && submesh->mNumFaces >= 1)
         {
-
-            std::vector<uint32_t> submeshIndices(submesh->mNumFaces * 3);
-            uint32_t* ptr = submeshIndices.data();
+            std::vector<uint32_t> submeshIndexData(submesh->mNumFaces * 3);
+            uint32_t* ptr = submeshIndexData.data();
 
             size_t submeshFaces = 0;
             size_t submeshVertices = 0;
@@ -212,84 +212,52 @@ std::shared_ptr<Model> ModelLoader::load(const std::string& filename, std::share
                 *ptr++ = face.mIndices[0];
                 *ptr++ = face.mIndices[1];
                 *ptr++ = face.mIndices[2];
+                submeshFaces += 1;
             }
-            indices.insert(indices.end(), submeshIndices.begin(), submeshIndices.end());
+            indices.insert(indices.end(), submeshIndexData.begin(), submeshIndexData.end());
 
             // Add submesh data to model
-            Indirect* smdLast = submeshes.size() == 0 ? nullptr : &submeshes[submeshes.size() - 1];
+            modelData.indexStart += modelData.indices;
+            modelData.vertexStart += modelData.vertices;
 
-            Indirect smd;
-            smd.baseInstance = 0;
-            smd.baseVertex = vertexOffset;
-            smd.firstIndex = smdLast == nullptr ? 0 : smdLast->firstIndex + smdLast->count;
-            smd.instanceCount = 0;
-            smd.count = submeshIndices.size();
+            modelData.vertices = submeshVertices;
+            modelData.indices = submeshFaces * 3;
 
-            logging::info(fmt::format("Submesh: v={}, f={}, matIdx={} -> {}", submesh->mNumVertices, submesh->mNumFaces, submesh->mMaterialIndex, materialIndex[submesh->mMaterialIndex]));
+            modelData.materialIndex = submesh->mMaterialIndex;
 
-            submeshes.push_back(smd);
+            model->addModelData(modelData);
 
             // Increase the vertex offset
             vertexOffset += submesh->mNumVertices;
         }
     }
 
-    std::shared_ptr<GenericArray<Indirect>> sm = context->createArray<Indirect>(BufferType::DrawIndirect, BufferUsage::StaticDraw);
-    std::shared_ptr<VertexBuffer> vb = context->createVertexBuffer(BufferUsage::StaticDraw);
-    std::shared_ptr<IndexBuffer> ib = context->createIndexBuffer(BufferUsage::StaticDraw);
-    std::shared_ptr<IDescriptor> desc = context->createDescriptor();
-
-    std::vector<Vertex> vertices(position.size());
-
-    Geometry geometry(context);
-
-
-    // Bind Buffers to Descriptors
-    desc->bind();
-    vb->bind();
-
-    if (indices.size())
-        ib->bind();
-
-    // Add geometry to model and to descriptor
+    // Position
     if (position.size())
     {
-        geometry.addVertexData(position.data(), position.size(), AttributeLocation::Position);
-        desc->addDescription(types::FloatV3, vb->stride(), AttributeLocation::Position);
+        // Scaling :: TODO: Move this to part of the yaml file
+        for (auto& p : position)
+        {
+            p *= 0.1f;
+        }
+
+        model->addVertexData(position.data(), position.size(), AttributeLocation::Position);
     }
+
+    // Normals
     if (normals.size())
-    {
-        geometry.addVertexData(normals.data(), normals.size(), AttributeLocation::Normal);
-        desc->addDescription(types::FloatV3, vb->stride(), AttributeLocation::Normal);
-    }
+        model->addVertexData(normals.data(), normals.size(), AttributeLocation::Normal);
 
+    // Texture Coords
     if (textureCoords.size())
-    {
-        geometry.addVertexData(textureCoords.data(), textureCoords.size(), AttributeLocation::TextureDiffuse);
-        desc->addDescription(types::FloatV2, vb->stride(), AttributeLocation::TextureDiffuse);
-    }
+        model->addVertexData(textureCoords.data(), textureCoords.size(), AttributeLocation::TextureDiffuse);
 
-    desc->addDescription(types::Int, vb->stride(), AttributeLocation::MaterialIndex);
-    geometry.addVertexData(materialIndices.data(), materialIndices.size(), 1, AttributeLocation::MaterialIndex);
+    // Material Indexing
+    model->addVertexData(materialIndices.data(), materialIndices.size(), 1, AttributeLocation::MaterialIndex);
 
-    desc->unbind();
-
-    // VertexBuffer requires staying bound while the descriptors are setup. Unbind after everything is setup
+    // Face indices
     if (indices.size())
-        ib->unbind();
-    vb->unbind();
+        model->addIndexData(indices.data(), indices.size());
 
-    logging::info(fmt::format("Loaded Mesh - Copying to Buffers: v={}, i={}, s={}", vertices.size(), indices.size(), submeshes.size()));
-
-    // Allocate Vertex/Index Buffers
-    geometry.interleave((uint8_t*)vertices.data(), vb->stride());
-    vb->allocate(vertices.data(), vertices.size());
-    if (indices.size())
-        ib->allocate(indices.data(), indices.size());
-
-    sm->allocate(submeshes.data(), submeshes.size());
-
-    // Construct model
-    std::shared_ptr<Model> model = std::make_shared<Model>(desc, vb, ib, sm);
     return model;
 }

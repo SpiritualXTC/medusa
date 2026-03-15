@@ -2,14 +2,11 @@
 
 #include <medusa/medusa.h>
 #include <medusa/engine_fwd.h>
-#include <medusa/graphics_fwd.h>
 
-#include <medusa/containers_fwd.h>
 
 namespace medusa
 {
     class Model;
-    class TextureManager;
 
     namespace loaders
     {
@@ -22,9 +19,8 @@ namespace medusa
             ModelLoader(std::shared_ptr<IContext> context);
             virtual ~ModelLoader();
 
-
-            std::shared_ptr<Model> load(const std::string& filename, std::shared_ptr<GenericMap<Material>> materials, std::shared_ptr<TextureManager> textures);
-
+            //
+            std::shared_ptr<Model> load(const std::string& filename);
 
         private:
             std::weak_ptr<IContext> _context;
