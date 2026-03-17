@@ -32,7 +32,7 @@ static std::vector<glm::vec3> cube_positions(float w, float h, float d)
     for (auto& p : position)
         p *= size;
 
-    return std::move(position);
+    return position;
 }
 
 
@@ -54,7 +54,7 @@ static std::vector<glm::vec3> cube_normals()
         {0, -1, 0}, {0, -1, 0}, {0, -1, 0}, {0, -1, 0},
     };
 
-    return std::move(normal);
+    return normal;
 }
 
 
@@ -70,7 +70,7 @@ static std::vector<glm::vec2> cube_texture_coords()
         {1, 1}, {0, 1}, {1, 0}, {0, 0},
     };
 
-    return std::move(texture);
+    return texture;
 }
 
 
