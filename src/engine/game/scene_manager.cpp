@@ -6,7 +6,6 @@
 #include <engine/resource_database.h>
 
 #include <engine/engine.h>
-#include <engine/graphics/model.h>
 #include <engine/geometry/geometry.h>
 #include <engine/geometry/geometry_buffer.h>
 
@@ -55,16 +54,11 @@ std::shared_ptr<IMesh> SceneManager::getModel(const std::string& modelName)
 }
 
 
-std::shared_ptr<IMesh> SceneManager::getModel(const std::string& name, const std::shared_ptr<Geometry> geometry, const Material& material)
+std::shared_ptr<IMesh> SceneManager::getModel(const std::string& name, const std::shared_ptr<IGeometryBuilder> shape, const Material& material)
 {
-    // TODO: This is a temp function, the above function is going to be the only one
-    static uint32_t generateIndex = 0;
-
-    std::string matName = std::format("test_{}", generateIndex++);
-    auto matIdx = _materials->insert(matName, material);
-
     // Add the geometry
-    _geometry->loadMesh(name, geometry, matIdx);
+    std::shared_ptr<Geometry> model = shape->build(_context.lock(), material);
+    _geometry->loadMesh(name, model, _materials, _textures);
 
     return nullptr;
 }

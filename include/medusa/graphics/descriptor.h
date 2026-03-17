@@ -9,7 +9,15 @@
 
 namespace medusa
 {
-    struct Indirect; // TODO: Make this a bit happier
+    struct Indirect
+    {
+        uint32_t count;
+        uint32_t instanceCount;
+        uint32_t firstIndex;
+        uint32_t baseVertex;
+        uint32_t baseInstance;
+    };
+
 
     class IDescriptor
     {

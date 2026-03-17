@@ -10,7 +10,7 @@
 
 namespace medusa
 {
-    class Model;
+    class Geometry;
     class TextureManager;
 
     class ResourceDatabase : public Config
@@ -20,7 +20,7 @@ namespace medusa
 
         std::shared_ptr<IShader> getShader(const std::string& shaderName);
 
-        std::shared_ptr<Model> getModel(const std::string& modelName, std::shared_ptr<GenericMap<Material>> materials = nullptr, std::shared_ptr<TextureManager> textures = nullptr);
+        std::shared_ptr<Geometry> getModel(const std::string& modelName, std::shared_ptr<GenericMap<Material>> materials = nullptr, std::shared_ptr<TextureManager> textures = nullptr);
 
     private:
         std::weak_ptr<IContext> _context;

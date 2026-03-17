@@ -9,8 +9,7 @@ namespace medusa
 {
     class IContext;
 
-    class Model;
-
+    // TODO: Should be private to Geometry
     struct GeometryData
     {
         DType dtype;
@@ -23,31 +22,24 @@ namespace medusa
     };
 
 
-    struct GeometryMesh
+    /// <summary>
+    ///
+    /// </summary>
+    struct ModelData
     {
-        std::string name;
-
-        uint32_t count;
-        uint32_t firstIndex;
-        uint32_t baseVertex;
+        uint32_t vertexStart;
+        uint32_t indexStart;
+        uint32_t indices;
+        uint32_t vertices;
 
         uint32_t materialIndex;
-
     };
 
 
-    class IGeometry
-    {
-    public:
-        IGeometry() {}
-        virtual ~IGeometry() {}
-
-    private:
-
-    };
-
-
-    class Geometry : public IGeometry
+    /// <summary>
+    ///
+    /// </summary>
+    class Geometry
     {
     public:
         Geometry(std::shared_ptr<IContext> context);
@@ -139,7 +131,9 @@ namespace medusa
         {
             std::vector<T> buffer(_vertices);
 
-            return interleave<T>(buffer);
+            interleave<T>(buffer);
+
+            return std::move(buffer);
         }
 
 
@@ -150,6 +144,31 @@ namespace medusa
         std::vector<uint32_t>& getIndices() { return _indices; }
 
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="texture"></param>
+        /// <returns></returns>
+        uint64_t addTexture(const std::string& name, std::shared_ptr<ITexture> texture);
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="material"></param>
+        /// <returns></returns>
+        uint64_t addMaterial(const Material& material);
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="modelData"></param>
+        /// <returns></returns>
+        uint64_t addModelData(const ModelData& modelData);
+
+        const std::vector<std::shared_ptr<ITexture>>& getTextures() const { return _textures; }
+        const std::vector<Material>& getMaterials() const { return _materials; }
+        const std::vector<ModelData>& getModelData() const { return _modelData; }
     private:
         std::weak_ptr<IContext> _context;
 
@@ -159,6 +178,25 @@ namespace medusa
         std::vector<uint32_t> _indices;
 
         std::unordered_map<AttributeLocation, GeometryData> _geometryData;
-        std::unordered_map<std::string, GeometryMesh> _geometryMesh;
+
+
+        std::vector<std::shared_ptr<ITexture>> _textures;
+        std::vector<Material> _materials;
+
+        std::vector<ModelData> _modelData;
+    };
+
+
+    /// <summary>
+    ///
+    /// </summary>
+    class IGeometryBuilder
+    {
+    public:
+        /// <summary>
+        /// Builds and returns a Model populated with this shape's
+        /// vertex/index data and the provided material.
+        /// </summary>
+        virtual std::shared_ptr<Geometry> build(std::shared_ptr<IContext> context, const Material& material) const = 0;
     };
 }

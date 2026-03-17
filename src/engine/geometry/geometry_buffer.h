@@ -12,8 +12,6 @@
 
 namespace medusa
 {
-    class Model;
-    class IGeometry;
     class Geometry;
     class TextureManager;
 
@@ -107,8 +105,8 @@ namespace medusa
         /// </summary>
         /// <returns></returns>
 
-        bool loadMesh(const std::string& name, std::shared_ptr<Model> model, std::shared_ptr<GenericMap<Material>> materials, std::shared_ptr<TextureManager> textures);
-        bool loadMesh(const std::string& name, std::shared_ptr<Geometry> geometry, int32_t materialOverride = -1);
+        bool loadMesh(const std::string& name, std::shared_ptr<Geometry> model, std::shared_ptr<GenericMap<Material>> materials, std::shared_ptr<TextureManager> textures);
+        //bool loadMesh(const std::string& name, std::shared_ptr<Geometry> geometry, int32_t materialOverride = -1);
 
 
         std::shared_ptr<MeshReference> referenceMesh(const std::string& name);

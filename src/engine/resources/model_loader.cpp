@@ -12,7 +12,6 @@
 #include <core/utilities/logging.h>
 
 #include <engine/geometry/geometry.h>
-#include <engine/graphics/model.h>
 
 #include <engine/resources/texture_loader.h>
 
@@ -37,14 +36,14 @@ ModelLoader::~ModelLoader()
 
 
 //
-std::shared_ptr<Model> ModelLoader::load(const std::string& filename)
+std::shared_ptr<Geometry> ModelLoader::load(const std::string& filename)
 {
     Assimp::Importer importer;
 
     auto context = _context.lock();
 
     // Model Data
-    std::shared_ptr<Model> model = std::make_shared<Model>(context);
+    std::shared_ptr<Geometry> model = std::make_shared<Geometry>(context);
 
     // Vertex Data
     std::vector<glm::vec3> position;

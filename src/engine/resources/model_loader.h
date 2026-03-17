@@ -6,7 +6,7 @@
 
 namespace medusa
 {
-    class Model;
+    class Geometry;
 
     namespace loaders
     {
@@ -20,7 +20,7 @@ namespace medusa
             virtual ~ModelLoader();
 
             //
-            std::shared_ptr<Model> load(const std::string& filename);
+            std::shared_ptr<Geometry> load(const std::string& filename);
 
         private:
             std::weak_ptr<IContext> _context;

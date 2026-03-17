@@ -1,15 +1,15 @@
 #include "cube.h"
 
-#include <medusa/graphics/mesh.h>
 #include <medusa/graphics/descriptor.h>
 
-#include <core/utilities/logging.h>
+#include <engine/geometry/geometry.h>
 
+#include <core/utilities/logging.h>
 
 using namespace medusa;
 
 
-std::vector<glm::vec3> cube_position(float w, float h, float d)
+static std::vector<glm::vec3> cube_positions(float w, float h, float d)
 {
     std::vector<glm::vec3> position
     {
@@ -32,11 +32,11 @@ std::vector<glm::vec3> cube_position(float w, float h, float d)
     for (auto& p : position)
         p *= size;
 
-    return position;
+    return std::move(position);
 }
 
 
-std::vector<glm::vec3> cube_normals()
+static std::vector<glm::vec3> cube_normals()
 {
     std::vector<glm::vec3> normal
     {
@@ -54,11 +54,11 @@ std::vector<glm::vec3> cube_normals()
         {0, -1, 0}, {0, -1, 0}, {0, -1, 0}, {0, -1, 0},
     };
 
-    return normal;
+    return std::move(normal);
 }
 
 
-std::vector<glm::vec2> cube_texture()
+static std::vector<glm::vec2> cube_texture_coords()
 {
     std::vector<glm::vec2> texture
     {
@@ -70,7 +70,7 @@ std::vector<glm::vec2> cube_texture()
         {1, 1}, {0, 1}, {1, 0}, {0, 0},
     };
 
-    return texture;
+    return std::move(texture);
 }
 
 
@@ -100,29 +100,12 @@ std::vector<uint32_t> cube_indices()
 
 
 //
-Cube::Cube(std::shared_ptr<IContext> context, float width, float height, float depth)
-    : Geometry(context)
-    , _width(width)
+Cube::Cube(float width, float height, float depth)
+    : _width(width)
     , _height(height)
     , _depth(depth)
 {
-    auto position = cube_position(_width, _height, _depth);
-    auto normals = cube_normals();
-    auto texture = cube_texture();
 
-    auto indices = cube_indices();
-
-    // Add Vertex Data
-    addVertexData(position.data(), position.size(), AttributeLocation::Position);
-    addVertexData(normals.data(), normals.size(), AttributeLocation::Normal);
-    addVertexData(texture.data(), texture.size(), AttributeLocation::TextureDiffuse);
-
-    std::vector<uint32_t> materialIndices(36);
-    std::fill(materialIndices.begin(), materialIndices.end(), 0);
-    addVertexData(materialIndices.data(), materialIndices.size(), 1, AttributeLocation::MaterialIndex);
-
-    // Add Index Data
-    addIndexData(indices.data(), indices.size());
 }
 
 
@@ -131,6 +114,45 @@ Cube::~Cube()
 {
 
 }
+
+
+//
+std::shared_ptr<Geometry> Cube::build(std::shared_ptr<IContext> context, const Material& material) const
+{
+    auto model = std::make_shared<Geometry>(context);
+
+    auto positions = cube_positions(_width, _height, _depth);
+    auto normals = cube_normals();
+    auto uvs = cube_texture_coords();
+    auto indices = cube_indices();
+
+    const size_t vertexCount = positions.size(); // 24
+
+    model->addVertexData(positions.data(), vertexCount, AttributeLocation::Position);
+    model->addVertexData(normals.data(), vertexCount, AttributeLocation::Normal);
+    model->addVertexData(uvs.data(), vertexCount, AttributeLocation::TextureDiffuse);
+
+    // All vertices reference material slot 0
+    std::vector<uint32_t> materialIndices(vertexCount, 0);
+    model->addVertexData(materialIndices.data(), vertexCount, 1, AttributeLocation::MaterialIndex);
+
+    model->addIndexData(indices.data(), indices.size());
+
+    // Register the material — slot 0 matches the indices written above
+    model->addMaterial(material);
+
+    // Register the single submesh covering all 36 indices from vertex 0
+    ModelData submesh{};
+    submesh.vertexStart = 0;
+    submesh.indexStart = 0;
+    submesh.indices = static_cast<uint32_t>(indices.size());
+    submesh.vertices = static_cast<uint32_t>(vertexCount);
+    submesh.materialIndex = 0;
+    model->addModelData(submesh);
+
+    return model;
+}
+
 
 /*
 //

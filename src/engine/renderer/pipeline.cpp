@@ -10,8 +10,6 @@
 #include <medusa/graphics/descriptor.h>
 #include <engine/geometry/geometry_buffer.h>
 
-#include <engine/graphics/model.h>
-
 using namespace medusa;
 
 

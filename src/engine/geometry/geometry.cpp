@@ -5,8 +5,6 @@
 #include <medusa/engine/context.h>
 #include <medusa/graphics.h>
 
-#include <engine/graphics/model.h>
-
 
 using namespace medusa;
 
@@ -104,4 +102,33 @@ void Geometry::interleave(uint8_t* buffer, size_t stride)
     }
 
     return;
+}
+
+
+//
+uint64_t Geometry::addTexture(const std::string& name, std::shared_ptr<ITexture> texture)
+{
+    uint64_t insertIndex = _textures.size();
+    _textures.push_back(texture);
+
+    return texture->handle();
+}
+
+
+//
+uint64_t Geometry::addMaterial(const Material& material)
+{
+    uint64_t insertIndex = _materials.size();
+    _materials.push_back(material);
+
+    return insertIndex;
+}
+
+
+//
+uint64_t Geometry::addModelData(const ModelData& modelData)
+{
+    uint64_t insertIndex = _modelData.size();
+    _modelData.push_back(modelData);
+    return insertIndex;
 }
