@@ -152,28 +152,3 @@ std::shared_ptr<Geometry> Cube::build(std::shared_ptr<IContext> context, const M
 
     return model;
 }
-
-
-/*
-//
-std::shared_ptr<Model> Cube::mesh(uint32_t materialIndex)
-{
-    Geometry g(_context.lock());
-
-    auto position = cube_position(_width, _height, _depth);
-    auto normals = cube_normals();
-    auto texture = cube_texture();
-
-    auto indices = cube_indices();
-
-    // Add Vertex Data
-    g.addVertexData(position.data(), position.size(), AttributeLocation::Position);
-    g.addVertexData(normals.data(), normals.size(), AttributeLocation::Normal);
-    g.addVertexData(texture.data(), texture.size(), AttributeLocation::TextureDiffuse);
-
-    // Add Index Data
-    g.addIndexData(indices.data(), indices.size());
-
-    return g.mesh(materialIndex);
-}
-*/
