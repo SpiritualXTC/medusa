@@ -41,29 +41,15 @@ SceneManager::SceneManager(std::shared_ptr<Engine> engine)
 
 
 //
-std::shared_ptr<IMesh> SceneManager::getModel(const std::string& modelName)
+bool SceneManager::addModel(const std::string& name, const std::shared_ptr<Geometry> geometry)
 {
-    auto engine = _engine.lock();
+    _geometry->loadMesh(name, geometry, _materials, _textures);
 
-    auto mesh = engine->resources()->getModel(modelName);
-
-    // Add the Mesh into the GeometryBuffer...
-    _geometry->loadMesh(modelName, mesh, _materials, _textures);
-
-    return nullptr;
+    return true;
 }
 
 
-std::shared_ptr<IMesh> SceneManager::getModel(const std::string& name, const std::shared_ptr<IGeometryBuilder> shape, const Material& material)
-{
-    // Add the geometry
-    std::shared_ptr<Geometry> model = shape->build(_context.lock(), material);
-    _geometry->loadMesh(name, model, _materials, _textures);
-
-    return nullptr;
-}
-
-
+//
 bool SceneManager::addTexture(const std::string& name, std::shared_ptr<ITexture> texture)
 {
     // Add to the Texture Manager
