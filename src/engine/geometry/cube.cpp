@@ -74,7 +74,7 @@ static std::vector<glm::vec2> cube_texture_coords()
 }
 
 
-std::vector<uint32_t> cube_indices()
+static std::vector<uint32_t> cube_indices()
 {
     const uint32_t SIDES = 6;
     const uint32_t INDICES_PER_SIDE = 6;
