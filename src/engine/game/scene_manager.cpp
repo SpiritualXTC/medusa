@@ -45,7 +45,7 @@ std::shared_ptr<IMesh> SceneManager::getModel(const std::string& modelName)
 {
     auto engine = _engine.lock();
 
-    auto mesh = engine->resources()->getModel(modelName, _materials, _textures);
+    auto mesh = engine->resources()->getModel(modelName);
 
     // Add the Mesh into the GeometryBuffer...
     _geometry->loadMesh(modelName, mesh, _materials, _textures);

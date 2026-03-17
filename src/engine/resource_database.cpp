@@ -61,7 +61,7 @@ std::shared_ptr<IShader> ResourceDatabase::getShader(const std::string& shaderNa
 
 
 //
-std::shared_ptr<Geometry> ResourceDatabase::getModel(const std::string& modelName, std::shared_ptr<GenericMap<Material>> materials, std::shared_ptr<TextureManager> textures)
+std::shared_ptr<Geometry> ResourceDatabase::getModel(const std::string& modelName)
 {
     logging::error("Loading Model");
 
