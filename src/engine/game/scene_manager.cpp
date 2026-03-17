@@ -41,7 +41,7 @@ SceneManager::SceneManager(std::shared_ptr<Engine> engine)
 
 
 //
-bool SceneManager::addModel(const std::string& name, const std::shared_ptr<Geometry> geometry)
+bool SceneManager::addGeometry(const std::string& name, const std::shared_ptr<Geometry> geometry)
 {
     _geometry->loadMesh(name, geometry, _materials, _textures);
 

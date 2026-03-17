@@ -34,7 +34,7 @@ namespace medusa
         inline std::shared_ptr<TextureManager> getTextures() { return _textures; }
         inline const std::shared_ptr<TextureManager> getTextures() const { return _textures; }
 
-        bool addModel(const std::string& name, const std::shared_ptr<Geometry> geometry);
+        bool addGeometry(const std::string& name, const std::shared_ptr<Geometry> geometry);
 
         std::shared_ptr<GeometryBuffer> getGeometryBuffer() { return _geometry; }
 
