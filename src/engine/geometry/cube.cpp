@@ -1,10 +1,7 @@
 #include "cube.h"
 
-#include <medusa/graphics/descriptor.h>
-
 #include <engine/geometry/geometry.h>
 
-#include <core/utilities/logging.h>
 
 using namespace medusa;
 
@@ -98,7 +95,6 @@ static std::vector<uint32_t> cube_indices()
 
 
 
-
 //
 Cube::Cube(float width, float height, float depth)
     : _width(width)
@@ -138,7 +134,7 @@ std::shared_ptr<Geometry> Cube::build(std::shared_ptr<IContext> context, const M
 
     model->addIndexData(indices.data(), indices.size());
 
-    // Register the material — slot 0 matches the indices written above
+    // Register the material - slot 0 matches the indices written above
     model->addMaterial(material);
 
     // Register the single submesh covering all 36 indices from vertex 0
