@@ -115,7 +115,7 @@ bool GeometryBuffer::loadMesh(const std::string& name, std::shared_ptr<Geometry>
     // Indices (Vertex offsets are handled by Indirect rendering)
     _indices->insert(indices);
 
-    // TODO: Optimize to push to GPU buffer all at once
+    // Add all partial geometric data to the reference
     for (auto& subMesh : modelData)
     {
         SubMesh sm;
