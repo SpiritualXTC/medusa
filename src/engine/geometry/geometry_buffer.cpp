@@ -4,6 +4,7 @@
 #include <medusa/graphics/containers.h>
 #include <medusa/graphics.h>
 
+#include <core/utilities/uuid.h>
 #include <engine/geometry/geometry.h>
 
 #include <engine/resources/texture_manager.h>
@@ -93,19 +94,19 @@ bool GeometryBuffer::loadMesh(const std::string& name, std::shared_ptr<Geometry>
     for (auto& v : vertices)
         v.material += materialsOffset;
 
-    // Add textures
+    // Add textures to the manager
+    auto uuid = UUID();
     for (auto& tex : textureData)
     {
-        // TODO: Needs a name
-        textures->addTexture(std::format("tex_{}", tex->handle()), tex);
+        // TODO: Needs a name in the format of <model_name>/<texture_name>
+        textures->addTexture(UUID().getUUID(), tex);
     }
 
     // Copy Materials to Material Buffer [Name Hack.... does the material really need to be a map?]
-    uint32_t idx = 0;
     for (auto& m : materialData)
     {
-        // TODO: Needs a name
-        materials->insert(fmt::format("mesh_{}", idx++), m);
+        // TODO: Needs a name in the format of <model_name>/<material_name>
+        materials->insert(UUID().getUUID(), m);
     }
 
     // Copy vertices to global buffer
