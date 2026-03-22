@@ -65,7 +65,7 @@ void Geometry::addIndexData(uint32_t* data, size_t count)
 //
 void Geometry::interleave(uint8_t* buffer, size_t stride)
 {
-    // TODO: Implement, interleaving SUBDATA, if specified. Default will be all
+    // TODO: Implement: interleave only specified attributes. Default will be all attributes
 
     size_t offset = 0;
     size_t bytes = _vertices * _stride;

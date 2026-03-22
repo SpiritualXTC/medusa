@@ -33,7 +33,7 @@ WindowGL::~WindowGL()
 //
 glm::ivec2 WindowGL::getDisplaySize() const
 {
-    // TODO: Ofcourse this is a GL function
+    // Get the Drawable section of the window
     int width = 0;
     int height = 0;
     SDL_GL_GetDrawableSize(handle(), &width, &height);
