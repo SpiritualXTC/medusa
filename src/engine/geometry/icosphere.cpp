@@ -100,8 +100,7 @@ namespace
 
 // -------------------------------------------------------------------------
 
-std::shared_ptr<Geometry> Icosphere::build(std::shared_ptr<IContext> context,
-    const Material& material) const
+std::shared_ptr<Geometry> Icosphere::build(const Material& material) const
 {
     // ------------------------------------------------------------------ base icosahedron vertices
     // Golden ratio
@@ -250,7 +249,7 @@ std::shared_ptr<Geometry> Icosphere::build(std::shared_ptr<IContext> context,
     }
 
     // ------------------------------------------------------------------ populate Geometry
-    auto geo = std::make_shared<Geometry>(context);
+    auto geo = std::make_shared<Geometry>();
 
     geo->addVertexData(positions.data(), positions.size(), 1, AttributeLocation::Position);
     geo->addVertexData(normals.data(), normals.size(), 1, AttributeLocation::Normal);

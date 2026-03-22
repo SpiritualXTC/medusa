@@ -30,7 +30,7 @@ namespace medusa
         inline void depth(float d) { _depth = d; }
 
 
-        std::shared_ptr<Geometry> build(std::shared_ptr<IContext> context, const Material& material) const override;
+        std::shared_ptr<Geometry> build(const Material& material) const override;
 
     private:
 

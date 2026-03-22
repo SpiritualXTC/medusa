@@ -113,9 +113,9 @@ Cube::~Cube()
 
 
 //
-std::shared_ptr<Geometry> Cube::build(std::shared_ptr<IContext> context, const Material& material) const
+std::shared_ptr<Geometry> Cube::build(const Material& material) const
 {
-    auto model = std::make_shared<Geometry>(context);
+    auto model = std::make_shared<Geometry>();
 
     auto positions = cube_positions(_width, _height, _depth);
     auto normals = cube_normals();

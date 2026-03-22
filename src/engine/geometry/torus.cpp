@@ -24,7 +24,7 @@ Torus::~Torus()
 
 
 //
-std::shared_ptr<Geometry> Torus::build(std::shared_ptr<IContext> context, const Material& material) const
+std::shared_ptr<Geometry> Torus::build(const Material& material) const
 {
     const uint32_t M = _majorSegments;   // longitude rings
     const uint32_t N = _minorSegments;   // tube cross-section rings
@@ -113,7 +113,7 @@ std::shared_ptr<Geometry> Torus::build(std::shared_ptr<IContext> context, const 
     }
 
     // ------------------------------------------------------------------ Geometry
-    auto geo = std::make_shared<Geometry>(context);
+    auto geo = std::make_shared<Geometry>();
 
     geo->addVertexData(positions.data(), positions.size(), 1, AttributeLocation::Position);
     geo->addVertexData(normals.data(), normals.size(), 1, AttributeLocation::Normal);

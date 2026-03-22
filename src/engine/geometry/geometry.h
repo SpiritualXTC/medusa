@@ -42,7 +42,7 @@ namespace medusa
     class Geometry
     {
     public:
-        Geometry(std::shared_ptr<IContext> context);
+        Geometry();
         virtual ~Geometry();
 
 
@@ -170,8 +170,6 @@ namespace medusa
         const std::vector<Material>& getMaterials() const { return _materials; }
         const std::vector<ModelData>& getModelData() const { return _modelData; }
     private:
-        std::weak_ptr<IContext> _context;
-
         size_t _vertices = 0;
         size_t _stride = 0;
         std::vector<GeometryData> _geometry;
@@ -197,6 +195,6 @@ namespace medusa
         /// Builds and returns a Model populated with this shape's
         /// vertex/index data and the provided material.
         /// </summary>
-        virtual std::shared_ptr<Geometry> build(std::shared_ptr<IContext> context, const Material& material) const = 0;
+        virtual std::shared_ptr<Geometry> build(const Material& material) const = 0;
     };
 }

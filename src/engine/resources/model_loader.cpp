@@ -43,7 +43,7 @@ std::shared_ptr<Geometry> ModelLoader::load(const std::string& filename)
     auto context = _context.lock();
 
     // Model Data
-    std::shared_ptr<Geometry> model = std::make_shared<Geometry>(context);
+    std::shared_ptr<Geometry> model = std::make_shared<Geometry>();
 
     // Vertex Data
     std::vector<glm::vec3> position;

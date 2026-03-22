@@ -35,7 +35,7 @@ namespace medusa
         inline void majorSegments(uint32_t s) { _majorSegments = s; }
         inline void minorSegments(uint32_t s) { _minorSegments = s; }
 
-        std::shared_ptr<Geometry> build(std::shared_ptr<IContext> context, const Material& material) const override;
+        std::shared_ptr<Geometry> build(const Material& material) const override;
 
     private:
         float    _majorRadius;

@@ -473,8 +473,7 @@ namespace
 // build()
 // =============================================================================
 
-std::shared_ptr<Geometry> Teapot::build(std::shared_ptr<IContext> context,
-    const Material& material) const
+std::shared_ptr<Geometry> Teapot::build(const Material& material) const
 {
     const uint32_t res = std::max(_resolution, 2u);
     const float    S = _scale;
@@ -557,7 +556,7 @@ std::shared_ptr<Geometry> Teapot::build(std::shared_ptr<IContext> context,
     }
 
     // ------------------------------------------------------------------ populate Geometry
-    auto geo = std::make_shared<Geometry>(context);
+    auto geo = std::make_shared<Geometry>();
 
     geo->addVertexData(positions.data(), positions.size(), 1, AttributeLocation::Position);
     geo->addVertexData(normals.data(), normals.size(), 1, AttributeLocation::Normal);

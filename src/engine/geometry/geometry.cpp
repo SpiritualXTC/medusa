@@ -10,8 +10,7 @@ using namespace medusa;
 
 
 //
-Geometry::Geometry(std::shared_ptr<IContext> context)
-    : _context(context)
+Geometry::Geometry()
 {
 
 }

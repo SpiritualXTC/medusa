@@ -40,8 +40,7 @@ namespace medusa
         inline void segments(uint32_t s)  { _segments = s; }
         inline void stacks(uint32_t s)    { _stacks   = s; }
 
-        std::shared_ptr<Geometry> build(std::shared_ptr<IContext> context,
-                                        const Material& material) const override;
+        std::shared_ptr<Geometry> build(const Material& material) const override;
 
     protected:
         float    _radius;
@@ -84,8 +83,7 @@ namespace medusa
         inline void outerRadius(float r) { _radius      = r; }
         inline void innerRadius(float r) { _innerRadius = r; }
 
-        std::shared_ptr<Geometry> build(std::shared_ptr<IContext> context,
-                                        const Material& material) const override;
+        std::shared_ptr<Geometry> build(const Material& material) const override;
 
     private:
         float _innerRadius;

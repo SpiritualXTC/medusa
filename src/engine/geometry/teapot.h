@@ -31,8 +31,7 @@ namespace medusa
         inline void resolution(uint32_t r) { _resolution = r; }
         inline void scale(float s)         { _scale      = s; }
 
-        std::shared_ptr<Geometry> build(std::shared_ptr<IContext> context,
-                                        const Material& material) const override;
+        std::shared_ptr<Geometry> build(const Material& material) const override;
 
     private:
         uint32_t _resolution;

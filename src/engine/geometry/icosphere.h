@@ -34,8 +34,7 @@ namespace medusa
         inline void radius(float r) { _radius = r; }
         inline void subdivisions(uint32_t s) { _subdivisions = s; }
 
-        std::shared_ptr<Geometry> build(std::shared_ptr<IContext> context,
-            const Material& material) const override;
+        std::shared_ptr<Geometry> build(const Material& material) const override;
 
     private:
         float    _radius;

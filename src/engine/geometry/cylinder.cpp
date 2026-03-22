@@ -223,8 +223,7 @@ Cylinder::~Cylinder()
 }
 
 
-std::shared_ptr<Geometry> Cylinder::build(std::shared_ptr<IContext> context,
-                                           const Material& material) const
+std::shared_ptr<Geometry> Cylinder::build(const Material& material) const
 {
     const uint32_t S   = std::max(_segments, 3u);
     const uint32_t ST  = std::max(_stacks, 1u);
@@ -270,7 +269,7 @@ std::shared_ptr<Geometry> Cylinder::build(std::shared_ptr<IContext> context,
     pushCap(mb, R, top, true,  S);
 
     // ------------------------------------------------------------------ populate Geometry
-    auto geo = std::make_shared<Geometry>(context);
+    auto geo = std::make_shared<Geometry>();
 
     geo->addVertexData(mb.positions.data(),       mb.positions.size(),       1, AttributeLocation::Position);
     geo->addVertexData(mb.normals.data(),         mb.normals.size(),         1, AttributeLocation::Normal);
@@ -310,8 +309,7 @@ Tube::~Tube()
 }
 
 
-std::shared_ptr<Geometry> Tube::build(std::shared_ptr<IContext> context,
-                                       const Material& material) const
+std::shared_ptr<Geometry> Tube::build(const Material& material) const
 {
     const uint32_t S    = std::max(_segments, 3u);
     const uint32_t ST   = std::max(_stacks, 1u);
@@ -387,7 +385,7 @@ std::shared_ptr<Geometry> Tube::build(std::shared_ptr<IContext> context,
     pushAnnularCap(mb, Ro, Ri, top, true,  S);
 
     // ------------------------------------------------------------------ populate Geometry
-    auto geo = std::make_shared<Geometry>(context);
+    auto geo = std::make_shared<Geometry>();
 
     geo->addVertexData(mb.positions.data(),       mb.positions.size(),       1, AttributeLocation::Position);
     geo->addVertexData(mb.normals.data(),         mb.normals.size(),         1, AttributeLocation::Normal);
