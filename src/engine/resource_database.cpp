@@ -11,6 +11,8 @@
 
 #include <engine/resources/model_loader.h>
 #include <engine/resources/texture_loader.h>
+#include <engine/resources/shader_loader.h>
+
 
 using namespace medusa;
 
@@ -27,20 +29,16 @@ ResourceDatabase::ResourceDatabase(const std::shared_ptr<IContext> context)
 //
 std::shared_ptr<IShader> ResourceDatabase::getShader(const std::string& shaderName)
 {
-    // ALWAYS. Load a new Shader. No References!
-
+    // Load a new Shader. No References!
     std::unordered_map<ShaderType, std::string> keys{
         {ShaderType::VertexShader, "vertex"},
         {ShaderType::FragmentShader, "fragment"},
         {ShaderType::GeometryShader, "geometry"},
     };
 
-    // Lock the context pointer
-    auto context = _context.lock();
+    std::unordered_map<ShaderType, std::string> paths{};
 
-    auto shader = context->createShader();
-
-    // TODO: Move to a loader
+    // Retrieve the filenames from the resource reference
     for (auto it = keys.begin(); it != keys.end(); ++it)
     {
         std::string resourceKey = std::format("resources.shaders.{}.{}", shaderName, it->second);
@@ -48,14 +46,13 @@ std::shared_ptr<IShader> ResourceDatabase::getShader(const std::string& shaderNa
         std::string s = getValue<std::string>(resourceKey, "");
         if (s != "")
         {
+            // Make the path relative to the data directory
             std::string filepath = "../data/" + s;
-            shader->attachShader(it->first, filepath);
+            paths.insert({ it->first, filepath });
         }
     }
 
-    shader->linkShader();
-
-    return shader;
+    return loaders::ShaderLoader::loadShader(_context.lock(), paths);
 
 }
 
@@ -64,8 +61,6 @@ std::shared_ptr<IShader> ResourceDatabase::getShader(const std::string& shaderNa
 std::shared_ptr<Geometry> ResourceDatabase::getModel(const std::string& modelName)
 {
     logging::error("Loading Model");
-
-    auto context = _context.lock();
 
     std::string resourceKey = std::format("resources.models.{}.model", modelName);
     std::string resourceFile = getValue<std::string>(resourceKey, "");
@@ -79,5 +74,5 @@ std::shared_ptr<Geometry> ResourceDatabase::getModel(const std::string& modelNam
 
     std::string filepath = "../data/" + resourceFile;
 
-    return loaders::ModelLoader::loadModel(context, filepath);
+    return loaders::ModelLoader::loadModel(_context.lock(), filepath);
 }
