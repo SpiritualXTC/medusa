@@ -79,7 +79,5 @@ std::shared_ptr<Geometry> ResourceDatabase::getModel(const std::string& modelNam
 
     std::string filepath = "../data/" + resourceFile;
 
-    std::shared_ptr<loaders::ModelLoader> loader = std::make_shared<loaders::ModelLoader>(context);
-
-    return loader->load(filepath);
+    return loaders::ModelLoader::loadModel(context, filepath);
 }

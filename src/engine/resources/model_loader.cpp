@@ -21,26 +21,9 @@ using namespace medusa::loaders;
 
 
 //
-ModelLoader::ModelLoader(std::shared_ptr<IContext> context)
-    : _context(context)
-{
-
-}
-
-
-//
-ModelLoader::~ModelLoader()
-{
-
-}
-
-
-//
-std::shared_ptr<Geometry> ModelLoader::load(const std::string& filename)
+std::shared_ptr<Geometry> ModelLoader::loadModel(std::shared_ptr<IContext> context, const std::string& filename)
 {
     Assimp::Importer importer;
-
-    auto context = _context.lock();
 
     // Model Data
     std::shared_ptr<Geometry> model = std::make_shared<Geometry>();

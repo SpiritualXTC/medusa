@@ -15,9 +15,6 @@ namespace medusa
             TextureLoader() = delete;
 
             static std::shared_ptr<ITexture> loadTexture2D(std::shared_ptr<IContext> context, const std::string& filename);
-
-        private:
-            std::weak_ptr<IContext> _context;
         };
     }
 }

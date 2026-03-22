@@ -16,14 +16,9 @@ namespace medusa
         class ModelLoader
         {
         public:
-            ModelLoader(std::shared_ptr<IContext> context);
-            virtual ~ModelLoader();
+            ModelLoader() = delete;
 
-            //
-            std::shared_ptr<Geometry> load(const std::string& filename);
-
-        private:
-            std::weak_ptr<IContext> _context;
+            static std::shared_ptr<Geometry> loadModel(std::shared_ptr<IContext> context, const std::string& filename);
         };
     }
 }
