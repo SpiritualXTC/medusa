@@ -251,156 +251,83 @@ namespace medusa
         }
 
 
-        /*
-
-
-        inline GLenum convBlendEquation(BlendEquation equation)
+        GLenum mapEnum(Capability cap)
         {
-            static GLenum dat[]
-            {
-                GL_FUNC_ADD,
-                GL_FUNC_SUBTRACT,
-                GL_FUNC_REVERSE_SUBTRACT,
-                GL_MIN,
-                GL_MAX
+            static const std::unordered_map<Capability, GLenum> items{
+                // Fragment operations
+                { Capability::Blend,                    GL_BLEND                    },
+                { Capability::ColorLogicOp,             GL_COLOR_LOGIC_OP           },
+                { Capability::DepthTest,                GL_DEPTH_TEST               },
+                { Capability::StencilTest,              GL_STENCIL_TEST             },
+                { Capability::ScissorTest,              GL_SCISSOR_TEST             },
+                { Capability::AlphaTest,                GL_ALPHA_TEST               },
+
+                // Rasterisation
+                { Capability::CullFace,                 GL_CULL_FACE                },
+                { Capability::PolygonOffsetFill,        GL_POLYGON_OFFSET_FILL      },
+                { Capability::PolygonOffsetLine,        GL_POLYGON_OFFSET_LINE      },
+                { Capability::PolygonOffsetPoint,       GL_POLYGON_OFFSET_POINT     },
+                { Capability::LineSmooth,               GL_LINE_SMOOTH              },
+                { Capability::PolygonSmooth,            GL_POLYGON_SMOOTH           },
+                { Capability::Multisample,              GL_MULTISAMPLE              },
+                { Capability::SampleAlphaToCoverage,    GL_SAMPLE_ALPHA_TO_COVERAGE },
+                { Capability::SampleAlphaToOne,         GL_SAMPLE_ALPHA_TO_ONE      },
+                { Capability::SampleCoverage,           GL_SAMPLE_COVERAGE          },
+                { Capability::SampleShading,            GL_SAMPLE_SHADING           },
+
+                // Primitive / geometry
+                { Capability::PrimitiveRestart,         GL_PRIMITIVE_RESTART        },
+                { Capability::PrimitiveRestartFixedIndex, GL_PRIMITIVE_RESTART_FIXED_INDEX },
+                { Capability::RasterizerDiscard,        GL_RASTERIZER_DISCARD       },
+
+                // Framebuffer / output
+                { Capability::FramebufferSRGB,          GL_FRAMEBUFFER_SRGB         },
+                { Capability::Dither,                   GL_DITHER                   },
+
+                // Miscellaneous
+                { Capability::DepthClamp,               GL_DEPTH_CLAMP              },
+                { Capability::TextureCubeMapSeamless,   GL_TEXTURE_CUBE_MAP_SEAMLESS },
+                { Capability::ProgramPointSize,         GL_PROGRAM_POINT_SIZE       },
+                { Capability::DebugOutput,              GL_DEBUG_OUTPUT             },
+                { Capability::DebugOutputSynchronous,   GL_DEBUG_OUTPUT_SYNCHRONOUS },
             };
-
-            return dat[(Int32)equation];
-        }
-
-        inline GLenum convBlendFunction(BlendFunction function)
-        {
-            static GLenum dat[]
-            {
-                GL_ZERO,
-                GL_ONE,
-
-                GL_SRC_COLOR,
-                GL_ONE_MINUS_SRC_COLOR,
-
-                GL_DST_COLOR,
-                GL_ONE_MINUS_DST_COLOR,
-
-                GL_SRC_ALPHA,
-                GL_ONE_MINUS_SRC_ALPHA,
-
-                GL_DST_ALPHA,
-                GL_ONE_MINUS_DST_ALPHA,
-
-                GL_CONSTANT_COLOR,
-                GL_ONE_MINUS_CONSTANT_COLOR,
-
-                GL_CONSTANT_ALPHA,
-                GL_ONE_MINUS_CONSTANT_ALPHA,
-
-                GL_SRC_ALPHA_SATURATE
-            };
-
-            return dat[(Int32)function];
+            return _gl_map(items, cap);
         }
 
 
-
-        inline GLenum convStencilOperation(StencilOperation op)
+        GLenum mapEnum(LogicOperation op)
         {
-            static GLenum dat[]
-            {
-                GL_ZERO,
-                GL_KEEP,
-                GL_REPLACE,
-                GL_INCR,
-                GL_INCR_WRAP,
-                GL_DECR,
-                GL_DECR_WRAP,
-                GL_INVERT
+            static const std::unordered_map<LogicOperation, GLenum> items{
+                { LogicOperation::Clear,        GL_CLEAR         },
+                { LogicOperation::Set,          GL_SET           },
+                { LogicOperation::Copy,         GL_COPY          },
+                { LogicOperation::CopyInverted, GL_COPY_INVERTED },
+                { LogicOperation::Noop,         GL_NOOP          },
+                { LogicOperation::Invert,       GL_INVERT        },
+                { LogicOperation::And,          GL_AND           },
+                { LogicOperation::Nand,         GL_NAND          },
+                { LogicOperation::Or,           GL_OR            },
+                { LogicOperation::Nor,          GL_NOR           },
+                { LogicOperation::Xor,          GL_XOR           },
+                { LogicOperation::Equivalent,   GL_EQUIV         },
+                { LogicOperation::AndReverse,   GL_AND_REVERSE   },
+                { LogicOperation::AndInverted,  GL_AND_INVERTED  },
+                { LogicOperation::OrReverse,    GL_OR_REVERSE    },
+                { LogicOperation::OrInverted,   GL_OR_INVERTED   },
             };
-
-            return dat[(Int32)op];
+            return _gl_map(items, op);
         }
 
 
-        inline GLenum convDataType(DataType dataType)
+        GLenum mapEnum(FaceSelector face)
         {
-            static GLenum dat[]
-            {
-                GL_BYTE,
-                GL_UNSIGNED_BYTE,
-                GL_SHORT,
-                GL_UNSIGNED_SHORT,
-                GL_INT,
-                GL_UNSIGNED_INT,
-                GL_FLOAT,
-                GL_FIXED,
+            static const std::unordered_map<FaceSelector, GLenum> items{
+                { FaceSelector::Front,        GL_FRONT          },
+                { FaceSelector::Back,         GL_BACK           },
+                { FaceSelector::FrontAndBack, GL_FRONT_AND_BACK },
             };
-
-            return dat[(Int32)dataType];
+            return _gl_map(items, face);
         }
-
-
-        inline GLenum convStorageFormatInternal(StorageFormat format)
-        {
-            static GLenum dat[]
-            {
-                GL_RGBA,
-
-                GL_RGBA16F,
-                GL_RGBA32F,
-
-                GL_DEPTH_COMPONENT16,
-                GL_DEPTH_COMPONENT24,
-                GL_DEPTH_COMPONENT32,
-
-                GL_DEPTH_STENCIL
-            };
-
-
-            return dat[(Int32)format];
-        }
-
-
-        inline GLenum convStorageFormat(StorageFormat format)
-        {
-            // Same as above... only the simpler version... lol
-            // https://www.opengl.org/sdk/docs/man/html/glTexImage2D.xhtml
-            static GLenum dat[]
-            {
-                GL_RGBA,
-
-                GL_RGBA,
-                GL_RGBA,
-
-                GL_DEPTH_COMPONENT,
-                GL_DEPTH_COMPONENT,
-                GL_DEPTH_COMPONENT,
-
-                GL_DEPTH_STENCIL
-            };
-
-
-            return dat[(Int32)format];
-        }
-
-
-        */
-
-
-
-
-        // What as this? lol
-        /*
-
-        inline GLenum convFaceMode(FaceMode face)
-        {
-            static GLenum dat[]
-            {
-                GL_FRONT,
-                GL_BACK,
-                GL_FRONT_AND_BACK
-            };
-
-            return dat[(Int32)face];
-        }
-        */
 
     }
 }

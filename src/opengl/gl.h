@@ -11,7 +11,6 @@
 #include <medusa/graphics/buffer.h>
 #include <medusa/graphics/shader.h>
 #include <medusa/graphics/texture.h>
-#include <medusa/graphics.h>
 
 
 namespace medusa
@@ -50,5 +49,10 @@ namespace medusa
         GLint mapEnum(TextureMinFilter minFilter);
         GLenum mapEnum(TextureWrapMode wrapMode);
         GLenum mapEnum(Swizzle swizzle);
+
+        // Pipeline state enums
+        GLenum mapEnum(Capability cap);
+        GLenum mapEnum(LogicOperation op);
+        GLenum mapEnum(FaceSelector face);
     }
 }
