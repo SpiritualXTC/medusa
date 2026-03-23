@@ -11,7 +11,6 @@ namespace medusa
 {
     // Forward Declarations
     class Config;
-    class MedusaState;
 
 
     namespace opengl
@@ -21,9 +20,6 @@ namespace medusa
         public:
             ContextGL(std::shared_ptr<Config> config);
             virtual ~ContextGL();
-
-            // IState
-            virtual bool reset() override;
 
             // IContext
             virtual std::shared_ptr<IWindow> window() override { return _window; }
@@ -44,7 +40,6 @@ namespace medusa
         private:
             SDL_GLContext _context = nullptr;
 
-            std::weak_ptr<MedusaState> _state;
             std::shared_ptr<WindowGL> _window;
             std::shared_ptr<RendererGL> _renderer;
 

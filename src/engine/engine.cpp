@@ -8,7 +8,6 @@
 #include <engine/config.h>
 #include <engine/events.h>
 #include <engine/window.h>
-#include <engine/state.h>
 #include <engine/resource_database.h>
 #include <engine/input/mouse.h>
 #include <engine/input/keyboard.h>
@@ -17,15 +16,9 @@
 
 using namespace medusa;
 
-Engine::Engine(std::shared_ptr<MedusaState> state)
+Engine::Engine()
 {
     logging::info("Launch Application");
-
-    // State
-    if (state == nullptr)
-        state = std::make_shared<MedusaState>();
-
-    _state = state;
 
     // Config
     _config = std::make_shared<MedusaConfig>();

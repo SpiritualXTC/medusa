@@ -3,18 +3,16 @@
 #include <memory>
 #include <vector>
 
+#include <medusa/engine/engine.h>
+#include <medusa/engine_fwd.h>
+
 namespace medusa
 {
     // Forward Declarations
-    class IApplication;
-    class IContext;
-    class IWindow;
-
     class MedusaConfig;
     class Timing;
 
     class Events;
-
 
     class Keyboard;
     class Mouse;
@@ -23,16 +21,14 @@ namespace medusa
 
     class IScene;
 
-    class MedusaState;
-
 
     /// <summary>
     ///
     /// </summary>
-    class Engine
+    class Engine : public IEngine
     {
     public:
-        Engine(std::shared_ptr<MedusaState> state = nullptr);
+        Engine();
         virtual ~Engine();
 
         void run(std::shared_ptr<IApplication> application);
@@ -44,8 +40,9 @@ namespace medusa
         const inline std::shared_ptr<Timing>& timing() { return _timing; }
         const inline std::shared_ptr<ResourceDatabase>& resources() { return _resources; }
 
-        // Input. Would be beneficial to abstract input to an action handler.
-        //  Multiple action handles can be registered, each once has customisable "behaviours" and configurable on a per-os basis. The Actions however remap the OS events into Game specific events
+        // TODO: Input. Would be beneficial to abstract input to an action handler.
+        //  Multiple action handles can be registered, each once has customisable "behaviours" and configurable on a per-os basis.
+        //  The Actions however remap the OS events into Game specific events
         //  For easier tracking
         inline std::shared_ptr<Mouse>& mouse() { return _mouse; }
         inline std::shared_ptr<Keyboard>& keyboard() { return _keyboard; }
@@ -74,7 +71,6 @@ namespace medusa
         std::shared_ptr<Keyboard> _keyboard;
 
         std::shared_ptr<IApplication> _application;
-        std::shared_ptr<MedusaState> _state;
         std::vector<std::shared_ptr<IScene>> _scenes;
     };
 }

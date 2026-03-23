@@ -6,9 +6,12 @@
 namespace medusa
 {
     // Forward Declarations
-    class IState;
+    class IEngine;
+    class IApplication;
     class IContext;
     class IWindow;
+
+    class Timing;
 
     class IMemory;
     class MemoryView;

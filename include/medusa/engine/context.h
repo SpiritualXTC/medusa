@@ -4,8 +4,6 @@
 #include <medusa/engine_fwd.h>
 #include <medusa/graphics_fwd.h>
 
-#include <medusa/engine/state.h>
-
 #include <medusa/graphics/containers.h>
 
 
@@ -13,7 +11,7 @@ namespace medusa
 {
     class IRenderer;
 
-    class IContext : public IState
+    class IContext
     {
     public:
         IContext() {}

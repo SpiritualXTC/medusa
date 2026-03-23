@@ -116,17 +116,6 @@ ContextGL::~ContextGL()
 
 
 //
-bool ContextGL::reset()
-{
-    // TODO: Zero the lists
-
-    // TODO: Undo binding indices
-
-    return true;
-}
-
-
-//
 bool ContextGL::next()
 {
     float r = 0.5;// (float)(rand() % 255) / 255;
