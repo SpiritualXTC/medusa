@@ -1,7 +1,5 @@
 #include "context_gl.h"
 
-#include <format>
-#include <iostream>
 #include <string>
 
 #include <SDL.h>
@@ -88,15 +86,11 @@ ContextGL::ContextGL(std::shared_ptr<Config> config)
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     glDebugMessageCallback(debugMessageCallback, this);
 
-    // Create the Renderer
-    _renderer = std::make_shared<RendererGL>(_window);
-
     int major, minor;
     SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &major);
     SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &minor);
 
     logging::info(fmt::format("OpenGL Version: {}.{}", major, minor));
-
 
     // Enable/Disable VSync [TODO: Should be an option]
     SDL_GL_SetSwapInterval(0);  // 1 to enable VSync
@@ -133,6 +127,34 @@ bool ContextGL::present()
 {
     SDL_GL_SwapWindow(_window->handle());
     return true;
+}
+
+
+//
+void ContextGL::setClearColour(float r, float g, float b, float a)
+{
+    glClearColor(r, g, b, a);
+}
+
+
+//
+void ContextGL::setClearDepth(float f)
+{
+    glClearDepth(f);
+}
+
+
+//
+void ContextGL::setClearStencil(int32_t i)
+{
+    glClearStencil(i);
+}
+
+
+//
+void ContextGL::setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+{
+    glViewport(x, y, width, height);
 }
 
 

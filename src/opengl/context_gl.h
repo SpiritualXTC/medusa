@@ -5,7 +5,7 @@
 #include <medusa/engine/context.h>
 
 #include "window_gl.h"
-#include "renderer_gl.h"
+
 
 namespace medusa
 {
@@ -23,10 +23,16 @@ namespace medusa
 
             // IContext
             virtual std::shared_ptr<IWindow> window() override { return _window; }
-            virtual std::shared_ptr<IRenderer> renderer() override { return _renderer; }
 
             virtual bool next() override;
             virtual bool present() override;
+
+            // Context States
+            void setClearColour(float r, float g, float b, float a) override;
+            void setClearDepth(float f) override;
+            void setClearStencil(int32_t i) override;
+
+            void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 
             // Factory
             std::shared_ptr<IMemory> createMemory(BufferType bufferType, BufferUsage usage) override;
@@ -41,7 +47,6 @@ namespace medusa
             SDL_GLContext _context = nullptr;
 
             std::shared_ptr<WindowGL> _window;
-            std::shared_ptr<RendererGL> _renderer;
 
             std::unordered_map<BufferType, ResourceIndex> _binding;
         };

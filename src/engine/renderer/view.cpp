@@ -4,7 +4,6 @@
 
 #include <medusa/engine/context.h>
 #include <medusa/renderer/layer.h>
-#include <medusa/renderer/renderer.h>
 #include <engine/window.h>
 
 using namespace medusa;
@@ -56,7 +55,7 @@ bool View::render()
     uint32_t width = _screen.x * _size.x;
     uint32_t height = _screen.y * _size.y;
 
-    _context->renderer()->setViewport(left, top, width, height);
+    _context->setViewport(left, top, width, height);
 
     layer()->render();
     return true;

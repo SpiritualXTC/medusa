@@ -18,7 +18,6 @@ namespace medusa
         virtual ~IContext() {}
 
         virtual std::shared_ptr<IWindow> window() = 0;
-        virtual std::shared_ptr<IRenderer> renderer() = 0;
 
         /// <summary>
         ///
@@ -32,6 +31,21 @@ namespace medusa
         /// </summary>
         /// <returns></returns>
         virtual bool present() = 0;
+
+
+
+        virtual void setClearColour(float r, float g, float b, float a) = 0;
+        virtual void setClearDepth(float f) = 0;
+        virtual void setClearStencil(int32_t i) = 0;
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        virtual void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
 
 
         /// <summary>
