@@ -2,43 +2,43 @@
 
 Medusa Renderer:
 ================
-
-IContext:	Device Context
-
-
-IRenderer:	Rendering point for the device context. Used for Render State assignments.
-				This means we don't require everything to have a per api implementation. They just need the renderer
+(This is a l'il out of date)
 
 
-IScene:		The objects being rendered to this view. The Views, the Pipelines.
+IEngine:    Entry Point
 
 
-IView:		The Viewport. Clipping. The "ACTIVE" camera (View/Projection)			There MAY be multiple simulateneous views
-			A View should create it's own set of shaders, they should NOT be shared.
+IContext:   Device Context, Render State Assignments
+
+
+IScene:     The objects being rendered to this view. The Views, the Pipelines.
+
+
+IView:      The Viewport. Clipping. The "ACTIVE" camera (View/Projection)           There MAY be multiple simulateneous views
+            A View should create it's own set of shaders, they should NOT be shared.
 
 
 
-ILayer:		Layer in a View.
-	- Layer
-	- LayerGroup
+ILayer:     Layer in a View.
+    - Layer
+    - LayerGroup
 
-IPipeline:	The rendering method, collection of passes					[equiv: DirectX9 Technique]
-IPass:		A shader. The rendering state								[equiv: DirectX9 Pass]
+IPipeline:  The rendering method, collection of passes                  [equiv: DirectX9 Technique]
+    - Reference to the global geometry buffer to render
+    - Manages the culling / instancing of the geometry
+    - Descriptor interfacing the geometry/shader                        (This will get moved to a pass later)
+        Each descriptor should be <unique> to it's pipeline/pass
+
+IPass:      A shader. The rendering state                               [equiv: DirectX9 Pass]
+    - Reference to the Shader
 
 
 
 Default Flow:
 -------------
 
-IScene														: SceneGraph
-	IView													: Viewport(s). The view will typically be the configuration point.
-		ILayer												: Different aspect of what is being rendered to a View (UI, World, HUD, etc)
-			IPipeline										: 1 or more passes. (Typically one, but deferred rendering (for eg) require multiple)
-				IPass										: Set the state for this pass. Renders the items
-					IRenderContainer						: Reference to the list of items to render
-
-
-Custom Flows:
--------------
-
-Can be configured however...
+IScene                                                      : SceneGraph
+    IView                                                   : Viewport(s). The view will typically be the configuration point.
+        ILayer                                              : Different aspect of what is being rendered to a View (UI, World, HUD, etc)
+            IPipeline                                       : 1 or more passes. (Typically one, but deferred rendering (for eg) require multiple)
+                IPass                                       : Set the state for this pass. Renders the items
