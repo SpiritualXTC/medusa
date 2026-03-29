@@ -18,6 +18,7 @@
 #include "graphics/shader_gl.h"
 #include "graphics/descriptor_gl.h"
 #include "graphics/texture_gl.h"
+#include "graphics/pipeline_state_gl.h"
 
 
 using namespace medusa;
@@ -94,6 +95,8 @@ ContextGL::ContextGL(std::shared_ptr<Config> config)
 
     // Enable/Disable VSync [TODO: Should be an option]
     SDL_GL_SetSwapInterval(0);  // 1 to enable VSync
+
+    _pipelineState = std::make_shared<PipelineStateGL>();
 }
 
 

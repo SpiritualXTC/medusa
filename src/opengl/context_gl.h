@@ -15,6 +15,8 @@ namespace medusa
 
     namespace opengl
     {
+        class PipelineStateGL;
+
         class ContextGL : public IContext, public std::enable_shared_from_this<ContextGL>
         {
         public:
@@ -49,6 +51,8 @@ namespace medusa
             std::shared_ptr<WindowGL> _window;
 
             std::unordered_map<BufferType, ResourceIndex> _binding;
+
+            std::shared_ptr<PipelineStateGL> _pipelineState;
         };
     }
 }
