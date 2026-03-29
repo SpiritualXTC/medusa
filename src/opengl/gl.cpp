@@ -294,6 +294,56 @@ namespace medusa
             return _gl_map(items, cap);
         }
 
+        GLenum mapEnum(BlendEquation equation)
+        {
+            static const std::unordered_map<BlendEquation, GLenum> items{
+                { BlendEquation::Add,             GL_FUNC_ADD              },
+                { BlendEquation::Subtract,        GL_FUNC_SUBTRACT         },
+                { BlendEquation::ReverseSubtract, GL_FUNC_REVERSE_SUBTRACT },
+                { BlendEquation::Min,             GL_MIN                   },
+                { BlendEquation::Max,             GL_MAX                   },
+            };
+            return _gl_map(items, equation);
+        }
+
+
+        GLenum mapEnum(BlendFunction function)
+        {
+            static const std::unordered_map<BlendFunction, GLenum> items{
+                { BlendFunction::Zero,                     GL_ZERO                     },
+                { BlendFunction::One,                      GL_ONE                      },
+                { BlendFunction::SourceColour,             GL_SRC_COLOR                },
+                { BlendFunction::OneMinusSourceColour,     GL_ONE_MINUS_SRC_COLOR      },
+                { BlendFunction::DestinationColour,        GL_DST_COLOR                },
+                { BlendFunction::OneMinusDestinationColour,GL_ONE_MINUS_DST_COLOR      },
+                { BlendFunction::SourceAlpha,              GL_SRC_ALPHA                },
+                { BlendFunction::OneMinusSourceAlpha,      GL_ONE_MINUS_SRC_ALPHA      },
+                { BlendFunction::DestinationAlpha,         GL_DST_ALPHA                },
+                { BlendFunction::OneMinusDestinationAlpha, GL_ONE_MINUS_DST_ALPHA      },
+                { BlendFunction::ConstantColour,           GL_CONSTANT_COLOR           },
+                { BlendFunction::OneMinusConstantColour,   GL_ONE_MINUS_CONSTANT_COLOR },
+                { BlendFunction::ConstantAlpha,            GL_CONSTANT_ALPHA           },
+                { BlendFunction::OneMinusConstantAlpha,    GL_ONE_MINUS_CONSTANT_ALPHA },
+                { BlendFunction::AlphaSaturate,            GL_SRC_ALPHA_SATURATE       },
+            };
+            return _gl_map(items, function);
+        }
+
+
+        GLenum mapEnum(StencilOperation operation)
+        {
+            static const std::unordered_map<StencilOperation, GLenum> items{
+                { StencilOperation::Zero,         GL_ZERO      },
+                { StencilOperation::Keep,         GL_KEEP      },
+                { StencilOperation::Replace,      GL_REPLACE   },
+                { StencilOperation::Increment,    GL_INCR      },
+                { StencilOperation::IncrementWrap,GL_INCR_WRAP },
+                { StencilOperation::Decrement,    GL_DECR      },
+                { StencilOperation::DecrementWrap,GL_DECR_WRAP },
+                { StencilOperation::Invert,       GL_INVERT    },
+            };
+            return _gl_map(items, operation);
+        }
 
         GLenum mapEnum(LogicOperation op)
         {

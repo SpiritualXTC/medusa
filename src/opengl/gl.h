@@ -52,6 +52,10 @@ namespace medusa
 
         // Pipeline state enums
         GLenum mapEnum(Capability cap);
+
+        GLenum mapEnum(BlendEquation equation);
+        GLenum mapEnum(BlendFunction function);
+        GLenum mapEnum(StencilOperation operation);
         GLenum mapEnum(LogicOperation op);
         GLenum mapEnum(FaceSelector face);
     }
