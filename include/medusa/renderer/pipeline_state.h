@@ -247,9 +247,9 @@ namespace medusa
         /// Maps normalised device depth values to window-space depth values.
         /// near and far are clamped to [0, 1].
         /// </summary>
-        inline PipelineState& depthRange(double near, double depthFar)
+        inline PipelineState& depthRange(double depthNear, double depthFar)
         {
-            _depth.depthNear = near;
+            _depth.depthNear = depthNear;
             _depth.depthFar = depthFar;
             return *this;
         }

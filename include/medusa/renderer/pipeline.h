@@ -1,11 +1,11 @@
 #pragma once
 
 #include <medusa/medusa.h>
+#include <medusa/graphics/enum.h>
+
 
 namespace medusa
 {
-    class IPass;
-
     class IPipeline
     {
     public:
@@ -14,4 +14,5 @@ namespace medusa
 
         virtual bool render() = 0;
     };
-}
+
+} //namespace medusa

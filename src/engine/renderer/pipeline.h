@@ -2,6 +2,7 @@
 
 #include <medusa/medusa.h>
 #include <medusa/graphics_fwd.h>
+#include <medusa/renderer_fwd.h>
 #include <medusa/containers_fwd.h>
 
 #include <medusa/renderer/pipeline.h>
