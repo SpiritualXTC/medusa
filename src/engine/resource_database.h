@@ -5,8 +5,10 @@
 #include <medusa/graphics_fwd.h>
 #include <medusa/containers_fwd.h>
 
+#include <medusa/renderer/pipeline_state.h>
 
 #include <core/utilities/config.h>
+
 
 namespace medusa
 {
@@ -18,7 +20,13 @@ namespace medusa
     public:
         ResourceDatabase(const std::shared_ptr<IContext> context);
 
-        std::shared_ptr<IShader> getShader(const std::string& shaderName);
+        std::shared_ptr<IShader> getShader(const std::string& shaderName)
+        {
+            PipelineState state;
+            return getShader(shaderName, state);
+        }
+
+        std::shared_ptr<IShader> getShader(const std::string& shaderName, PipelineState& pipelineState);
 
         std::shared_ptr<Geometry> getModel(const std::string& modelName);
 

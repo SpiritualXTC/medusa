@@ -4,7 +4,7 @@
 #include <medusa/engine_fwd.h>
 #include <medusa/containers_fwd.h>
 #include <medusa/graphics_fwd.h>
-
+#include <medusa/renderer/pipeline_state.h>
 
 namespace medusa
 {
@@ -53,6 +53,15 @@ namespace medusa
         virtual bool bind() = 0;
         virtual bool unbind() = 0;
 
+        inline PipelineState& state() { return _state; }    // TODO: This should crash once the shader is linked.
+        const inline PipelineState& state() const { return _state; }
+
+        inline PipelineState& state(const PipelineState& state)
+        {
+            _state = state;
+            return _state;
+        }
+
 
         /// <summary>
         /// Bind UniformBuffer or ShaderStorage
@@ -86,7 +95,7 @@ namespace medusa
         virtual inline void setUniform(const std::string& name, const int32_t i) const = 0;
         virtual inline void setUniform(const std::string& name, const bool b) const = 0;
 
-    private:
-
+    protected:
+        PipelineState _state;
     };
 }  // namespace medusa

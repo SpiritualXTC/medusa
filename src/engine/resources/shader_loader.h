@@ -12,7 +12,7 @@ namespace medusa
         public:
             ShaderLoader() = delete;
 
-            static std::shared_ptr<IShader> loadShader(std::shared_ptr<IContext> context, const std::unordered_map<ShaderType, std::string>& shaderFilenames);
+            static std::shared_ptr<IShader> loadShader(std::shared_ptr<IContext> context, const std::unordered_map<ShaderType, std::string>& shaderFilenames, const PipelineState& pipelineState = PipelineState());
         };
     }
 }

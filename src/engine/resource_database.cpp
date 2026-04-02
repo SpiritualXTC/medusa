@@ -12,6 +12,7 @@
 #include <engine/resources/model_loader.h>
 #include <engine/resources/texture_loader.h>
 #include <engine/resources/shader_loader.h>
+#include <engine/resources/pipeline_state_parser.h>
 
 
 using namespace medusa;
@@ -27,7 +28,7 @@ ResourceDatabase::ResourceDatabase(const std::shared_ptr<IContext> context)
 
 
 //
-std::shared_ptr<IShader> ResourceDatabase::getShader(const std::string& shaderName)
+std::shared_ptr<IShader> ResourceDatabase::getShader(const std::string& shaderName, PipelineState& pipelineState)
 {
     // Load a new Shader. No References!
     std::unordered_map<ShaderType, std::string> keys{
@@ -37,6 +38,42 @@ std::shared_ptr<IShader> ResourceDatabase::getShader(const std::string& shaderNa
     };
 
     std::unordered_map<ShaderType, std::string> paths{};
+
+    // Retrieve the state
+    std::string stateKey = std::format("resources.shaders.{}.state", shaderName);
+
+    YAML::Node stateNode;
+
+    if (getNode(stateKey, stateNode))
+    {
+        std::unordered_map<std::string, std::string> state;
+
+        for (auto it = stateNode.begin(); it != stateNode.end(); ++it)
+        {
+            std::string key = it->first.as<std::string>();
+            if (key == "enable")
+            {
+                YAML::Node enableNode = it->second.as<YAML::Node>();
+
+                for (auto it = enableNode.begin(); it != enableNode.end(); ++it)
+                {
+                    std::string cap = std::format("enable.{}", it->first.as<std::string>());
+
+                    state.insert({ cap, it->second.as<std::string>() });
+
+                    logging::debug(std::format("Getting cap state from YAML: {}={}", it->first.as<std::string>(), it->second.as<std::string>()));
+                }
+            }
+            else
+            {
+                state.insert({ it->first.as<std::string>(), it->second.as<std::string>() });
+
+                logging::debug(std::format("Getting state from YAML: {}={}", it->first.as<std::string>(), it->second.as<std::string>()));
+            }
+        }
+
+        PipelineStateParser::apply(pipelineState, state);
+    }
 
     // Retrieve the filenames from the resource reference
     for (auto it = keys.begin(); it != keys.end(); ++it)
@@ -52,7 +89,7 @@ std::shared_ptr<IShader> ResourceDatabase::getShader(const std::string& shaderNa
         }
     }
 
-    return loaders::ShaderLoader::loadShader(_context.lock(), paths);
+    return loaders::ShaderLoader::loadShader(_context.lock(), paths, pipelineState);
 
 }
 
