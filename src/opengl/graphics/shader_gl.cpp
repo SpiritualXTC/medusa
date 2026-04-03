@@ -6,7 +6,8 @@
 #include <medusa/graphics.h>
 #include <core/utilities/logging.h>
 
-#include "../gl.h"
+#include <opengl/gl.h>
+#include <opengl/graphics/pipeline_state_gl.h>
 
 using namespace medusa;
 using namespace medusa::opengl;
@@ -64,7 +65,8 @@ private:
 
 
 //
-ShaderGL::ShaderGL()
+ShaderGL::ShaderGL(std::shared_ptr<PipelineStateGL> pipelineStateGL)
+    : _pipelineStateGL(pipelineStateGL)
 {
     _handle = glCreateProgram();
 }
@@ -182,11 +184,12 @@ bool ShaderGL::bindBuffer(const std::string& name, std::shared_ptr<MemoryView> v
 }
 
 
-
 // Bind this shader as the active shader
 bool ShaderGL::bind()
 {
     glUseProgram(_handle);
+    _pipelineStateGL->push();
+    _pipelineStateGL->apply(_state);
     return true;
 }
 
@@ -194,6 +197,7 @@ bool ShaderGL::bind()
 // Unbind this shader
 bool ShaderGL::unbind()
 {
+    _pipelineStateGL->pop();
     glUseProgram(0);
     return true;
 }

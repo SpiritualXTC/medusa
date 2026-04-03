@@ -11,10 +11,12 @@ namespace medusa
 {
     namespace opengl
     {
+        class PipelineStateGL;
+
         class ShaderGL : public IShader
         {
         public:
-            ShaderGL();
+            ShaderGL(std::shared_ptr<PipelineStateGL> pipelineStateGL);
             virtual ~ShaderGL();
 
             bool attachShader(ShaderType shaderType, const std::string& filepath) override;
@@ -110,6 +112,8 @@ namespace medusa
 
         private:
             GLHandle _handle = 0;
+
+            std::shared_ptr<PipelineStateGL> _pipelineStateGL;
         };
     }
 }

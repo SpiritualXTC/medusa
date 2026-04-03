@@ -164,7 +164,7 @@ void ContextGL::setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t hei
 //
 std::shared_ptr<IShader> ContextGL::createShader()
 {
-    auto shader = std::make_shared<ShaderGL>();
+    auto shader = std::make_shared<ShaderGL>(_pipelineState);
 
     return shader;
 }
