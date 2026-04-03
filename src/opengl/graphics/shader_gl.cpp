@@ -34,7 +34,7 @@ public:
         _handle = glCreateShader(shader);
 
         const GLchar* source = content.c_str();
-        GLint length = content.length();
+        GLint length = (GLint)content.length();
         glShaderSource(_handle, 1, &source, &length);
 
         glCompileShader(_handle);
@@ -124,7 +124,7 @@ bool ShaderGL::linkShader()
     logging::info(fmt::format("Linking Shader: attributes={}, uniforms={}", attributes, uniforms));
 
     // Debugging
-    for (size_t i = 0; i < uniforms; ++i)
+    for (GLuint i = 0; i < uniforms; ++i)
     {
         char name[256] = { '\0' };
         GLsizei len = 0;
