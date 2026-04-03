@@ -31,7 +31,7 @@ namespace medusa
             if (!transformBuffer)
                 throw MedusaError("No transform buffer");
 
-            _transformIndex = transformBuffer->insert(matrix);
+            _transformIndex = static_cast<uint32_t>(transformBuffer->insert(matrix));
         }
         virtual ~Transform()
         {
