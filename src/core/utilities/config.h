@@ -1,5 +1,7 @@
 #pragma once
 
+#include <medusa/medusa.h>
+
 #include <tuple>
 #include <yaml-cpp/yaml.h>
 
@@ -11,7 +13,14 @@ namespace medusa
     class Config
     {
     public:
-        Config(const std::string& file);
+        Config(const std::string& file); // TODO: Remove
+        Config();
+
+        bool loadFromFile(const std::string& file);
+        bool loadFromString(const std::string& s);
+
+
+    public:
         virtual ~Config();
 
 

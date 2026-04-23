@@ -5,42 +5,57 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/predef.h>
 
+#include <medusa/exception.h>
+
 #include "core/utilities/logging.h"
+
 
 using namespace medusa;
 
 
-Config::Config(const std::string& file)
+//
+Config::Config()
 {
-    // TODO: Needs to combine MULTIPLE config files into a single global config.
-    //  - Application / User configs (~/./game.yaml)
-    //  - Engine (Embedded Resource)
-
-    _config = YAML::LoadFile(file);
-    for (YAML::const_iterator it = _config.begin(); it != _config.end(); ++it)
-    {
-        /*
-        std::cout << "YAML `" << it->first.as<std::string>() << "`" << std::endl;
-        std::cout << "- IsMap: " << it->first.IsMap() << std::endl;
-        std::cout << "- IsScaler: " << it->first.IsScalar() << std::endl;
-        std::cout << "- IsSequence: " << it->first.IsSequence() << std::endl;
-
-        std::cout << "- IsMap: " << it->second.IsMap() << std::endl;
-        std::cout << "- IsScaler: " << it->second.IsScalar() << std::endl;
-        std::cout << "- IsSequence: " << it->second.IsSequence() << std::endl;
-        */
-    }
-
-
 
 }
 
+
+//
+bool Config::loadFromFile(const std::string& path)
+{
+    _config = YAML::LoadFile(path);
+
+    return true;
+}
+
+
+//
+bool Config::loadFromString(const std::string& contents)
+{
+    if (contents == "")
+        throw MedusaError("No contents to load");
+    _config = YAML::Load(contents);
+
+    return true;
+}
+
+
+//
+Config::Config(const std::string& file)
+{
+    if (!loadFromFile(file))
+        throw MedusaError("Unable to load config file");
+}
+
+
+//
 Config::~Config()
 {
 
 }
 
 
+//
 std::string Config::makePlatformKey(std::string& key)
 {
 #ifdef BOOST_OS_WINDOWS
@@ -56,7 +71,7 @@ std::string Config::makePlatformKey(std::string& key)
 }
 
 
-
+//
 bool Config::getNode(const std::string& key, YAML::Node& node)
 {
     YAML::Node* n = &_config;
@@ -71,7 +86,7 @@ bool Config::getNode(const std::string& key, YAML::Node& node)
 
         YAML::Node n2 = (*n)[k].as<YAML::Node>();
 
-        n = &n2;// ((*n)[k]);
+        n = &n2;
 
         if (!n->IsDefined())
             return false;
@@ -83,6 +98,7 @@ bool Config::getNode(const std::string& key, YAML::Node& node)
 }
 
 
+//
 bool Config::getValues(const std::string& key, std::vector<std::string>& values)
 {
     YAML::Node node;
