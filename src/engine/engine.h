@@ -4,6 +4,7 @@
 #include <medusa/engine/engine.h>
 #include <medusa/engine_fwd.h>
 
+#include <engine/resources/asset_manager.h>
 
 namespace medusa
 {
@@ -17,7 +18,6 @@ namespace medusa
     class Mouse;
 
     class ResourceDatabase; // TODO: REMOVE
-    class AssetManager;
 
     class IScene;
 

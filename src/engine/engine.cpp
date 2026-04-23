@@ -13,8 +13,6 @@
 #include <engine/input/keyboard.h>
 #include <opengl/context_gl.h>
 
-#include <engine/resources/asset_manager.h>
-
 
 using namespace medusa;
 
