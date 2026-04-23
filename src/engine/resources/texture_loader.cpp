@@ -65,3 +65,51 @@ std::shared_ptr<ITexture> TextureLoader::loadTexture2D(std::shared_ptr<IContext>
 
     return texture;
 }
+
+
+//
+std::shared_ptr<ITexture> TextureLoader::loadTexture2D(std::shared_ptr<IContext> context, std::vector<uint8_t>& bytes)
+{
+    // Wrap the raw memory buffer as an SDL I/O stream
+    SDL_RWops* rw = SDL_RWFromMem((void*)bytes.data(), (int)bytes.size());
+    if (!rw)
+    {
+        SDL_Log("SDL_RWFromMem error: %s", SDL_GetError());
+        return NULL;
+    }
+
+    //
+    SDL_Surface* raw = IMG_Load_RW(rw, 0);
+    if (!raw)
+    {
+        SDL_Log("IMG_Load_RW error: %s", IMG_GetError());
+        return NULL;
+    }
+
+    // Convert to RGBA
+    SDL_Surface* rgba = toRGBA(raw);
+    if (!rgba)
+    {
+        SDL_FreeSurface(raw);
+        throw MedusaError("Failed to convert image format");
+    }
+
+    uint32_t width = static_cast<uint32_t>(rgba->w);
+    uint32_t height = static_cast<uint32_t>(rgba->h);
+
+    // Create the texture
+    std::shared_ptr<ITexture> texture = context->createTexture();
+    bool result = texture->create(rgba->pixels, width, height, TextureFormat::RGBA8);
+    if (!result)
+    {
+        logging::error(fmt::format("TextureLoader: ITexture::create() failed from RAW binary"));
+    }
+
+    // Free the converted surface if it's a separate allocation
+    if (rgba != raw)
+        SDL_FreeSurface(rgba);
+
+    SDL_FreeSurface(raw);
+
+    return texture;
+}
