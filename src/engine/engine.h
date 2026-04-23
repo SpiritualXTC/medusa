@@ -1,10 +1,9 @@
 #pragma once
 
-#include <memory>
-#include <vector>
-
+#include <medusa/medusa.h>
 #include <medusa/engine/engine.h>
 #include <medusa/engine_fwd.h>
+
 
 namespace medusa
 {
@@ -17,7 +16,8 @@ namespace medusa
     class Keyboard;
     class Mouse;
 
-    class ResourceDatabase;
+    class ResourceDatabase; // TODO: REMOVE
+    class AssetManager;
 
     class IScene;
 
@@ -39,6 +39,7 @@ namespace medusa
 
         const inline std::shared_ptr<Timing>& timing() { return _timing; }
         const inline std::shared_ptr<ResourceDatabase>& resources() { return _resources; }
+        const inline std::shared_ptr<IAssets>& assets() override { return _assets; }
 
         // TODO: Input. Would be beneficial to abstract input to an action handler.
         //  Multiple action handles can be registered, each once has customisable "behaviours" and configurable on a per-os basis.
@@ -47,6 +48,8 @@ namespace medusa
         inline std::shared_ptr<Mouse>& mouse() { return _mouse; }
         inline std::shared_ptr<Keyboard>& keyboard() { return _keyboard; }
 
+        // Asset Management
+        bool registerDirectory(const std::string& path);
 
 
         // Scene management : Maybe this needs to be somewhere else... maybe .... a SceneManager?
@@ -59,6 +62,7 @@ namespace medusa
 
         std::shared_ptr<MedusaConfig> _config;
         std::shared_ptr<ResourceDatabase> _resources;
+        std::shared_ptr<AssetManager> _assets;
 
         std::shared_ptr<Timing> _timing;
 

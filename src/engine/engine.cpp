@@ -13,9 +13,13 @@
 #include <engine/input/keyboard.h>
 #include <opengl/context_gl.h>
 
+#include <engine/resources/asset_manager.h>
+
 
 using namespace medusa;
 
+
+//
 Engine::Engine()
 {
     logging::info("Launch Application");
@@ -34,6 +38,7 @@ Engine::Engine()
     _window = _context->window();
 
     // Create Resource Database
+    _assets = std::make_shared<AssetManager>(_context);
     _resources = std::make_shared<ResourceDatabase>(_context);
     _resources->getShader("basic");
 
@@ -59,12 +64,24 @@ Engine::Engine()
     _timing->onSecond.connect([this](int fps) {this->window()->setTitle(std::format("Medusa: {0}", fps)); });
 }
 
+
+//
 Engine::~Engine()
 {
     logging::info("Quit Application");
 
 }
 
+
+//
+bool Engine::registerDirectory(const std::string& path)
+{
+    assert(_assets != nullptr);
+    return _assets->registerDirectory(path);
+}
+
+
+//
 void Engine::run(std::shared_ptr<IApplication> application)
 {
     _application = application;
