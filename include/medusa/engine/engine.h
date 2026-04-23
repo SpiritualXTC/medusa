@@ -46,6 +46,13 @@ namespace medusa
         /// </summary>
         /// <returns></returns>
         virtual const inline std::shared_ptr<Timing>& timing() = 0;
+
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        virtual const inline std::shared_ptr<IAssets>& assets() = 0;
     };
 
 }

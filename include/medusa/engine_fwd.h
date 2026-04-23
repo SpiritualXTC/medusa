@@ -10,6 +10,7 @@ namespace medusa
     class IApplication;
     class IContext;
     class IWindow;
+    class IAssets;
 
     class Timing;
 
