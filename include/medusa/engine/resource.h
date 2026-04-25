@@ -1,6 +1,7 @@
 #pragma once
 
 #include <medusa/medusa.h>
+#include <medusa/graphics_fwd.h>
 
 namespace medusa
 {
@@ -24,5 +25,4 @@ namespace medusa
     private:
         uint64_t _id = ResourceID::generate_id();
     };
-
 }
