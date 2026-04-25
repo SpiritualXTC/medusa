@@ -20,7 +20,7 @@ using namespace medusa;
 
 //
 ResourceDatabase::ResourceDatabase(const std::shared_ptr<IContext> context)
-    : Config("../data/resource.yaml")
+    : Config("../data/assets.yaml")
     , _context(context)
 {
 
