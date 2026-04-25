@@ -9,7 +9,7 @@ namespace medusa
     class TextureManager
     {
     public:
-        TextureManager(std::weak_ptr<IContext> context);
+        TextureManager(std::weak_ptr<IContext> context, std::weak_ptr<IAssets> assets);
         virtual ~TextureManager();
 
         bool hasTexture(const std::string& name);
@@ -18,8 +18,9 @@ namespace medusa
         std::shared_ptr<ITexture> addTexture(const std::string& name, std::shared_ptr<ITexture> texture);
         std::shared_ptr<ITexture> loadTexture(const std::string& filename);
 
-    private:
 
+    private:
+        std::weak_ptr<IAssets> _assets;
         std::weak_ptr<IContext> _context;
 
         std::unordered_map<std::string, std::shared_ptr<ITexture>> _textures;

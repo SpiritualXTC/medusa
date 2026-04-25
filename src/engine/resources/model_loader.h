@@ -7,6 +7,7 @@
 namespace medusa
 {
     class Geometry;
+    class TextureManager;
 
     namespace loaders
     {
@@ -18,7 +19,7 @@ namespace medusa
         public:
             ModelLoader() = delete;
 
-            static std::shared_ptr<Geometry> loadModel(std::shared_ptr<IContext> context, const std::string& filename);
+            static std::shared_ptr<Geometry> loadModel(std::shared_ptr<IContext> context, const std::string& filename, std::shared_ptr<TextureManager> textureManager = nullptr);
         };
     }
 }

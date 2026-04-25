@@ -14,6 +14,7 @@
 #include <engine/geometry/geometry.h>
 
 #include <engine/resources/texture_loader.h>
+#include <engine/resources/texture_manager.h>
 
 
 using namespace medusa;
@@ -21,7 +22,7 @@ using namespace medusa::loaders;
 
 
 //
-std::shared_ptr<Geometry> ModelLoader::loadModel(std::shared_ptr<IContext> context, const std::string& filename)
+std::shared_ptr<Geometry> ModelLoader::loadModel(std::shared_ptr<IContext> context, const std::string& filename, std::shared_ptr<TextureManager> textureManager)
 {
     Assimp::Importer importer;
 
@@ -86,7 +87,12 @@ std::shared_ptr<Geometry> ModelLoader::loadModel(std::shared_ptr<IContext> conte
         {
             std::string name = matTextureDiffuse.C_Str();
 
-            std::shared_ptr<ITexture> tex = loaders::TextureLoader::loadTexture2D(context, name);
+            // TODO: This needs to load via the asset manager
+            std::shared_ptr<ITexture> tex;
+            if (textureManager)
+                tex = textureManager->getTexture(name);
+            else
+                tex = loaders::TextureLoader::loadTexture2D(context, name);
 
             uint64_t handle = model->addTexture(name, tex);
 

@@ -20,10 +20,11 @@ SceneManager::SceneManager(std::shared_ptr<Engine> engine)
     : _engine(engine)
     , _context(engine->context())
 {
-    auto& context = engine->context();
+    auto context = engine->context();
+    auto assets = engine->assets();
 
     // Create Material Database
-    _textures = std::make_shared<TextureManager>(context);
+    _textures = std::make_shared<TextureManager>(context, assets);
 
     _materials = context->createMap<Material>(BufferType::ShaderStorage, BufferUsage::StaticDraw);
 
@@ -55,4 +56,13 @@ bool SceneManager::addTexture(const std::string& name, std::shared_ptr<ITexture>
     // Add to the Texture Manager
     _textures->addTexture(name, texture);
     return true;
+}
+
+
+//
+std::shared_ptr<ITexture> SceneManager::loadTexture(const std::string& assetName)
+{
+    auto engine = _engine.lock();
+
+    return _textures->getTexture(assetName);
 }
