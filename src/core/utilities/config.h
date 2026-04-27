@@ -3,26 +3,23 @@
 #include <medusa/medusa.h>
 
 #include <tuple>
-#include <yaml-cpp/yaml.h>
+#include <yaml-cpp/yaml.h> // This shouldn't be here ?
 
 namespace medusa
 {
     /*
         YAML Wrapper
     */
+
     class Config
     {
     public:
         Config(const std::string& file); // TODO: Remove
         Config();
+        virtual ~Config();
 
         bool loadFromFile(const std::string& file);
         bool loadFromString(const std::string& s);
-
-
-    public:
-        virtual ~Config();
-
 
         bool getNode(const std::string& key, YAML::Node& node);
         bool getValues(const std::string& key, std::vector<std::string>& values);

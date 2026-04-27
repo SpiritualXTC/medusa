@@ -4,35 +4,24 @@
 
 #include <medusa/engine/assets.h>
 
+#include <core/utilities/config.h>
+
 namespace medusa
 {
+    class TextureAsset;
+
+
     class Config;
 
-
-    struct TextureInfo;
-
-
-    class IAssetLocation
+    class IAssetLocation : public IAssetReader
     {
     public:
         IAssetLocation() {}
         virtual ~IAssetLocation() {}
 
-
-        /// <summary>
-        /// Read a file
-        /// </summary>
-        /// <param name="path">Assetr Path</param>
-        /// <returns></returns>
-        virtual std::string readFile(const std::string& path) = 0;
-        virtual std::vector<uint8_t> readBinary(const std::string& path) = 0;
-
         bool loadAssets(std::list<std::string>& assets);
 
-
-        bool getInfo(const std::string& name, TextureInfo& info);
-
-    protected:
+        std::shared_ptr<Config> getConfig() { return _config; }
 
 
     private:

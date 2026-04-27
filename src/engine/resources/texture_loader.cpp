@@ -11,6 +11,7 @@ using namespace medusa;
 using namespace medusa::loaders;
 
 
+//
 static SDL_Surface* toRGBA(SDL_Surface* surface)
 {
     // SDL_PIXELFORMAT_RGBA32 is always RGBA byte-order regardless of endianness
@@ -26,6 +27,26 @@ static SDL_Surface* toRGBA(SDL_Surface* surface)
     return converted;
 }
 
+
+//
+bool TextureAsset::info(std::shared_ptr<Config> config)
+{
+    std::string pathNodeName = fmt::format("{}.filename", getAssetName());
+
+    setFilename(config->getValue<std::string>(pathNodeName, ""));
+
+    return true;
+}
+
+
+//
+std::shared_ptr<ITexture> TextureAsset::load(std::shared_ptr<IContext> context, std::shared_ptr<IAssetReader> reader)
+{
+    std::vector<uint8_t> buffer = reader->readBinary(getFilename());
+    std::shared_ptr<ITexture> texture = loaders::TextureLoader::loadTexture2D(context, buffer);
+
+    return texture;
+}
 
 
 //

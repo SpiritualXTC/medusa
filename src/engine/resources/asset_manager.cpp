@@ -1,37 +1,14 @@
 #include "asset_manager.h"
 
-#include <boost/filesystem.hpp>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-
 #include <core/utilities/config.h>
 #include <core/utilities/logging.h>
 
+#include <engine/resources/asset_directory.h>
 #include <engine/resources/texture_loader.h>
 
-namespace fs = boost::filesystem;
 
 using namespace medusa;
 
-namespace medusa
-{
-    struct TextureInfo
-    {
-        std::string filename;
-    };
-}
-
-//
-bool IAssetLocation::getInfo(const std::string& name, TextureInfo& info)
-{
-
-    std::string pathNodeName = fmt::format("{}.filename", name);
-
-    info.filename = _config->getValue<std::string>(pathNodeName, "");
-
-    return true;
-}
 
 //
 bool IAssetLocation::loadAssets(std::list<std::string>& assets)
@@ -62,84 +39,11 @@ bool IAssetLocation::loadAssets(std::list<std::string>& assets)
 
                 assets.push_back(assetPath);
             }
-
         }
     }
 
     return true;
 }
-
-
-
-
-class AssetDirectory : public IAssetLocation
-{
-public:
-    AssetDirectory(const std::string& path)
-        : _path(path)
-    {
-
-    }
-
-
-    std::string readFile(const std::string& path) override
-    {
-        fs::path filePath = fs::path(_path + path);
-
-        // Check the file exists and is a regular file
-        if (!fs::exists(filePath))
-        {
-            throw MedusaError("File not found: " + filePath.string());
-        }
-        if (!fs::is_regular_file(filePath))
-        {
-            throw MedusaError("Not a regular file: " + filePath.string());
-        }
-
-        std::ifstream file(filePath.string());
-        if (!file.is_open())
-        {
-            throw MedusaError("Failed to open: " + filePath.string());
-        }
-
-        std::ostringstream ss;
-        ss << file.rdbuf();
-        return ss.str();;
-    }
-
-    std::vector<uint8_t> readBinary(const std::string& path) override
-    {
-        fs::path filePath = fs::path(_path + path);
-
-        // Check the file exists and is a regular file
-        if (!fs::exists(filePath))
-        {
-            throw MedusaError("File not found: " + filePath.string());
-        }
-        if (!fs::is_regular_file(filePath))
-        {
-            throw MedusaError("Not a regular file: " + filePath.string());
-        }
-
-        // Open the file at the end, simplifiy getting the size
-        std::ifstream file(filePath.string(), std::ios::binary | std::ios::ate);
-
-        // Get filesize
-        auto size = file.tellg();
-        file.seekg(0);
-
-        // Read the blob
-        std::vector<uint8_t> buf(static_cast<size_t>(size));
-        file.read(reinterpret_cast<char*>(buf.data()), size);
-
-        return buf;
-    }
-
-
-private:
-    std::string _path;
-};
-
 
 
 
@@ -207,20 +111,16 @@ std::shared_ptr<ITexture> AssetManager::loadTexture(const std::string& name)
 {
     std::string assetName = fmt::format("resources.textures.{}", name);
 
+    // Get the location from the asset map
     std::shared_ptr<IAssetLocation> location = getLocation(assetName);
     if (! location)
         return nullptr;
 
-    // Read the TextureInfo to get the filename
-    TextureInfo info;
-    if (!location->getInfo(assetName, info))
+    // Extract info from config
+    TextureAsset info = TextureAsset(assetName);
+    if (! info.info(location->getConfig()))
         return nullptr;
 
-
-    std::vector<uint8_t> buffer = location->readBinary(info.filename);
-
-
-    std::shared_ptr<ITexture> texture = loaders::TextureLoader::loadTexture2D(_context.lock(), buffer);
-
-    return texture;
+    // Load the asset from the location
+    return info.load(_context.lock(), location);
 }
