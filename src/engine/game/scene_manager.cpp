@@ -66,3 +66,13 @@ std::shared_ptr<ITexture> SceneManager::loadTexture(const std::string& assetName
 
     return _textures->getTexture(assetName);
 }
+
+
+//
+std::shared_ptr<IShader> SceneManager::loadShader(const std::string& assetName)
+{
+    auto engine = _engine.lock();
+
+    // Shaders are never cached
+    return engine->assets()->loadShader(assetName);
+}

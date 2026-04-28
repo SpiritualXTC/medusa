@@ -41,6 +41,9 @@ namespace medusa
         bool registerData(const std::string& path);
 
         //
+        std::shared_ptr<IShader> loadShader(const std::string& name) override;
+
+        //
         std::shared_ptr<ITexture> loadTexture(const std::string& name) override;
 
 

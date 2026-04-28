@@ -39,6 +39,12 @@ namespace medusa
         std::shared_ptr<GeometryBuffer> getGeometryBuffer() { return _geometry; }
 
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="assetName"></param>
+        /// <returns></returns>
+        std::shared_ptr<IShader> loadShader(const std::string& assetName);
 
         /// <summary>
         /// Load a texture via the assets repository, and add to the manager

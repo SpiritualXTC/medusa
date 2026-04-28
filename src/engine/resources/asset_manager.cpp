@@ -5,7 +5,7 @@
 
 #include <engine/resources/asset_directory.h>
 #include <engine/resources/texture_loader.h>
-
+#include <engine/resources/shader_loader.h>
 
 using namespace medusa;
 
@@ -103,6 +103,26 @@ std::shared_ptr<IAssetLocation> AssetManager::getLocation(const std::string& nam
     }
 
     return it->second.lock();
+}
+
+
+//
+std::shared_ptr<IShader> AssetManager::loadShader(const std::string& name)
+{
+    std::string assetName = fmt::format("resources.shaders.{}", name);
+
+    // Get the location from the asset map
+    std::shared_ptr<IAssetLocation> location = getLocation(assetName);
+    if (!location)
+        return nullptr;
+
+    // Extract info from config
+    AssetInfo<IShader> asset = AssetInfo<IShader>();
+    if (!asset.info(assetName, location->getConfig()))
+        return nullptr;
+
+    // Load the asset from the location
+    return asset.load(_context.lock(), location);
 }
 
 

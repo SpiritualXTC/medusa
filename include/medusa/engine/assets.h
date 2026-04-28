@@ -46,6 +46,14 @@ namespace medusa
         virtual ~IAssets() {}
 
         /// <summary>
+        /// Loads a shader
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        virtual std::shared_ptr<IShader> loadShader(const std::string& name) = 0;
+
+
+        /// <summary>
         /// Loads a texture
         /// </summary>
         /// <param name="name"></param>
