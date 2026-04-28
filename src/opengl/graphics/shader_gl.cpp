@@ -15,20 +15,22 @@ using namespace medusa::opengl;
 
 class ShaderSource
 {
+protected:
+    ShaderSource() {}
+
 public:
-    ShaderSource(ShaderType shaderType, const std::string& filepath)
+    //ShaderSource(ShaderType shaderType, const std::string& filepath)
+    ShaderSource(ShaderType shaderType, const std::string& content)
+    {
+        load(shaderType, content);
+    }
+
+    bool load(ShaderType shaderType, const std::string& content)
     {
         GLenum shader = mapEnum(shaderType);
 
         if (shader == GL_INVALID_ENUM)
             throw MedusaError("Invalid Shader Type");
-
-        std::ifstream file;
-
-        file.open(filepath);
-
-        std::string content((std::istreambuf_iterator<char>(file)),
-            (std::istreambuf_iterator<char>()));
 
         // Create Handle
         _handle = glCreateShader(shader);
@@ -54,13 +56,29 @@ public:
 
             delete[] log;
         }
-
     }
 
     const inline GLHandle handle() const { return _handle; }
 
 private:
     GLHandle _handle = 0;
+};
+
+
+class ShaderFile : public ShaderSource
+{
+public:
+    ShaderFile(ShaderType shaderType, const std::string& filepath)
+    {
+        std::ifstream file;
+
+        file.open(filepath);
+
+        std::string content((std::istreambuf_iterator<char>(file)),
+            (std::istreambuf_iterator<char>()));
+
+        load(shaderType, content);
+    }
 };
 
 
@@ -79,12 +97,25 @@ ShaderGL::~ShaderGL()
 }
 
 
-// Attach Shader
+// Attach Shader from File
 bool ShaderGL::attachShader(ShaderType shaderType, const std::string& filepath)
 {
-    logging::debug("Attaching {}Shader from `{}`", (int)shaderType, filepath);
+    logging::debug("Attaching {} Shader from `{}`", (int)shaderType, filepath);
 
-    auto shader = std::make_shared<ShaderSource>(shaderType, filepath);
+    auto shader = std::make_shared<ShaderFile>(shaderType, filepath);
+
+    glAttachShader(_handle, shader->handle());
+
+    return true;
+}
+
+
+// Attach Shader from Source
+bool ShaderGL::attachShaderFromSource(ShaderType shaderType, const std::string& source)
+{
+    logging::debug("Attaching {} Shader from source", (int)shaderType);
+
+    auto shader = std::make_shared<ShaderSource>(shaderType, source);
 
     glAttachShader(_handle, shader->handle());
 

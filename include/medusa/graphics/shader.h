@@ -48,6 +48,7 @@ namespace medusa
         virtual ~IShader() {}
 
         virtual bool attachShader(ShaderType shaderType, const std::string& filepath) = 0;
+        virtual bool attachShaderFromSource(ShaderType shaderType, const std::string& source) = 0;
         virtual bool linkShader() = 0;
 
         virtual bool bind() = 0;

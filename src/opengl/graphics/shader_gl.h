@@ -20,6 +20,7 @@ namespace medusa
             virtual ~ShaderGL();
 
             bool attachShader(ShaderType shaderType, const std::string& filepath) override;
+            bool attachShaderFromSource(ShaderType shaderType, const std::string& source) override;
             bool linkShader() override;
 
             const inline GLHandle handle() const { return _handle; }
