@@ -29,9 +29,9 @@ static SDL_Surface* toRGBA(SDL_Surface* surface)
 
 
 //
-bool TextureAsset::info(std::shared_ptr<Config> config)
+bool TextureAsset::info(const std::string& assetName, std::shared_ptr<Config> config)
 {
-    std::string pathNodeName = fmt::format("{}.filename", getAssetName());
+    std::string pathNodeName = fmt::format("{}.filename", assetName);
 
     setFilename(config->getValue<std::string>(pathNodeName, ""));
 

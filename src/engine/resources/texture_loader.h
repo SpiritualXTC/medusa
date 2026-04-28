@@ -18,9 +18,8 @@ namespace medusa
     class TextureAsset : public AssetInfo<ITexture>
     {
     public:
-        TextureAsset(const std::string& name) : AssetInfo(name) { }
 
-        bool info(std::shared_ptr<Config> config) override;
+        bool info(const std::string& assetName, std::shared_ptr<Config> config) override;
         std::shared_ptr<ITexture> load(std::shared_ptr<IContext> context, std::shared_ptr<IAssetReader> reader) override;
 
 

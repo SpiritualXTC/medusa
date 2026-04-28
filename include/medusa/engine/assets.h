@@ -28,16 +28,11 @@ namespace medusa
     template <typename T>
     class AssetInfo {
     public:
-        AssetInfo(const std::string& name) : _name(name) {}
+        AssetInfo() {}
 
-        inline const std::string& getAssetName() const { return _name; }
-
-        virtual bool info(std::shared_ptr<Config> config) = 0;
-        virtual std::shared_ptr<T> load(std::shared_ptr<IContext> context, std::shared_ptr<IAssetReader> assets) = 0;
-    private:
-        std::string _name;
+        virtual bool info(const std::string& name, std::shared_ptr<Config> config) { return false; }
+        virtual std::shared_ptr<T> load(std::shared_ptr<IContext> context, std::shared_ptr<IAssetReader> assets) { return nullptr; }
     };
-
 
 
     /// <summary>

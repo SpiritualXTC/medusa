@@ -117,8 +117,8 @@ std::shared_ptr<ITexture> AssetManager::loadTexture(const std::string& name)
         return nullptr;
 
     // Extract info from config
-    TextureAsset info = TextureAsset(assetName);
-    if (! info.info(location->getConfig()))
+    TextureAsset info = TextureAsset();
+    if (! info.info(assetName, location->getConfig()))
         return nullptr;
 
     // Load the asset from the location
