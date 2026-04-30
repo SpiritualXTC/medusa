@@ -117,7 +117,7 @@ std::shared_ptr<IShader> AssetManager::loadShader(const std::string& name)
         return nullptr;
 
     // Extract info from config
-    AssetInfo<IShader> asset = AssetInfo<IShader>();
+    ShaderAsset asset = ShaderAsset();
     if (!asset.info(assetName, location->getConfig()))
         return nullptr;
 
@@ -137,10 +137,10 @@ std::shared_ptr<ITexture> AssetManager::loadTexture(const std::string& name)
         return nullptr;
 
     // Extract info from config
-    TextureAsset info = TextureAsset();
-    if (! info.info(assetName, location->getConfig()))
+    TextureAsset asset = TextureAsset();
+    if (! asset.info(assetName, location->getConfig()))
         return nullptr;
 
     // Load the asset from the location
-    return info.load(_context.lock(), location);
+    return asset.load(_context.lock(), location);
 }

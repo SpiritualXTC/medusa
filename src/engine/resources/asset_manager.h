@@ -37,13 +37,35 @@ namespace medusa
         virtual ~AssetManager();
 
 
+        /// <summary>
+        /// Register a directory as a location of assets
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         bool registerDirectory(const std::string& path);
+
+
+        /// <summary>
+        /// Register a packaged file as a location of assets
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         bool registerData(const std::string& path);
 
-        //
+
+        /// <summary>
+        /// Loads a Shader by it's registered name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         std::shared_ptr<IShader> loadShader(const std::string& name) override;
 
-        //
+
+        /// <summary>
+        /// Loads a Texture by it's registered name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         std::shared_ptr<ITexture> loadTexture(const std::string& name) override;
 
 
