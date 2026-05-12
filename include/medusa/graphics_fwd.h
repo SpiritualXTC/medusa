@@ -13,6 +13,7 @@ namespace medusa
 {
     class IMesh;
     class IShader;
+    class IModel;
 
     class IDescriptor;
     class ITexture;

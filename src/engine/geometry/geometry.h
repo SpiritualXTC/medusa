@@ -2,6 +2,7 @@
 
 #include <medusa/medusa.h>
 #include <medusa/graphics/shader.h>
+#include <medusa/graphics/model.h>
 
 #include <medusa/math.h>
 
@@ -19,20 +20,6 @@ namespace medusa
         std::vector<uint8_t> data;
 
         AttributeLocation location;
-    };
-
-
-    /// <summary>
-    ///
-    /// </summary>
-    struct ModelData
-    {
-        uint32_t vertexStart;
-        uint32_t indexStart;
-        uint32_t indices;
-        uint32_t vertices;
-
-        uint32_t materialIndex;
     };
 
 
