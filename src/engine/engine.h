@@ -4,7 +4,7 @@
 #include <medusa/engine/engine.h>
 #include <medusa/engine_fwd.h>
 
-#include <engine/resources/asset_manager.h>
+#include <engine/resources/asset_manager.h>  // TODO: This shouldn't be here -- need to add some register functions to the assets interface
 
 namespace medusa
 {
