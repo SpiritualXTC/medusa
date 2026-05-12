@@ -12,6 +12,7 @@
 #include <core/utilities/logging.h>
 
 #include <engine/geometry/geometry.h>
+#include <engine/geometry/model.h>
 
 #include <engine/resources/texture_loader.h>
 #include <engine/resources/texture_manager.h>
@@ -22,7 +23,51 @@ using namespace medusa::loaders;
 
 
 //
-std::shared_ptr<Geometry> ModelLoader::loadModel(std::shared_ptr<IContext> context, const std::string& filename, std::shared_ptr<TextureManager> textureManager)
+bool loadScene(std::shared_ptr<IContext> context, const aiScene* scene, std::shared_ptr<Geometry> geometry);
+
+
+//
+bool ModelAsset::info(const std::string& assetName, std::shared_ptr<Config> config)
+{
+    std::string pathNodeMesh = fmt::format("{}.model", assetName);
+    std::string pathNodeMaterial = fmt::format("{}.material", assetName);
+
+    setModelFilename(config->getValue<std::string>(pathNodeMesh, ""));
+    setMaterialFilename(config->getValue<std::string>(pathNodeMaterial, ""));
+
+    return true;
+}
+
+
+//
+std::shared_ptr<IModel> ModelAsset::load(std::shared_ptr<IContext> context, std::shared_ptr<IAssetReader> reader)
+{
+
+    Assimp::Importer importer;
+
+    std::string meshContents = reader->readFile(_meshFilename);
+    std::string materialContents = reader->readFile(_materialFilename);
+
+
+    // This works but looks nasty AF
+    std::string full = materialContents + "\n\n" + meshContents;
+
+    // Load *.obj file
+    const aiScene* mesh = importer.ReadFileFromMemory(full.c_str(), full.length(), aiProcessPreset_TargetRealtime_MaxQuality, "obj");
+    assert(mesh != nullptr);
+
+    logging::info("Loading Model from Asset: obj={}, mtl={}", _meshFilename, _materialFilename);
+
+    std::shared_ptr<Geometry> geometry = std::make_shared<Geometry>();
+
+    loadScene(context, mesh, geometry);
+
+    return std::make_shared<Model>(geometry);
+}
+
+
+//
+std::shared_ptr<Geometry> ModelLoader::loadModel(std::shared_ptr<IContext> context, const std::string& filename)
 {
     Assimp::Importer importer;
 
@@ -48,8 +93,35 @@ std::shared_ptr<Geometry> ModelLoader::loadModel(std::shared_ptr<IContext> conte
     const aiScene* scene = importer.ReadFile(filename.c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
     assert(scene != nullptr);
 
-    logging::info("Model: {}", filename);
-    logging::info("- meshes: {}, materials: {}, textures: {}", scene->mNumMeshes, scene->mNumMaterials, scene->mNumTextures);
+    logging::info("Loading Model from File: {}", filename);
+
+    loadScene(context, scene, model);
+
+    return model;
+}
+
+
+//
+bool loadScene(std::shared_ptr<IContext> context, const aiScene* scene, std::shared_ptr<Geometry> geometry)
+{
+    assert(scene != nullptr);
+
+    // Vertex Data
+    std::vector<glm::vec3> position;
+    std::vector<glm::vec3> normals;
+    std::vector<glm::vec2> textureCoords;
+    std::vector<uint32_t> materialIndices;
+
+    // Face Data
+    std::vector<uint32_t> indices;
+
+    // Mesh Data
+    ModelData modelData{ 0, 0, 0, 0, 0 };
+    std::vector<size_t> materialIndex;
+
+    uint32_t vertexOffset = 0;
+
+    logging::info("Loading Model: meshes: {}, materials: {}, textures: {}", scene->mNumMeshes, scene->mNumMaterials, scene->mNumTextures);
 
     // Load Materials
     for (uint32_t matIdx = 0; matIdx < scene->mNumMaterials; ++matIdx)
@@ -88,13 +160,9 @@ std::shared_ptr<Geometry> ModelLoader::loadModel(std::shared_ptr<IContext> conte
             std::string name = matTextureDiffuse.C_Str();
 
             // TODO: This needs to load via the asset manager
-            std::shared_ptr<ITexture> tex;
-            if (textureManager)
-                tex = textureManager->getTexture(name);
-            else
-                tex = loaders::TextureLoader::loadTexture2D(context, name);
+            std::shared_ptr<ITexture> tex = loaders::TextureLoader::loadTexture2D(context, name);
 
-            uint64_t handle = model->addTexture(name, tex);
+            uint64_t handle = geometry->addTexture(name, tex);
 
             material.diffuseTexture(handle);
 
@@ -103,7 +171,7 @@ std::shared_ptr<Geometry> ModelLoader::loadModel(std::shared_ptr<IContext> conte
         }
 
         // Add material
-        auto idx = model->addMaterial(material);
+        auto idx = geometry->addMaterial(material);
 
         // Map the material name -> index
         materialIndex.push_back(idx);
@@ -173,7 +241,9 @@ std::shared_ptr<Geometry> ModelLoader::loadModel(std::shared_ptr<IContext> conte
         size_t count = submesh->mNumVertices;
         materialIndices.resize(materialIndices.size() + count);
 
-        std::fill(materialIndices.begin() + start, materialIndices.end(), materialIndex[submesh->mMaterialIndex]);
+        size_t matIndex = submesh->mMaterialIndex < materialIndex.size() ? materialIndex[submesh->mMaterialIndex] : 0;
+
+        std::fill(materialIndices.begin() + start, materialIndices.end(), matIndex);
 
         // Faces
         if (submesh->HasFaces() && submesh->mNumFaces >= 1)
@@ -213,7 +283,7 @@ std::shared_ptr<Geometry> ModelLoader::loadModel(std::shared_ptr<IContext> conte
 
             modelData.materialIndex = submesh->mMaterialIndex;
 
-            model->addModelData(modelData);
+            geometry->addModelData(modelData);
 
             // Increase the vertex offset
             vertexOffset += submesh->mNumVertices;
@@ -229,23 +299,24 @@ std::shared_ptr<Geometry> ModelLoader::loadModel(std::shared_ptr<IContext> conte
             p *= 0.1f;
         }
 
-        model->addVertexData(position.data(), position.size(), AttributeLocation::Position);
+        geometry->addVertexData(position.data(), position.size(), AttributeLocation::Position);
     }
 
     // Normals
     if (normals.size())
-        model->addVertexData(normals.data(), normals.size(), AttributeLocation::Normal);
+        geometry->addVertexData(normals.data(), normals.size(), AttributeLocation::Normal);
 
     // Texture Coords
     if (textureCoords.size())
-        model->addVertexData(textureCoords.data(), textureCoords.size(), AttributeLocation::TextureDiffuse);
+        geometry->addVertexData(textureCoords.data(), textureCoords.size(), AttributeLocation::TextureDiffuse);
 
     // Material Indexing
-    model->addVertexData(materialIndices.data(), materialIndices.size(), 1, AttributeLocation::MaterialIndex);
+    geometry->addVertexData(materialIndices.data(), materialIndices.size(), 1, AttributeLocation::MaterialIndex);
 
     // Face indices
     if (indices.size())
-        model->addIndexData(indices.data(), indices.size());
+        geometry->addIndexData(indices.data(), indices.size());
 
-    return model;
+
+    return true;
 }

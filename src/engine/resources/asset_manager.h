@@ -69,6 +69,11 @@ namespace medusa
         std::shared_ptr<ITexture> loadTexture(const std::string& name) override;
 
 
+        /// <summary>
+        /// Loads a Model by it's registered name
+        /// </summary>
+        std::shared_ptr<IModel> loadModel(const std::string& name) override;
+
     private:
         std::weak_ptr<IContext> _context;
 

@@ -6,6 +6,7 @@
 #include <engine/resources/asset_directory.h>
 #include <engine/resources/texture_loader.h>
 #include <engine/resources/shader_loader.h>
+#include <engine/resources/model_loader.h>
 
 using namespace medusa;
 
@@ -142,5 +143,24 @@ std::shared_ptr<ITexture> AssetManager::loadTexture(const std::string& name)
         return nullptr;
 
     // Load the asset from the location
+    return asset.load(_context.lock(), location);
+}
+
+
+//
+std::shared_ptr<IModel> AssetManager::loadModel(const std::string& name)
+{
+    std::string assetName = fmt::format("resources.models.{}", name);
+
+    // Get the location from the asset map
+    std::shared_ptr<IAssetLocation> location = getLocation(assetName);
+    if (!location)
+        return nullptr;
+
+    // Extract info from Config
+    ModelAsset asset = ModelAsset();
+    if (!asset.info(assetName, location->getConfig()))
+        return nullptr;
+
     return asset.load(_context.lock(), location);
 }

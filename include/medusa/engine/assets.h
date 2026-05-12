@@ -59,5 +59,13 @@ namespace medusa
         /// <param name="name"></param>
         /// <returns></returns>
         virtual std::shared_ptr<ITexture> loadTexture(const std::string& name) = 0;
+
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        virtual std::shared_ptr<IModel> loadModel(const std::string& name) = 0;
     };
 }
