@@ -54,6 +54,11 @@ namespace medusa
         std::shared_ptr<ITexture> loadTexture(const std::string& assetName);
 
         /// <summary>
+        /// Load a model via the assets repository
+        /// </summary>
+        std::shared_ptr<IModel> loadModel(const std::string& assetName);
+
+        /// <summary>
         /// Add a texture to the manager
         /// </summary>
         /// <param name="name"></param>

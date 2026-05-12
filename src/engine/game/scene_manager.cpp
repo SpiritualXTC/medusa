@@ -51,6 +51,20 @@ bool SceneManager::addGeometry(const std::string& name, const std::shared_ptr<Ge
 
 
 //
+std::shared_ptr<IModel> SceneManager::loadModel(const std::string& assetName)
+{
+    auto engine = _engine.lock();
+
+    // Needs to be pushed through to _geometry
+    auto model = engine->assets()->loadModel(assetName);
+    //auto geometry = std::dynamic_pointer_cast<Geometry>(model);
+    _geometry->loadMesh(assetName, model, _materials, _textures);
+
+    return model;
+}
+
+
+//
 bool SceneManager::addTexture(const std::string& name, std::shared_ptr<ITexture> texture)
 {
     // Add to the Texture Manager
@@ -63,7 +77,7 @@ bool SceneManager::addTexture(const std::string& name, std::shared_ptr<ITexture>
 std::shared_ptr<ITexture> SceneManager::loadTexture(const std::string& assetName)
 {
     auto engine = _engine.lock();
-
+    // Maybe this shouldn't go through the manager first?
     return _textures->getTexture(assetName);
 }
 

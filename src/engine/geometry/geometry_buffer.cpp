@@ -2,10 +2,12 @@
 
 #include <medusa/engine/context.h>
 #include <medusa/graphics/containers.h>
+
 #include <medusa/graphics.h>
 
 #include <core/utilities/uuid.h>
 #include <engine/geometry/geometry.h>
+#include <engine/geometry/model.h>
 
 #include <engine/resources/texture_manager.h>
 
@@ -70,13 +72,23 @@ GeometryBuffer::~GeometryBuffer()
 
 
 //
-bool GeometryBuffer::loadMesh(const std::string& name, std::shared_ptr<Geometry> model, std::shared_ptr<GenericMap<Material>> materials, std::shared_ptr<TextureManager> textures)
+bool GeometryBuffer::loadMesh(const std::string& name, std::shared_ptr<Geometry> geometry, std::shared_ptr<GenericMap<Material>> materials, std::shared_ptr<TextureManager> textures)
+{
+    // This is a hack
+    std::shared_ptr<IModel> model = std::make_shared<Model>(geometry);
+    return loadMesh(name, model, materials, textures);
+}
+
+
+//
+bool GeometryBuffer::loadMesh(const std::string& name, std::shared_ptr<IModel> model, std::shared_ptr<GenericMap<Material>> materials, std::shared_ptr<TextureManager> textures)
 {
     std::shared_ptr<MeshReference> ref = std::make_shared<MeshReference>(_context.lock());
 
     // TODO: The interleave here, needs to use ONLY what the geometry expects.
-    std::vector<Vertex> vertices = model->interleave<Vertex>();
-    std::vector<uint32_t>& indices = model->getIndices();
+    //std::vector<Vertex> vertices = model->interleave<Vertex>();
+    std::vector<Vertex> vertices = model->getVertices();
+    std::vector<uint32_t> indices = model->getIndices();
     auto& modelData = model->getModelData();
     auto& textureData = model->getTextures();
     auto& materialData = model->getMaterials();
@@ -87,8 +99,9 @@ bool GeometryBuffer::loadMesh(const std::string& name, std::shared_ptr<Geometry>
     size_t materialsOffset = materials->elements(); // MaterialBuffer needs to be here :(
 
     // Size mismatch
-    if (model->stride() != _vertices->stride())
-        throw MedusaError("Invalid Stride");
+    // TODO: This needs to be enforced with variable type vertex structures
+    //if (model->stride() != _vertices->stride())
+        //throw MedusaError("Invalid Stride");
 
     // Update Material Index (Dis is a hacky mc hack)
     for (auto& v : vertices)
