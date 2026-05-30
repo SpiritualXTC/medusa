@@ -1,9 +1,9 @@
 #pragma once
 
-#include <medusa/medusa.h>
+#include <medusa/engine/config.h>
 
-#include <tuple>
-#include <yaml-cpp/yaml.h> // This shouldn't be here ?
+#include <yaml-cpp/yaml.h> // TODO: Remove this // Move to the cpp file
+
 
 namespace medusa
 {
@@ -11,7 +11,7 @@ namespace medusa
         YAML Wrapper
     */
 
-    class Config
+    class Config : public IConfig
     {
     public:
         Config(const std::string& file); // TODO: Remove
@@ -21,6 +21,10 @@ namespace medusa
         bool loadFromFile(const std::string& file);
         bool loadFromString(const std::string& s);
 
+        const PTree& root() const override { return _tree; }
+
+
+        // TODO: Deprecate/Remove all of the following
         bool getNode(const std::string& key, YAML::Node& node);
         bool getValues(const std::string& key, std::vector<std::string>& values);
 
@@ -37,8 +41,12 @@ namespace medusa
 
     private:
 
+        void toTree();
+
+
         std::string makePlatformKey(std::string& key);
 
         YAML::Node _config;
+        PTree _tree;
     };
 }
