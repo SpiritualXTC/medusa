@@ -17,8 +17,6 @@ namespace medusa
     class Keyboard;
     class Mouse;
 
-    class ResourceDatabase; // TODO: REMOVE
-
     class IScene;
 
 
@@ -38,7 +36,6 @@ namespace medusa
         const inline std::shared_ptr<IContext>& context() { return _context; }
 
         const inline std::shared_ptr<Timing>& timing() { return _timing; }
-        const inline std::shared_ptr<ResourceDatabase>& resources() { return _resources; }
         const inline std::shared_ptr<IAssets>& assets() override { return _assets; }
 
         // TODO: Input. Would be beneficial to abstract input to an action handler.
@@ -61,7 +58,6 @@ namespace medusa
         bool _running = false;
 
         std::shared_ptr<MedusaConfig> _config;
-        std::shared_ptr<ResourceDatabase> _resources;
         std::shared_ptr<AssetManager> _assets;
 
         std::shared_ptr<Timing> _timing;

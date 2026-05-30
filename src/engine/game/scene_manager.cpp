@@ -3,7 +3,6 @@
 #include <medusa/engine/context.h>
 #include <medusa/graphics.h>
 #include <medusa/graphics/containers.h>
-#include <engine/resource_database.h>
 
 #include <engine/engine.h>
 #include <engine/geometry/geometry.h>

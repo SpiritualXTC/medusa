@@ -8,7 +8,6 @@
 #include <engine/config.h>
 #include <engine/events.h>
 #include <engine/window.h>
-#include <engine/resource_database.h>
 #include <engine/input/mouse.h>
 #include <engine/input/keyboard.h>
 #include <opengl/context_gl.h>
@@ -37,8 +36,6 @@ Engine::Engine()
 
     // Create Resource Database
     _assets = std::make_shared<AssetManager>(_context);
-    _resources = std::make_shared<ResourceDatabase>(_context);
-    _resources->getShader("basic");
 
     // compute context
 
