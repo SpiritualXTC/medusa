@@ -15,7 +15,26 @@ namespace medusa
     class IAssetReader
     {
     public:
+
+        /// <summary>
+        /// Path associated with this reader
+        /// </summary>
+        /// <returns></returns>
+        virtual std::string filepath() = 0;
+
+        /// <summary>
+        /// Read file contents into a string
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         virtual std::string readFile(const std::string& path) = 0;
+
+
+        /// <summary>
+        /// Read file contents into a binary buffer
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         virtual std::vector<uint8_t> readBinary(const std::string& path) = 0;
     };
 

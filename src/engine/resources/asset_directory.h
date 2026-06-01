@@ -15,6 +15,13 @@ namespace medusa
         AssetDirectory(const std::string& path);
 
         /// <summary>
+        /// Directory location
+        /// </summary>
+        /// <returns></returns>
+        std::string filepath() override { return _path; }
+
+
+        /// <summary>
         /// Read a text file
         /// </summary>
         /// <param name="path"></param>
