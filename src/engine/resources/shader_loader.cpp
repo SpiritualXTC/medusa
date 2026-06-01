@@ -1,6 +1,7 @@
 #include "shader_loader.h"
 
 #include <medusa/engine/context.h>
+#include <medusa/engine/config.h>
 
 #include <core/utilities/logging.h>
 
@@ -10,7 +11,7 @@ using namespace medusa;
 using namespace medusa::loaders;
 
 
-bool ShaderAsset::info(const std::string& assetName, std::shared_ptr<Config> config)
+bool ShaderAsset::info(const std::string& assetName, std::shared_ptr<IConfig> config)
 {
     // Load a new Shader. No References!
     std::unordered_map<ShaderType, std::string> keys{
@@ -25,8 +26,8 @@ bool ShaderAsset::info(const std::string& assetName, std::shared_ptr<Config> con
     std::string stateKey = std::format("{}.state", assetName);
     std::string enableKey = std::format("{}.state.enable", assetName);
 
-    const Config::PTree& stateNode = config->node(stateKey);
-    const Config::PTree& enableNode = config->node(enableKey);
+    const IConfig::PTree& stateNode = config->node(stateKey);
+    const IConfig::PTree& enableNode = config->node(enableKey);
 
     if (!stateNode.empty())
     {

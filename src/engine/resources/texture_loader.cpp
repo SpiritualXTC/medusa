@@ -2,6 +2,7 @@
 
 #include <SDL_image.h>
 
+#include <medusa/engine/config.h>
 #include <medusa/engine/context.h>
 #include <medusa/graphics/texture.h>
 
@@ -29,7 +30,7 @@ static SDL_Surface* toRGBA(SDL_Surface* surface)
 
 
 //
-bool TextureAsset::info(const std::string& assetName, std::shared_ptr<Config> config)
+bool TextureAsset::info(const std::string& assetName, std::shared_ptr<IConfig> config)
 {
     std::string pathNodeName = fmt::format("{}.filename", assetName);
 

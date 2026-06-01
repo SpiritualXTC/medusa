@@ -5,6 +5,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/material.h>
 
+#include <medusa/engine/config.h>
 #include <medusa/engine/context.h>
 #include <medusa/graphics.h>
 #include <medusa/graphics/containers.h>
@@ -27,7 +28,7 @@ bool loadScene(std::shared_ptr<IContext> context, const aiScene* scene, std::sha
 
 
 //
-bool ModelAsset::info(const std::string& assetName, std::shared_ptr<Config> config)
+bool ModelAsset::info(const std::string& assetName, std::shared_ptr<IConfig> config)
 {
     std::string pathNodeMesh = fmt::format("{}.model", assetName);
     std::string pathNodeMaterial = fmt::format("{}.material", assetName);

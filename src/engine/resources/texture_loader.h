@@ -19,7 +19,7 @@ namespace medusa
     {
     public:
 
-        bool info(const std::string& assetName, std::shared_ptr<Config> config) override;
+        bool info(const std::string& assetName, std::shared_ptr<IConfig> config) override;
         std::shared_ptr<ITexture> load(std::shared_ptr<IContext> context, std::shared_ptr<IAssetReader> reader) override;
 
 

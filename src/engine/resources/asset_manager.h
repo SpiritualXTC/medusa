@@ -4,8 +4,6 @@
 
 #include <medusa/engine/assets.h>
 
-#include <core/utilities/config.h>
-
 namespace medusa
 {
     class TextureAsset;
