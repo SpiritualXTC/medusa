@@ -21,38 +21,37 @@ bool ShaderAsset::info(const std::string& assetName, std::shared_ptr<Config> con
 
 
     // Retrieve the state
+    std::unordered_map<std::string, std::string> state;
     std::string stateKey = std::format("{}.state", assetName);
+    std::string enableKey = std::format("{}.state.enable", assetName);
 
-    YAML::Node stateNode;
+    const Config::PTree& stateNode = config->node(stateKey);
+    const Config::PTree& enableNode = config->node(enableKey);
 
-    if (config->getNode(stateKey, stateNode))
+    if (!stateNode.empty())
     {
-        std::unordered_map<std::string, std::string> state;
-
         for (auto it = stateNode.begin(); it != stateNode.end(); ++it)
         {
-            std::string key = it->first.as<std::string>();
-            if (key == "enable")
-            {
-                YAML::Node enableNode = it->second.as<YAML::Node>();
+            std::string key = it->first.c_str();
+            logging::error(fmt::format("Shader State Key: {}, {}", key, it->second.data()));
 
-                for (auto it = enableNode.begin(); it != enableNode.end(); ++it)
-                {
-                    std::string cap = std::format("enable.{}", it->first.as<std::string>());
-
-                    state.insert({ cap, it->second.as<std::string>() });
-
-                    logging::debug(std::format("Getting cap state from YAML: {}={}", it->first.as<std::string>(), it->second.as<std::string>()));
-                }
-            }
-            else
-            {
-                state.insert({ it->first.as<std::string>(), it->second.as<std::string>() });
-
-                logging::debug(std::format("Getting state from YAML: {}={}", it->first.as<std::string>(), it->second.as<std::string>()));
-            }
+            state.insert({ it->first.c_str(), it->second.data()});
         }
+    }
 
+    if (!enableNode.empty())
+    {
+        for (auto it = enableNode.begin(); it != enableNode.end(); ++it)
+        {
+            std::string cap = std::format("enable.{}", it->first.c_str());
+            logging::error(fmt::format("Shader State Cap: {}, {}", it->first.c_str(), it->second.data()));
+            state.insert({ cap, it->second.data()});
+        }
+    }
+
+
+    if (!state.empty())
+    {
         PipelineStateParser::apply(_pipelineState, state);
     }
 
@@ -61,7 +60,7 @@ bool ShaderAsset::info(const std::string& assetName, std::shared_ptr<Config> con
     {
         std::string resourceKey = std::format("{}.{}", assetName, it->second);
 
-        std::string s = config->getValue<std::string>(resourceKey, "");
+        std::string s = config->value<std::string>(resourceKey, "");
         if (s != "")
         {
             // Make the path relative to the data directory

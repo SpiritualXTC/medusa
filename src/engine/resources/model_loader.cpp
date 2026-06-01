@@ -32,8 +32,8 @@ bool ModelAsset::info(const std::string& assetName, std::shared_ptr<Config> conf
     std::string pathNodeMesh = fmt::format("{}.model", assetName);
     std::string pathNodeMaterial = fmt::format("{}.material", assetName);
 
-    setModelFilename(config->getValue<std::string>(pathNodeMesh, ""));
-    setMaterialFilename(config->getValue<std::string>(pathNodeMaterial, ""));
+    setModelFilename(config->value<std::string>(pathNodeMesh, ""));
+    setMaterialFilename(config->value<std::string>(pathNodeMaterial, ""));
 
     return true;
 }

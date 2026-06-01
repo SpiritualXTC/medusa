@@ -58,8 +58,8 @@ ContextGL::ContextGL(std::shared_ptr<Config> config)
     }
 
     // Create the Window
-    int w = config->getValue<int>("medusa.window.width", 800);
-    int h = config->getValue<int>("medusa.window.height", 600);
+    int w = config->value<int>("medusa.window.width", 800);
+    int h = config->value<int>("medusa.window.height", 600);
 
     logging::info(fmt::format("Resolution: {}x{}", w, h));
     _window = std::make_shared<WindowGL>(w, h);

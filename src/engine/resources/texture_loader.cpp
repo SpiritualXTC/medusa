@@ -33,7 +33,7 @@ bool TextureAsset::info(const std::string& assetName, std::shared_ptr<Config> co
 {
     std::string pathNodeName = fmt::format("{}.filename", assetName);
 
-    setFilename(config->getValue<std::string>(pathNodeName, ""));
+    setFilename(config->value<std::string>(pathNodeName, ""));
 
     return true;
 }
