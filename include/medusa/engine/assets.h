@@ -54,7 +54,7 @@ namespace medusa
     public:
         AssetInfo() {}
 
-        virtual bool info(const std::string& name, std::shared_ptr<Config> config) { return false; }
+        virtual bool info(const std::string& name, std::shared_ptr<IConfig> config) { return false; }
         virtual std::shared_ptr<T> load(std::shared_ptr<IContext> context, std::shared_ptr<IAssetReader> assets) { return nullptr; }
     };
 
