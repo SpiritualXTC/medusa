@@ -12,7 +12,7 @@ using namespace medusa;
 
 
 //
-bool IAssetLocation::loadAssets(std::list<std::string>& assets)
+bool IAssetLocation::findAssets(std::list<std::string>& assets)
 {
     // Get the Assets YAML
     std::string contents = readFile("assets.yaml");
@@ -72,7 +72,7 @@ bool AssetManager::registerDirectory(const std::string& path)
 
     std::list<std::string> assetList;
 
-    if (!assetLocation->loadAssets(assetList))
+    if (!assetLocation->findAssets(assetList))
         throw MedusaError(std::format("Failed to load the asset list from `{}`", path));
 
     std::weak_ptr<IAssetLocation> location = assetLocation;

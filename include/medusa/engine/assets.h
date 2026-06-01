@@ -6,9 +6,6 @@
 
 namespace medusa
 {
-    class Config; // TODO: This is part of the Interface. Config is NOT part of the interface -- but it should be
-
-
     /// <summary>
     /// Interface for accessing the asset reader
     /// </summary>
@@ -36,6 +33,14 @@ namespace medusa
         /// <param name="path"></param>
         /// <returns></returns>
         virtual std::vector<uint8_t> readBinary(const std::string& path) = 0;
+
+
+        /// <summary>
+        /// Find assets associated with this reader
+        /// </summary>
+        /// <param name="assets"></param>
+        /// <returns></returns>
+        virtual bool findAssets(std::list<std::string>& assets) = 0;
     };
 
 

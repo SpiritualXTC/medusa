@@ -19,10 +19,9 @@ namespace medusa
         IAssetLocation() {}
         virtual ~IAssetLocation() {}
 
-        bool loadAssets(std::list<std::string>& assets);
-
         std::shared_ptr<Config> getConfig() { return _config; }
 
+        bool findAssets(std::list<std::string>& assets) override;
 
     private:
         std::shared_ptr<Config> _config;
