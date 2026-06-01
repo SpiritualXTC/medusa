@@ -28,7 +28,7 @@ bool IAssetLocation::findAssets(std::list<std::string>& assets)
     {
 
         std::string nodePath = std::format("resources.{}", assetType);
-        const Config::PTree& assetRoot = _config->node(nodePath);
+        const IConfig::PTree& assetRoot = _config->node(nodePath);
 
         if (!assetRoot.empty())
         {
