@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 
+#include <medusa/engine_fwd.h>
 #include <medusa/engine/context.h>
 
 #include "window_gl.h"
@@ -9,10 +10,6 @@
 
 namespace medusa
 {
-    // Forward Declarations
-    class Config;
-
-
     namespace opengl
     {
         class PipelineStateGL;
@@ -20,7 +17,7 @@ namespace medusa
         class ContextGL : public IContext, public std::enable_shared_from_this<ContextGL>
         {
         public:
-            ContextGL(std::shared_ptr<Config> config);
+            ContextGL(std::shared_ptr<IConfig> config);
             virtual ~ContextGL();
 
             // IContext

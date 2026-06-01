@@ -6,9 +6,9 @@
 #include <SDL_image.h>
 
 #include <medusa/exception.h>
+#include <medusa/engine/config.h>
 
 #include <core/utilities/logging.h>
-#include <core/utilities/config.h>
 
 #include "gl.h"
 #include "window_gl.h"
@@ -33,7 +33,7 @@ void APIENTRY debugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum
 
 
 //
-ContextGL::ContextGL(std::shared_ptr<Config> config)
+ContextGL::ContextGL(std::shared_ptr<IConfig> config)
 {
     // Initialise SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) != 0)
