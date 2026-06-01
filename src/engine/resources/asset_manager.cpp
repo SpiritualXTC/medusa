@@ -29,13 +29,15 @@ bool IAssetLocation::loadAssets(std::list<std::string>& assets)
 
     for (auto& assetType : types)
     {
+
         std::string nodePath = std::format("resources.{}", assetType);
-        YAML::Node assetRootNode;
-        if (_config->getNode(nodePath, assetRootNode))
+        const Config::PTree& assetRoot = _config->node(nodePath);
+
+        if (!assetRoot.empty())
         {
-            for (auto it = assetRootNode.begin(); it != assetRootNode.end(); ++it)
+            for (auto it = assetRoot.begin(); it != assetRoot.end(); ++it)
             {
-                std::string assetPath = std::format("{}.{}", nodePath, it->first.as<std::string>());
+                std::string assetPath = std::format("{}.{}", nodePath, it->first.c_str());
                 logging::warn(fmt::format("Found Asset: {}", assetPath));
 
                 assets.push_back(assetPath);
