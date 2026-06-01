@@ -3,7 +3,7 @@
 #include <medusa/app.h>
 #include <medusa/renderer/scene.h>
 
-#include <core/utilities/config.h>
+#include <core/utilities/config_yaml.h>
 #include <core/utilities/logging.h>
 #include <core/utilities/timing.h>
 #include <engine/events.h>

@@ -1,4 +1,4 @@
-#include "config.h"
+#include "config_yaml.h"
 
 #include <medusa/exception.h>
 

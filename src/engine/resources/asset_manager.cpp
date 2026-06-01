@@ -1,6 +1,6 @@
 #include "asset_manager.h"
 
-#include <core/utilities/config.h>
+#include <core/utilities/config_yaml.h>
 #include <core/utilities/logging.h>
 
 #include <engine/resources/asset_directory.h>
