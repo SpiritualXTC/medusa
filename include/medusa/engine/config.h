@@ -5,6 +5,8 @@
 
 namespace medusa
 {
+    // TODO: How easy to abstract the PTree to an IConfigNode?
+
     class IConfig
     {
     public:
@@ -18,13 +20,24 @@ namespace medusa
         virtual const PTree& root() const = 0;
 
 
+        bool exists(const std::string& key)
+        {
+            return exists(key, root());
+        }
+
+        bool exists(const std::string& key, const PTree& parentNode)
+        {
+            return exists(key, parentNode);
+        }
+
+
         const PTree& node(const std::string& key)
         {
             return node(key, root());
         }
         const PTree& node(const std::string& key, const PTree& parentNode)
         {
-            return parentNode.get_child(key);
+            return parentNode.get_child(key, _empty);
         }
 
         template<typename T>
@@ -43,6 +56,9 @@ namespace medusa
 
             return n->get_value<T>();
         }
+
+    private:
+        PTree _empty;
 
     };
 }
