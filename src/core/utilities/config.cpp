@@ -46,31 +46,31 @@ void yaml_to_ptree(const YAML::Node& yaml_node, boost::property_tree::ptree& pt_
 
 
 //
-std::shared_ptr<IConfig> Config::loadFromFile(const std::string& file)
+std::shared_ptr<IConfig> ConfigYAML::loadFromFile(const std::string& file)
 {
     YAML::Node yaml = YAML::LoadFile(file);
 
     IConfig::PTree tree;
     yaml_to_ptree(yaml, tree);
 
-    return std::make_shared<Config>(std::move(tree));
+    return std::make_shared<ConfigYAML>(std::move(tree));
 }
 
 
 //
-std::shared_ptr<IConfig> Config::loadFromString(const std::string& s)
+std::shared_ptr<IConfig> ConfigYAML::loadFromString(const std::string& s)
 {
     YAML::Node yaml = YAML::Load(s);
 
     IConfig::PTree tree;
     yaml_to_ptree(yaml, tree);
 
-    return std::make_shared<Config>(std::move(tree));
+    return std::make_shared<ConfigYAML>(std::move(tree));
 }
 
 
 //
-Config::Config(const IConfig::PTree& config)
+ConfigYAML::ConfigYAML(const IConfig::PTree& config)
     : _config(config)
 {
 
@@ -78,7 +78,7 @@ Config::Config(const IConfig::PTree& config)
 
 
 //
-Config::~Config()
+ConfigYAML::~ConfigYAML()
 {
 
 }

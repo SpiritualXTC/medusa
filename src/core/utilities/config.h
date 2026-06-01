@@ -9,15 +9,15 @@ namespace medusa
         YAML Wrapper
     */
 
-    class Config : public IConfig
+    class ConfigYAML : public IConfig
     {
     public:
         static std::shared_ptr<IConfig> loadFromFile(const std::string& file);
         static std::shared_ptr<IConfig> loadFromString(const std::string& s);
 
     public:
-        Config(const IConfig::PTree& config);
-        virtual ~Config();
+        ConfigYAML(const IConfig::PTree& config);
+        virtual ~ConfigYAML();
 
         const PTree& root() const override { return _config; }
 

@@ -16,7 +16,7 @@ bool IAssetLocation::findAssets(std::list<std::string>& assets)
 {
     // Load the YAML
     std::string contents = readFile("assets.yaml");
-    _config = Config::loadFromString(contents);
+    _config = ConfigYAML::loadFromString(contents);
 
     std::string types[] = {
         "textures",

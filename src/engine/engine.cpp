@@ -22,7 +22,7 @@ Engine::Engine()
     logging::info("Launch Application");
 
     // Config
-    _config = Config::loadFromFile("../config/medusa.config.yaml");
+    _config = ConfigYAML::loadFromFile("../config/medusa.config.yaml");
 
     // Events
     _events = std::make_shared<Events>();
