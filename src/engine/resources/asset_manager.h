@@ -6,23 +6,18 @@
 
 namespace medusa
 {
-    class TextureAsset;
-
-
-    class Config;
-
     class IAssetLocation : public IAssetReader
     {
     public:
         IAssetLocation() {}
         virtual ~IAssetLocation() {}
 
-        std::shared_ptr<Config> getConfig() { return _config; }
+        std::shared_ptr<IConfig> getConfig() { return _config; }
 
         bool findAssets(std::list<std::string>& assets) override;
 
     private:
-        std::shared_ptr<Config> _config;
+        std::shared_ptr<IConfig> _config;
     };
 
 

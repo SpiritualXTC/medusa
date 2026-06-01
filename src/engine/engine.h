@@ -57,7 +57,7 @@ namespace medusa
     private:
         bool _running = false;
 
-        std::shared_ptr<MedusaConfig> _config;
+        std::shared_ptr<IConfig> _config;
         std::shared_ptr<AssetManager> _assets;
 
         std::shared_ptr<Timing> _timing;

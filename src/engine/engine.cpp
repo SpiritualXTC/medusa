@@ -3,9 +3,9 @@
 #include <medusa/app.h>
 #include <medusa/renderer/scene.h>
 
+#include <core/utilities/config.h>
 #include <core/utilities/logging.h>
 #include <core/utilities/timing.h>
-#include <engine/config.h>
 #include <engine/events.h>
 #include <engine/window.h>
 #include <engine/input/mouse.h>
@@ -22,7 +22,7 @@ Engine::Engine()
     logging::info("Launch Application");
 
     // Config
-    _config = std::make_shared<MedusaConfig>();
+    _config = Config::loadFromFile("../config/medusa.config.yaml");
 
     // Events
     _events = std::make_shared<Events>();

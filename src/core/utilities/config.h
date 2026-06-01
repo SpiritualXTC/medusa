@@ -12,17 +12,17 @@ namespace medusa
     class Config : public IConfig
     {
     public:
-        Config(const std::string& file); // TODO: Remove
-        Config();
+        static std::shared_ptr<IConfig> loadFromFile(const std::string& file);
+        static std::shared_ptr<IConfig> loadFromString(const std::string& s);
+
+    public:
+        Config(const IConfig::PTree& config);
         virtual ~Config();
 
-        bool loadFromFile(const std::string& file);
-        bool loadFromString(const std::string& s);
-
-        const PTree& root() const override { return _tree; }
+        const PTree& root() const override { return _config; }
 
     private:
 
-        PTree _tree;
+        PTree _config;
     };
 }

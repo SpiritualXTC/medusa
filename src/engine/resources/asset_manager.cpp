@@ -14,12 +14,9 @@ using namespace medusa;
 //
 bool IAssetLocation::findAssets(std::list<std::string>& assets)
 {
-    // Get the Assets YAML
-    std::string contents = readFile("assets.yaml");
-
     // Load the YAML
-    _config = std::make_shared<Config>();
-    _config->loadFromString(contents);
+    std::string contents = readFile("assets.yaml");
+    _config = Config::loadFromString(contents);
 
     std::string types[] = {
         "textures",

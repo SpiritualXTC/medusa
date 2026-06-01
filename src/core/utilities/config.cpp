@@ -45,43 +45,35 @@ void yaml_to_ptree(const YAML::Node& yaml_node, boost::property_tree::ptree& pt_
 }
 
 
-
 //
-Config::Config()
+std::shared_ptr<IConfig> Config::loadFromFile(const std::string& file)
 {
+    YAML::Node yaml = YAML::LoadFile(file);
 
+    IConfig::PTree tree;
+    yaml_to_ptree(yaml, tree);
+
+    return std::make_shared<Config>(std::move(tree));
 }
 
 
 //
-bool Config::loadFromFile(const std::string& path)
+std::shared_ptr<IConfig> Config::loadFromString(const std::string& s)
 {
-    YAML::Node yaml = YAML::LoadFile(path);
+    YAML::Node yaml = YAML::Load(s);
 
-    yaml_to_ptree(yaml, _tree);
+    IConfig::PTree tree;
+    yaml_to_ptree(yaml, tree);
 
-    return true;
+    return std::make_shared<Config>(std::move(tree));
 }
 
 
 //
-bool Config::loadFromString(const std::string& contents)
+Config::Config(const IConfig::PTree& config)
+    : _config(config)
 {
-    if (contents == "")
-        throw MedusaError("No contents to load");
-    YAML::Node yaml = YAML::Load(contents);
 
-    yaml_to_ptree(yaml, _tree);
-
-    return true;
-}
-
-
-//
-Config::Config(const std::string& file)
-{
-    if (!loadFromFile(file))
-        throw MedusaError("Unable to load config file");
 }
 
 
