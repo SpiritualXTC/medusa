@@ -6,6 +6,7 @@
 namespace medusa
 {
     // Forward Declarations
+    class IConfig;
     class IEngine;
     class IApplication;
     class IContext;
