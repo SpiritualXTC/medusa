@@ -41,6 +41,13 @@ namespace medusa
         /// <param name="assets"></param>
         /// <returns></returns>
         virtual bool findAssets(std::list<std::string>& assets) = 0;
+
+
+        /// <summary>
+        /// Get the asset info
+        /// </summary>
+        /// <returns></returns>
+        virtual std::shared_ptr<IConfig> getConfig() = 0;
     };
 
 
@@ -91,5 +98,16 @@ namespace medusa
         /// <param name="name"></param>
         /// <returns></returns>
         virtual std::shared_ptr<IModel> loadModel(const std::string& name) = 0;
+
+
+        /// <summary>
+        /// Register a reader
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns></returns>
+        virtual bool registerReader(std::shared_ptr<IAssetReader> reader) = 0;
+
+    protected:
+        virtual std::shared_ptr<IAssetReader> getReader(const std::string& name) = 0;
     };
 }

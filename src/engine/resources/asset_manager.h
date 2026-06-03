@@ -12,7 +12,7 @@ namespace medusa
         IAssetLocation() {}
         virtual ~IAssetLocation() {}
 
-        std::shared_ptr<IConfig> getConfig() { return _config; }
+        std::shared_ptr<IConfig> getConfig() override { return _config; }
 
         bool findAssets(std::list<std::string>& assets) override;
 
@@ -46,6 +46,14 @@ namespace medusa
 
 
         /// <summary>
+        /// Generic register
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns></returns>
+        bool registerReader(std::shared_ptr<IAssetReader> reader);
+
+
+        /// <summary>
         /// Loads a Shader by it's registered name
         /// </summary>
         /// <param name="name"></param>
@@ -69,10 +77,9 @@ namespace medusa
     private:
         std::weak_ptr<IContext> _context;
 
+        std::shared_ptr<IAssetReader> getReader(const std::string& name) override;
 
-        std::shared_ptr<IAssetLocation> getLocation(const std::string& name);
-
-        std::vector<std::shared_ptr<IAssetLocation>> _locations;
-        std::unordered_map<std::string, std::weak_ptr<IAssetLocation>> _assets;
+        std::vector<std::shared_ptr<IAssetReader>> _locations;
+        std::unordered_map<std::string, std::weak_ptr<IAssetReader>> _assets;
     };
 }

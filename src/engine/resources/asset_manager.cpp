@@ -26,7 +26,6 @@ bool IAssetLocation::findAssets(std::list<std::string>& assets)
 
     for (auto& assetType : types)
     {
-
         std::string nodePath = std::format("resources.{}", assetType);
         const IConfig::PTree& assetRoot = _config->node(nodePath);
 
@@ -62,24 +61,35 @@ AssetManager::~AssetManager()
 }
 
 
+bool AssetManager::registerReader(std::shared_ptr<IAssetReader> reader)
+{
+    std::list<std::string> assetList;
+
+    // Find assets from the reader
+    if (!reader->findAssets(assetList))
+        throw MedusaError(std::format("Failed to find assets from `{}`", reader->filepath()));
+
+    // Register assets from the reader
+    for (auto& item : assetList)
+    {
+        _assets.insert({ item, reader });
+    }
+
+    // Store the reader
+    _locations.push_back(reader);
+
+    return true;
+}
+
+
 //
 bool AssetManager::registerDirectory(const std::string& path)
 {
     std::shared_ptr<AssetDirectory> assetLocation = std::make_shared<AssetDirectory>(path);
 
-    std::list<std::string> assetList;
-
-    if (!assetLocation->findAssets(assetList))
-        throw MedusaError(std::format("Failed to load the asset list from `{}`", path));
-
-    std::weak_ptr<IAssetLocation> location = assetLocation;
-    for (auto& item : assetList)
-    {
-        _assets.insert({ item, location });
-    }
-
-    // Store the directory
-    _locations.push_back(assetLocation);
+    // Register the directory location
+    if (!registerReader(assetLocation))
+        return false;
 
     return true;
 }
@@ -93,7 +103,7 @@ bool AssetManager::registerData(const std::string& path)
 
 
 //
-std::shared_ptr<IAssetLocation> AssetManager::getLocation(const std::string& name)
+std::shared_ptr<IAssetReader> AssetManager::getReader(const std::string& name)
 {
     auto it = _assets.find(name);
 
@@ -112,17 +122,17 @@ std::shared_ptr<IShader> AssetManager::loadShader(const std::string& name)
     std::string assetName = fmt::format("resources.shaders.{}", name);
 
     // Get the location from the asset map
-    std::shared_ptr<IAssetLocation> location = getLocation(assetName);
-    if (!location)
+    std::shared_ptr<IAssetReader> reader = getReader(assetName);
+    if (!reader)
         return nullptr;
 
     // Extract info from config
     ShaderAsset asset = ShaderAsset();
-    if (!asset.info(assetName, location->getConfig()))
+    if (!asset.info(assetName, reader->getConfig()))
         return nullptr;
 
     // Load the asset from the location
-    return asset.load(_context.lock(), location);
+    return asset.load(_context.lock(), reader);
 }
 
 
@@ -132,17 +142,17 @@ std::shared_ptr<ITexture> AssetManager::loadTexture(const std::string& name)
     std::string assetName = fmt::format("resources.textures.{}", name);
 
     // Get the location from the asset map
-    std::shared_ptr<IAssetLocation> location = getLocation(assetName);
-    if (! location)
+    std::shared_ptr<IAssetReader> reader = getReader(assetName);
+    if (!reader)
         return nullptr;
 
     // Extract info from config
     TextureAsset asset = TextureAsset();
-    if (! asset.info(assetName, location->getConfig()))
+    if (! asset.info(assetName, reader->getConfig()))
         return nullptr;
 
     // Load the asset from the location
-    return asset.load(_context.lock(), location);
+    return asset.load(_context.lock(), reader);
 }
 
 
@@ -152,14 +162,14 @@ std::shared_ptr<IModel> AssetManager::loadModel(const std::string& name)
     std::string assetName = fmt::format("resources.models.{}", name);
 
     // Get the location from the asset map
-    std::shared_ptr<IAssetLocation> location = getLocation(assetName);
-    if (!location)
+    std::shared_ptr<IAssetReader> reader = getReader(assetName);
+    if (!reader)
         return nullptr;
 
     // Extract info from Config
     ModelAsset asset = ModelAsset();
-    if (!asset.info(assetName, location->getConfig()))
+    if (!asset.info(assetName, reader->getConfig()))
         return nullptr;
 
-    return asset.load(_context.lock(), location);
+    return asset.load(_context.lock(), reader);
 }
