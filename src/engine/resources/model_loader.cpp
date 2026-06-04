@@ -28,26 +28,28 @@ bool loadScene(std::shared_ptr<IContext> context, const aiScene* scene, std::sha
 
 
 //
-bool ModelAsset::info(const std::string& assetName, std::shared_ptr<IConfig> config)
+template<>
+bool IAssetReader::getInfo(const std::string& assetName, ModelInfo& info)
 {
-    std::string pathNodeMesh = fmt::format("{}.model", assetName);
-    std::string pathNodeMaterial = fmt::format("{}.material", assetName);
+    auto config = getConfig();
+    auto& node = config->node(assetName);
 
-    setModelFilename(config->value<std::string>(pathNodeMesh, ""));
-    setMaterialFilename(config->value<std::string>(pathNodeMaterial, ""));
+    info.meshFilename = node.get<std::string>("model", "");
+    info.materialFilename = node.get<std::string>("material", "");
 
     return true;
 }
 
 
 //
-std::shared_ptr<IModel> ModelAsset::load(std::shared_ptr<IContext> context, std::shared_ptr<IAssetReader> reader)
+template<>
+std::shared_ptr<IModel> AssetManager::load(std::shared_ptr<IContext> context, const ModelInfo& info, std::shared_ptr<IAssetReader> reader)
 {
 
     Assimp::Importer importer;
 
-    std::string meshContents = reader->readFile(_meshFilename);
-    std::string materialContents = reader->readFile(_materialFilename);
+    std::string meshContents = reader->readFile(info.meshFilename);
+    std::string materialContents = reader->readFile(info.materialFilename);
 
 
     // This works but looks nasty AF
@@ -57,7 +59,7 @@ std::shared_ptr<IModel> ModelAsset::load(std::shared_ptr<IContext> context, std:
     const aiScene* mesh = importer.ReadFileFromMemory(full.c_str(), full.length(), aiProcessPreset_TargetRealtime_MaxQuality, "obj");
     assert(mesh != nullptr);
 
-    logging::info("Loading Model from Asset: obj={}, mtl={}", _meshFilename, _materialFilename);
+    logging::info("Loading Model from Asset: obj={}, mtl={}", info.meshFilename, info.materialFilename);
 
     std::shared_ptr<Geometry> geometry = std::make_shared<Geometry>();
 

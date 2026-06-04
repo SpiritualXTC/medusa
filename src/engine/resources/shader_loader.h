@@ -7,20 +7,23 @@
 
 namespace medusa
 {
-    class ShaderAsset : public AssetInfo<IShader>
+    /// <summary>
+    /// Data struct to load shader info
+    /// </summary>
+    struct ShaderInfo
     {
-    public:
-        bool info(const std::string& assetName, std::shared_ptr<IConfig> config);
+        inline static const std::string type = "shaders";
 
-        std::shared_ptr<IShader> load(std::shared_ptr<IContext> context, std::shared_ptr<IAssetReader> reader);
-    private:
-        PipelineState _pipelineState;
-        std::unordered_map<ShaderType, std::string> _paths;
+        PipelineState pipelineState;
+        std::unordered_map<ShaderType, std::string> paths;
     };
 
 
     namespace loaders
     {
+        /// <summary>
+        /// Loads the shader
+        /// </summary>
         class ShaderLoader
         {
         public:
@@ -29,4 +32,25 @@ namespace medusa
             static std::shared_ptr<IShader> loadShader(std::shared_ptr<IContext> context, const std::unordered_map<ShaderType, std::string>& shaderFilenames, const PipelineState& pipelineState = PipelineState());
         };
     }
+
+
+    /// <summary>
+    /// Template specialization for reading shader info
+    /// </summary>
+    /// <param name="assetName"></param>
+    /// <param name="info"></param>
+    /// <returns></returns>
+    template<>
+    bool IAssetReader::getInfo<ShaderInfo>(const std::string& assetName, ShaderInfo& info);
+
+
+    /// <summary>
+    /// Template specialisation for loading shaders
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="info"></param>
+    /// <param name="reader"></param>
+    /// <returns></returns>
+    template<>
+    std::shared_ptr<IShader> AssetManager::load(std::shared_ptr<IContext> context, const ShaderInfo& info, std::shared_ptr<IAssetReader> reader);
 }

@@ -11,29 +11,23 @@ namespace medusa
 {
     class Geometry;
 
-    class ModelAsset : public AssetInfo<IModel>
+
+    /// <summary>
+    /// Data struct to load model info
+    /// </summary>
+    struct ModelInfo
     {
-    public:
+        inline static const std::string type = "models";
 
-        bool info(const std::string& assetName, std::shared_ptr<IConfig> config) override;
-        std::shared_ptr<IModel> load(std::shared_ptr<IContext> context, std::shared_ptr<IAssetReader> reader) override;
-
-        const std::string& getModelFilename() const { return _meshFilename; }
-        const std::string& getMaterialFilename() const { return _materialFilename; }
-
-        void setModelFilename(const std::string& filename) { _meshFilename = filename; }
-        void setMaterialFilename(const std::string& filename) { _materialFilename = filename; }
-
-    private:
-        std::string _meshFilename;
-        std::string _materialFilename;
+        std::string meshFilename;
+        std::string materialFilename;
     };
 
 
     namespace loaders
     {
         /// <summary>
-        ///
+        /// Loads the model
         /// </summary>
         class ModelLoader
         {
@@ -43,4 +37,25 @@ namespace medusa
             static std::shared_ptr<Geometry> loadModel(std::shared_ptr<IContext> context, const std::string& filename);
         };
     }
+
+
+    /// <summary>
+    /// Template specialization for reading model info
+    /// </summary>
+    /// <param name="assetName"></param>
+    /// <param name="info"></param>
+    /// <returns></returns>
+    template<>
+    bool IAssetReader::getInfo(const std::string& assetName, ModelInfo& info);
+
+
+    /// <summary>
+    /// Template specialisation for loading models
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="info"></param>
+    /// <param name="reader"></param>
+    /// <returns></returns>
+    template<>
+    std::shared_ptr<IModel> AssetManager::load(std::shared_ptr<IContext> context, const ModelInfo& info, std::shared_ptr<IAssetReader> reader);
 }

@@ -11,7 +11,9 @@ using namespace medusa;
 using namespace medusa::loaders;
 
 
-bool ShaderAsset::info(const std::string& assetName, std::shared_ptr<IConfig> config)
+//
+template<>
+bool IAssetReader::getInfo<ShaderInfo>(const std::string& assetName, ShaderInfo& info)
 {
     // Load a new Shader. No References!
     std::unordered_map<ShaderType, std::string> keys{
@@ -20,14 +22,13 @@ bool ShaderAsset::info(const std::string& assetName, std::shared_ptr<IConfig> co
         {ShaderType::GeometryShader, "geometry"},
     };
 
-
     // Retrieve the state
     std::unordered_map<std::string, std::string> state;
     std::string stateKey = std::format("{}.state", assetName);
     std::string enableKey = std::format("{}.state.enable", assetName);
 
-    const IConfig::PTree& stateNode = config->node(stateKey);
-    const IConfig::PTree& enableNode = config->node(enableKey);
+    const IConfig::PTree& stateNode = getConfig()->node(stateKey);
+    const IConfig::PTree& enableNode = getConfig()->node(enableKey);
 
     if (!stateNode.empty())
     {
@@ -50,10 +51,11 @@ bool ShaderAsset::info(const std::string& assetName, std::shared_ptr<IConfig> co
         }
     }
 
-
+    // Populate the pipelinestate from the Map.
+    // TODO: Why is the out param before the input? stupid AI
     if (!state.empty())
     {
-        PipelineStateParser::apply(_pipelineState, state);
+        PipelineStateParser::apply(info.pipelineState, state);
     }
 
     // Retrieve the filenames from the resource reference
@@ -61,12 +63,12 @@ bool ShaderAsset::info(const std::string& assetName, std::shared_ptr<IConfig> co
     {
         std::string resourceKey = std::format("{}.{}", assetName, it->second);
 
-        std::string s = config->value<std::string>(resourceKey, "");
+        std::string s = getConfig()->value<std::string>(resourceKey, "");
         if (s != "")
         {
             // Make the path relative to the data directory
             std::string filepath = "../data/" + s;
-            _paths.insert({ it->first, filepath });
+            info.paths.insert({ it->first, filepath });
         }
     }
 
@@ -75,13 +77,14 @@ bool ShaderAsset::info(const std::string& assetName, std::shared_ptr<IConfig> co
 
 
 //
-std::shared_ptr<IShader> ShaderAsset::load(std::shared_ptr<IContext> context, std::shared_ptr<IAssetReader> reader)
+template<>
+std::shared_ptr<IShader> AssetManager::load(std::shared_ptr<IContext> context, const ShaderInfo& info, std::shared_ptr<IAssetReader> reader)
 {
     auto shader = context->createShader();
 
-    shader->state(_pipelineState);
+    shader->state(info.pipelineState);
 
-    for (auto [type, filename] : _paths)
+    for (auto [type, filename] : info.paths)
     {
         std::string contents = reader->readFile(filename);
 
@@ -92,7 +95,6 @@ std::shared_ptr<IShader> ShaderAsset::load(std::shared_ptr<IContext> context, st
 
     return shader;
 }
-
 
 
 //

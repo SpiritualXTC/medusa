@@ -12,6 +12,32 @@ using namespace medusa;
 using namespace medusa::loaders;
 
 
+
+template<>
+bool IAssetReader::getInfo<TextureInfo>(const std::string& assetName, TextureInfo& info)
+{
+    auto config = getConfig();
+
+    auto& node = config->node(assetName);
+
+    info.filename = node.get<std::string>("filename", "");
+
+    return true;
+}
+
+
+template<>
+std::shared_ptr<ITexture> AssetManager::load(std::shared_ptr<IContext> context, const TextureInfo& info, std::shared_ptr<IAssetReader> reader)
+{
+    std::vector<uint8_t> buffer = reader->readBinary(info.filename);
+    std::shared_ptr<ITexture> texture = loaders::TextureLoader::loadTexture2D(context, buffer);
+    return texture;
+}
+
+
+
+
+
 //
 static SDL_Surface* toRGBA(SDL_Surface* surface)
 {
@@ -29,10 +55,12 @@ static SDL_Surface* toRGBA(SDL_Surface* surface)
 }
 
 
+/*
 //
 bool TextureAsset::info(const std::string& assetName, std::shared_ptr<IConfig> config)
 {
     std::string pathNodeName = fmt::format("{}.filename", assetName);
+    _assetName = assetName;
 
     setFilename(config->value<std::string>(pathNodeName, ""));
 
@@ -48,6 +76,7 @@ std::shared_ptr<ITexture> TextureAsset::load(std::shared_ptr<IContext> context, 
 
     return texture;
 }
+*/
 
 
 //

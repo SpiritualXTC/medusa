@@ -48,21 +48,20 @@ namespace medusa
         /// </summary>
         /// <returns></returns>
         virtual std::shared_ptr<IConfig> getConfig() = 0;
-    };
 
 
-
-    /// <summary>
-    /// Base information to load an asset
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    template <typename T>
-    class AssetInfo {
-    public:
-        AssetInfo() {}
-
-        virtual bool info(const std::string& name, std::shared_ptr<IConfig> config) { return false; }
-        virtual std::shared_ptr<T> load(std::shared_ptr<IContext> context, std::shared_ptr<IAssetReader> assets) { return nullptr; }
+        /// <summary>
+        /// Template method for loading an asset - requires specialisation
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="asset"></param>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        template <typename T>
+        bool getInfo(const std::string& asset, T& info)
+        {
+            return false;
+        }
     };
 
 
@@ -93,7 +92,7 @@ namespace medusa
 
 
         /// <summary>
-        ///
+        /// Loads a model
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -108,6 +107,7 @@ namespace medusa
         virtual bool registerReader(std::shared_ptr<IAssetReader> reader) = 0;
 
     protected:
+        virtual std::shared_ptr<IContext> getContext() = 0;
         virtual std::shared_ptr<IAssetReader> getReader(const std::string& name) = 0;
     };
 }

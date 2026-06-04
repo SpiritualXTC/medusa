@@ -11,33 +11,21 @@
 
 namespace medusa
 {
-
     /// <summary>
-    ///
+    /// Data struct to load Texture info
     /// </summary>
-    class TextureAsset : public AssetInfo<ITexture>
+    struct TextureInfo
     {
-    public:
+        inline static const std::string type = "textures";
 
-        bool info(const std::string& assetName, std::shared_ptr<IConfig> config) override;
-        std::shared_ptr<ITexture> load(std::shared_ptr<IContext> context, std::shared_ptr<IAssetReader> reader) override;
-
-
-        const std::string& getFilename() const { return _filename; }
-
-        void setFilename(const std::string& filename) { _filename = filename; }
-
-
-    private:
-        std::string _filename;
+        std::string filename;
     };
-
 
 
     namespace loaders
     {
         /// <summary>
-        ///
+        /// Loads the texture
         /// </summary>
         class TextureLoader
         {
@@ -48,4 +36,25 @@ namespace medusa
             static std::shared_ptr<ITexture> loadTexture2D(std::shared_ptr<IContext> context, std::vector<uint8_t>& bytes);
         };
     }
+
+
+    /// <summary>
+    /// Template specialization for reading texture info
+    /// </summary>
+    /// <param name="assetName"></param>
+    /// <param name="info"></param>
+    /// <returns></returns>
+    template<>
+    bool IAssetReader::getInfo<TextureInfo>(const std::string& assetName, TextureInfo& info);
+
+
+    /// <summary>
+    /// Template specialisation for loading textures
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="info"></param>
+    /// <param name="reader"></param>
+    /// <returns></returns>
+    template<>
+    std::shared_ptr<ITexture> AssetManager::load(std::shared_ptr<IContext> context, const TextureInfo& info, std::shared_ptr<IAssetReader> reader);
 }

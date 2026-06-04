@@ -77,9 +77,38 @@ namespace medusa
     private:
         std::weak_ptr<IContext> _context;
 
+        std::shared_ptr<IContext> getContext() override { return _context.lock(); }
         std::shared_ptr<IAssetReader> getReader(const std::string& name) override;
 
         std::vector<std::shared_ptr<IAssetReader>> _locations;
         std::unordered_map<std::string, std::weak_ptr<IAssetReader>> _assets;
+
+
+        template <typename ASSET, typename INFO>
+        std::shared_ptr<ASSET> loadAsset(const std::string& name)
+        {
+            // TODO: The textures part also needs to be abstract
+            std::string assetName = fmt::format("resources.{}.{}", INFO::type, name);
+
+            // Get the location from the asset map
+            std::shared_ptr<IAssetReader> reader = getReader(assetName);
+            if (!reader)
+                return nullptr;
+
+            // Extract info from config
+            INFO info = INFO();
+            if (!reader->getInfo<INFO>(assetName, info))
+                return nullptr;
+
+            // Pass to specialisation loader
+            return load<ASSET, INFO>(getContext(), info, reader);
+        }
+
+
+        template <typename ASSET, typename INFO>
+        std::shared_ptr<ASSET> load(std::shared_ptr<IContext> context, const INFO& info, std::shared_ptr<IAssetReader> reader)
+        {
+            return nullptr;
+        }
     };
 }

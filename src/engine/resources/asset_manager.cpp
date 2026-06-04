@@ -45,7 +45,6 @@ bool IAssetLocation::findAssets(std::list<std::string>& assets)
 }
 
 
-
 //
 AssetManager::AssetManager(std::shared_ptr<IContext> context)
     : _context(context)
@@ -61,6 +60,7 @@ AssetManager::~AssetManager()
 }
 
 
+//
 bool AssetManager::registerReader(std::shared_ptr<IAssetReader> reader)
 {
     std::list<std::string> assetList;
@@ -119,57 +119,19 @@ std::shared_ptr<IAssetReader> AssetManager::getReader(const std::string& name)
 //
 std::shared_ptr<IShader> AssetManager::loadShader(const std::string& name)
 {
-    std::string assetName = fmt::format("resources.shaders.{}", name);
-
-    // Get the location from the asset map
-    std::shared_ptr<IAssetReader> reader = getReader(assetName);
-    if (!reader)
-        return nullptr;
-
-    // Extract info from config
-    ShaderAsset asset = ShaderAsset();
-    if (!asset.info(assetName, reader->getConfig()))
-        return nullptr;
-
-    // Load the asset from the location
-    return asset.load(_context.lock(), reader);
+    return loadAsset<IShader, ShaderInfo>(name);
 }
 
 
 //
 std::shared_ptr<ITexture> AssetManager::loadTexture(const std::string& name)
 {
-    std::string assetName = fmt::format("resources.textures.{}", name);
-
-    // Get the location from the asset map
-    std::shared_ptr<IAssetReader> reader = getReader(assetName);
-    if (!reader)
-        return nullptr;
-
-    // Extract info from config
-    TextureAsset asset = TextureAsset();
-    if (! asset.info(assetName, reader->getConfig()))
-        return nullptr;
-
-    // Load the asset from the location
-    return asset.load(_context.lock(), reader);
+    return loadAsset<ITexture, TextureInfo>(name);
 }
 
 
 //
 std::shared_ptr<IModel> AssetManager::loadModel(const std::string& name)
 {
-    std::string assetName = fmt::format("resources.models.{}", name);
-
-    // Get the location from the asset map
-    std::shared_ptr<IAssetReader> reader = getReader(assetName);
-    if (!reader)
-        return nullptr;
-
-    // Extract info from Config
-    ModelAsset asset = ModelAsset();
-    if (!asset.info(assetName, reader->getConfig()))
-        return nullptr;
-
-    return asset.load(_context.lock(), reader);
+    return loadAsset<IModel, ModelInfo>(name);
 }
