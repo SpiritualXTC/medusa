@@ -1,5 +1,7 @@
 #pragma once
 
+#include <fmt/format.h>
+
 #include <medusa/engine_fwd.h>
 
 #include <medusa/engine/assets.h>
